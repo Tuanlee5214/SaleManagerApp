@@ -1,0 +1,68 @@
+# ========================
+# Build folders
+# ========================
+bin/
+obj/
+Debug/
+Release/
+
+# ========================
+# Visual Studio files
+# ========================
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+
+# ========================
+# Logs and temporary files
+# ========================
+*.log
+*.tmp
+*.cache
+
+# ========================
+# NuGet packages
+# ========================
+*.nupkg
+packages/
+*.nuget/
+
+# ========================
+# Database files (local)
+# ========================
+*.mdf
+*.ldf
+*.db
+
+# ========================
+# Build artifacts
+# ========================
+*.dll
+*.exe
+*.pdb
+*.app
+
+# ========================
+# ReSharper, Rider, other IDE
+# ========================
+_ReSharper*/
+*.DotSettings.user
+.idea/
+
+# ========================
+# EF Migrations
+# Keep migration code files, ignore metadata/database
+# ========================
+Data/Migrations/*
+!Data/Migrations/*.cs
+!Data/Migrations/*.Designer.cs
+!Data/Migrations/*.resx
+
+# ========================
+# Other user-specific files
+# ========================
+*.userprefs
+*.local
