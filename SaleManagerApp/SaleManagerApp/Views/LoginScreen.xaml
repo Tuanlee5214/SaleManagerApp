@@ -158,13 +158,7 @@
                 </Button>
 
                 <!-- Quên mật khẩu -->
-                <TextBlock Text="Quên mật khẩu?"
-                           Foreground="#3B82F6"
-                           FontSize="13"
-                           HorizontalAlignment="Center"
-                           Cursor="Hand"
-                           TextDecorations="Underline"
-                           MouseDown="ForgotPassword_Click"/>
+                
 
             </StackPanel>
         </Border>
