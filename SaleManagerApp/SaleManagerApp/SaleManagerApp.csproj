@@ -119,12 +119,47 @@
     <Folder Include="Data\Migrations\" />
     <Folder Include="Data\Repositories\" />
     <Folder Include="Infrastructure\" />
-    <Folder Include="Services\Implementations\" />
-    <Folder Include="Services\Interfaces\" />
+    <Folder Include="Services\" />
     <Folder Include="Utils\Converters\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Images\logo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\anh1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\anh2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\PieChart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\PieChart %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\BarLineChart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\anh3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\shopping.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\user.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\house.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\bell.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DataBaseScript\SaleManagement1.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
