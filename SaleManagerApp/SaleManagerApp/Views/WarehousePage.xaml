@@ -10,23 +10,24 @@
     <UserControl.Resources>
         <!-- Nút tag chung -->
         <Style x:Key="TagButton" TargetType="Button">
-            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Padding" Value="12,8"/>
             <Setter Property="Margin" Value="6,0"/>
-            <Setter Property="Background" Value="#EFEFEF"/>
-            <Setter Property="Foreground" Value="#333"/>
-            <Setter Property="BorderBrush" Value="#D0D0D0"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Height" Value="34"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#666"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="40"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border CornerRadius="18"
+                        <Border CornerRadius="20"
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0">
-                                <ContentPresenter VerticalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12,0">
+                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>
@@ -36,44 +37,53 @@
 
         <!-- Nút tag đang chọn -->
         <Style x:Key="TagButtonSelected" TargetType="Button" BasedOn="{StaticResource TagButton}">
-            <Setter Property="Background" Value="#407BFF"/>
+            <Setter Property="Background" Value="#5B7FFF"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#407BFF"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
 
-        <!-- Style cho pill trạng thái "Còn" -->
-        <Style x:Key="PillAvailable" TargetType="Border">
-            <Setter Property="CornerRadius" Value="20"/>
-            <Setter Property="Padding" Value="12,6"/>
-            <Setter Property="Background" Value="#3F7BFF"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-        </Style>
-
-        <!-- Style cho pill trạng thái "Hết" -->
-        <Style x:Key="PillEmpty" TargetType="Border">
-            <Setter Property="CornerRadius" Value="20"/>
-            <Setter Property="Padding" Value="12,6"/>
-            <Setter Property="Background" Value="#E7E7E7"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
+        <!-- Style cho nút Nhập kho -->
+        <Style x:Key="AddButton" TargetType="Button">
+            <Setter Property="Background" Value="#5B7FFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="20"
+                                Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16,0">
+                                <TextBlock Text="+" FontSize="18" FontWeight="Bold" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <!-- Template cho container card hover -->
         <Style x:Key="CardStyle" TargetType="Border">
-            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="CornerRadius" Value="16"/>
             <Setter Property="Background" Value="White"/>
-            <Setter Property="Padding" Value="18"/>
-            <Setter Property="Margin" Value="20"/>
-            <Setter Property="Width" Value="280"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="12"/>
+            <Setter Property="Width" Value="300"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect Color="#000000" BlurRadius="8" Opacity="0.05"/>
+                    <DropShadowEffect Color="#000000" BlurRadius="10" Opacity="0.08" ShadowDepth="2"/>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Effect">
                         <Setter.Value>
-                            <DropShadowEffect Color="#000000" BlurRadius="14" Opacity="0.12"/>
+                            <DropShadowEffect Color="#000000" BlurRadius="16" Opacity="0.15" ShadowDepth="4"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>
@@ -81,146 +91,133 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Margin="20">
-
+    <Grid Margin="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- SIDEBAR -->
-      
-
         <!-- HEADER / NAV -->
-        <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,0,10" Background="White" Height="70">
+        <Grid Grid.Row="0" Background="White" Height="80">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <!-- Top navigation và title -->
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="30,0,0,0">
                 <!-- Logo text -->
-                <TextBlock Text="WMS" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                <TextBlock Text="WMS" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Margin="0,0,40,0"/>
 
                 <!-- Top nav links -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <StackPanel Margin="12,0" VerticalAlignment="Center">
-                        <TextBlock Text="Dụng cụ bếp" Foreground="#2B65D1" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                        <!-- small dot under active -->
-                        <Ellipse Width="6" Height="6" Fill="#2B65D1" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    <StackPanel Margin="20,0" VerticalAlignment="Center">
+                        <TextBlock Text="Dụng cụ bếp" Foreground="#888" FontSize="14" HorizontalAlignment="Center"/>
                     </StackPanel>
 
-                    <StackPanel Margin="12,0" VerticalAlignment="Center">
-                        <TextBlock Text="Nguyên liệu" Foreground="#888" HorizontalAlignment="Center"/>
+                    <StackPanel Margin="20,0" VerticalAlignment="Center">
+                        <TextBlock Text="Nguyên liệu" Foreground="#5B7FFF" FontWeight="SemiBold" FontSize="14" HorizontalAlignment="Center"/>
+                        <Border Height="3" Background="#5B7FFF" CornerRadius="2" Margin="0,4,0,0"/>
                     </StackPanel>
 
-                    <StackPanel Margin="12,0" VerticalAlignment="Center">
-                        <TextBlock Text="Lịch sử xuất/nhập kho" Foreground="#888" HorizontalAlignment="Center"/>
+                    <StackPanel Margin="20,0" VerticalAlignment="Center">
+                        <TextBlock Text="Lịch sử xuất/nhập kho" Foreground="#888" FontSize="14" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
 
-            <!-- User info and Nhập kho button -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0">
+            <!-- User info -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,30,0">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,12,0">
-                    <TextBlock Text="Tên admin/user" FontWeight="Bold" HorizontalAlignment="Right"/>
-                    <TextBlock Text="Mã NV/ADMIN" FontSize="11" Foreground="#777" HorizontalAlignment="Right"/>
+                    <TextBlock Text="Tên admin/user" FontWeight="SemiBold" HorizontalAlignment="Right" FontSize="14"/>
+                    <TextBlock Text="Mã NV/ADMIN" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
                 </StackPanel>
-                <Button Content="+ Nhập kho" Background="#407BFF" Foreground="White" Width="110" Height="36" Margin="8,0"/>
             </StackPanel>
         </Grid>
 
         <!-- MAIN CONTENT -->
-        <Grid Grid.Column="1" Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1" Margin="20,20,20,20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- FILTER + SEARCH ROW -->
-            <DockPanel Grid.Row="0" LastChildFill="False" Margin="10,6,10,6">
+            <DockPanel Grid.Row="0" LastChildFill="False" Margin="10,10,10,20">
+                <!-- Button Nhập kho - bên phải cùng -->
+                <Button Content="Nhập kho" 
+                        Style="{StaticResource AddButton}"
+                        DockPanel.Dock="Right"
+                        Margin="0,0,0,0"/>
+
+                <!-- Tag buttons bên trái -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
-                    <!-- Tag buttons with small icons -->
                     <Button Style="{StaticResource TagButtonSelected}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse Width="16" Height="16" Fill="White" Margin="0,0,8,0"/>
                             <TextBlock Text="Tất cả" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <Button Style="{StaticResource TagButton}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Đồ làm bếp" VerticalAlignment="Center"/>
+                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
+                            <TextBlock Text="Thịt" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <Button Style="{StaticResource TagButton}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Máy móc" VerticalAlignment="Center"/>
+                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
+                            <TextBlock Text="Hải sản" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <Button Style="{StaticResource TagButton}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Khác" VerticalAlignment="Center"/>
+                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
+                            <TextBlock Text="Rau củ" VerticalAlignment="Center"/>
                         </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource TagButton}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
+                            <TextBlock Text="Gia vị" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource TagButton}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
+                            <TextBlock Text="Pha chế" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Search icon button -->
+                    <Button Style="{StaticResource TagButton}" Width="40" Padding="0" Margin="12,0,0,0">
+                        <Canvas Width="16" Height="16">
+                            <Ellipse Canvas.Left="0" Canvas.Top="0" Width="12" Height="12" Stroke="#666" StrokeThickness="2"/>
+                            <Line X1="10" Y1="10" X2="15" Y2="15" Stroke="#666" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                        </Canvas>
                     </Button>
                 </StackPanel>
-
-                <!-- Search box -->
-                <Grid DockPanel.Dock="Left" Width="260" Height="36" Margin="12,0,0,0" VerticalAlignment="Center">
-                    <Border Background="White" CornerRadius="18" BorderBrush="#E0E0E0" BorderThickness="1">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="36"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Viewbox Margin="8" VerticalAlignment="Center">
-                                <!-- search icon -->
-                            </Viewbox>
-
-                            <TextBox Grid.Column="1" x:Name="SearchBox" BorderThickness="0" VerticalContentAlignment="Center" Padding="6,0" Background="Transparent" Foreground="#222"/>
-                            <!-- placeholder -->
-                            <TextBlock Grid.Column="1" Text="Tìm kiếm" Foreground="#999" Margin="6,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Grid>
-                    </Border>
-                </Grid>
             </DockPanel>
 
             <!-- ITEMS CARDS -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <ItemsControl ItemsSource="{Binding ToolList}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
+                            <WrapPanel Orientation="Horizontal"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <!-- Card (only ONE Style assigned via StaticResource CardStyle) -->
                             <Border Style="{StaticResource CardStyle}">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -228,58 +225,68 @@
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
 
-                                    <!-- top small round avatar at left -->
-                                    <Ellipse Width="56" Height="56" Fill="#EAD9D9" HorizontalAlignment="Left"/>
+                                    <!-- Avatar -->
+                                    <Ellipse Width="64" Height="64" Fill="#E5D5D5" HorizontalAlignment="Left"/>
 
-                                    <!-- Card main content -->
-                                    <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                                    <!-- Card content -->
+                                    <StackPanel Grid.Row="1" Margin="0,16,0,0">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                            <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="SemiBold"/>
-                                            <TextBlock Text=" " />
-                                            <TextBlock Text="(cái)" Foreground="#777" Margin="8,6,0,0" VerticalAlignment="Top" FontSize="12"/>
+                                            <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold"/>
+                                            <TextBlock Text=" (KG)" Foreground="#999" Margin="4,4,0,0" VerticalAlignment="Top" FontSize="13"/>
                                         </StackPanel>
 
-                                        <TextBlock Text="{Binding Code}" Foreground="#5A5A5A" FontWeight="Bold" Margin="0,6,0,0"/>
+                                        <TextBlock Text="{Binding Code}" Foreground="#333" FontWeight="SemiBold" Margin="0,8,0,0" FontSize="14"/>
 
-                                        <TextBlock Text="Ngày nhập: DD/MM/YYYY" Foreground="#888" Margin="0,12,0,6"/>
+                                        <TextBlock Text="Ngày nhập: DD/MM/YYYY" Foreground="#999" Margin="0,12,0,4" FontSize="13"/>
+                                        <TextBlock Text="Hạn sử dụng: DD/MM/YYYY" Foreground="#999" Margin="0,0,0,16" FontSize="13"/>
 
                                         <!-- Status pill -->
-                                        <Border x:Name="StatusPill" CornerRadius="20" Padding="10,6" HorizontalAlignment="Left" Background="#3F7BFF">
+                                        <Border x:Name="StatusPill" CornerRadius="20" Padding="14,8" HorizontalAlignment="Left" Background="#5B7FFF">
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <Image x:Name="StatusIcon" Source="/Assets/Images/check-white.png" Width="16" Height="16" Margin="0,0,8,0"/>
-                                                <!-- BIND HERE to StatusLabel (prepare in VM) -->
-                                                <TextBlock x:Name="StatusText" Text="{Binding StatusLabel}" Foreground="White" FontWeight="SemiBold"/>
+                                                <Ellipse x:Name="StatusIcon" Width="16" Height="16" Fill="White" Margin="0,0,8,0">
+                                                    <Ellipse.OpacityMask>
+                                                        <VisualBrush>
+                                                            <VisualBrush.Visual>
+                                                                <Canvas Width="16" Height="16">
+                                                                    <Path Data="M6,11 L3,8 L4.5,6.5 L6,8 L11.5,2.5 L13,4 Z" Fill="Black" StrokeThickness="0"/>
+                                                                </Canvas>
+                                                            </VisualBrush.Visual>
+                                                        </VisualBrush>
+                                                    </Ellipse.OpacityMask>
+                                                </Ellipse>
+                                                <TextBlock x:Name="StatusText" Text="{Binding StatusLabel}" Foreground="White" FontWeight="SemiBold" FontSize="13"/>
                                             </StackPanel>
                                         </Border>
-
                                     </StackPanel>
                                 </Grid>
-
-                                <!-- NO inner Border.Style here (we already set Style above) -->
                             </Border>
 
-                            <!-- Triggers for item template -->
+                            <!-- Triggers -->
                             <DataTemplate.Triggers>
-                                <!-- Available -->
+                                <!-- Available (Còn) -->
                                 <DataTrigger Binding="{Binding Status}" Value="Available">
-                                    <Setter TargetName="StatusPill" Property="Background" Value="#3F7BFF"/>
-                                    <!--<Setter TargetName="StatusIcon" Property="Source" Value="/Assets/Images/check-white.png"/>-->
+                                    <Setter TargetName="StatusPill" Property="Background" Value="#5B7FFF"/>
                                     <Setter TargetName="StatusText" Property="Foreground" Value="White"/>
                                 </DataTrigger>
 
-                                <!-- Empty -->
+                                <!-- Empty (Đã hết) -->
                                 <DataTrigger Binding="{Binding Status}" Value="Empty">
-                                    <Setter TargetName="StatusPill" Property="Background" Value="#E7E7E7"/>
-                                    <!--<Setter TargetName="StatusIcon" Property="Source" Value="/Assets/Images/close-gray.png"/>-->
-                                    <Setter TargetName="StatusText" Property="Foreground" Value="#666"/>
+                                    <Setter TargetName="StatusPill" Property="Background" Value="#E8E8E8"/>
+                                    <Setter TargetName="StatusText" Property="Foreground" Value="#999"/>
+                                    <Setter TargetName="StatusIcon" Property="Fill" Value="#999"/>
+                                </DataTrigger>
+
+                                <!-- Expired (Hết HSD) -->
+                                <DataTrigger Binding="{Binding Status}" Value="Expired">
+                                    <Setter TargetName="StatusPill" Property="Background" Value="#FF4444"/>
+                                    <Setter TargetName="StatusText" Property="Foreground" Value="White"/>
+                                    <Setter TargetName="StatusIcon" Property="Fill" Value="White"/>
                                 </DataTrigger>
                             </DataTemplate.Triggers>
-
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-
         </Grid>
     </Grid>
 </UserControl>

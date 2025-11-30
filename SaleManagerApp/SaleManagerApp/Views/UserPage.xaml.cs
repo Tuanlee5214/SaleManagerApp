@@ -24,5 +24,20 @@ namespace SaleManagerApp.Views
         {
             InitializeComponent();
         }
+
+        private void DataGrid_SelectionChanged(SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

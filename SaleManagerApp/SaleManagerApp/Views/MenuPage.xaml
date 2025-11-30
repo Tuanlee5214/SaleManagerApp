@@ -68,14 +68,47 @@
             </Grid.RowDefinitions>
 
             <!-- Header -->
-            <DockPanel Grid.Row="0" Margin="0,0,0,20">
-                <TextBlock Text="Dashboard" FontSize="24" FontWeight="Bold" DockPanel.Dock="Left"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="Menu" FontSize="16" Foreground="#4A7BF7" Margin="0,0,30,0" VerticalAlignment="Center" Cursor="Hand"/>
-                    <TextBlock Text="Đơn hàng" FontSize="16" Foreground="#999" Margin="0,0,30,0" VerticalAlignment="Center" Cursor="Hand"/>
-                    <TextBlock Text="Lịch sử thanh toán" FontSize="16" Foreground="#999" VerticalAlignment="Center" Cursor="Hand"/>
+            <DockPanel Grid.Row="0" Margin="0,0,0,20" LastChildFill="False" Background="White">
+
+                <!-- BÊN TRÁI: Title -->
+                <TextBlock Text="Dashboard"
+               FontSize="24"
+               FontWeight="Bold"
+               DockPanel.Dock="Left"
+               VerticalAlignment="Center"
+               Margin="0,0,20,0"/>
+
+                <!-- BÊN PHẢI: Admin Info -->
+                <StackPanel DockPanel.Dock="Right"
+                Orientation="Vertical"
+                HorizontalAlignment="Right"
+                Margin="0,0,20,0"
+                VerticalAlignment="Center">
+                    <TextBlock Text="Tên admin/user"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Right"/>
+                    <TextBlock Text="Mã NV/ADMIN"
+                   FontSize="12"
+                   Foreground="#666"
+                   HorizontalAlignment="Right"
+                   Margin="0,2,0,0"/>
                 </StackPanel>
+
+                <!-- Ở GIỮA: Menu -->
+                <StackPanel Orientation="Horizontal"
+                VerticalAlignment="Center"
+                Margin="40,0,40,0">
+                    <TextBlock Text="Menu" Margin="0,0,30,0"
+                   FontSize="16" Foreground="#4A7BF7" Cursor="Hand"/>
+                    <TextBlock Text="Đơn hàng" Margin="0,0,30,0"
+                   FontSize="16" Foreground="#999" Cursor="Hand"/>
+                    <TextBlock Text="Lịch sử thanh toán"
+                   FontSize="16" Foreground="#999" Cursor="Hand"/>
+                </StackPanel>
+
             </DockPanel>
+
 
             <!-- Order Status Cards -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,30">
@@ -84,13 +117,13 @@
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,40,0,20">
                 <!-- Card 1 - Available -->
-                <Border Background="White" Padding="20" Margin="0,0,15,0" Width="220">
+                <Border CornerRadius="20" Background="White" Padding="20" Margin="0,0,15,0" Width="220">
                     <StackPanel>
                         <DockPanel Margin="0,0,0,10">
                             <TextBlock Text="🛒 # Mã đơn" FontSize="14" Foreground="#666"/>
                             <TextBlock Text="0 món" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
                         </DockPanel>
-                        <Border Background="#4CAF50" Padding="12,6" HorizontalAlignment="Left">
+                        <Border CornerRadius="20" Background="#4CAF50" Padding="12,6" HorizontalAlignment="Left">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Sẵn sàng" FontSize="13" Foreground="White" FontWeight="SemiBold"/>
                                 <TextBlock Text=" ✓" FontSize="14" Foreground="White" Margin="5,0,0,0"/>
@@ -100,13 +133,13 @@
                 </Border>
 
                 <!-- Card 2 - Pending -->
-                <Border Background="White" Padding="20" Margin="0,0,15,0" Width="220">
+                <Border CornerRadius="20" Background="White" Padding="20" Margin="0,0,15,0" Width="220">
                     <StackPanel>
                         <DockPanel Margin="0,0,0,10">
                             <TextBlock Text="🚗 # Mã đơn" FontSize="14" Foreground="#666"/>
                             <TextBlock Text="0 món" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
                         </DockPanel>
-                        <Border Background="#FF9800" Padding="12,6" HorizontalAlignment="Left">
+                        <Border CornerRadius="20" Background="#FF9800" Padding="12,6" HorizontalAlignment="Left">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Đang chế biến" FontSize="13" Foreground="White" FontWeight="SemiBold"/>
                                 <TextBlock Text=" ⟳" FontSize="14" Foreground="White" Margin="5,0,0,0"/>
@@ -116,13 +149,13 @@
                 </Border>
 
                 <!-- Card 3 - Pending -->
-                <Border Background="White" Padding="20" Width="220">
+                <Border CornerRadius="20" Background="White" Padding="20" Width="220">
                     <StackPanel>
                         <DockPanel Margin="0,0,0,10">
                             <TextBlock Text="🛒 # Mã đơn" FontSize="14" Foreground="#666"/>
                             <TextBlock Text="0 món" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
                         </DockPanel>
-                        <Border Background="#FF9800" Padding="12,6" HorizontalAlignment="Left">
+                        <Border CornerRadius="20" Background="#FF9800" Padding="12,6" HorizontalAlignment="Left">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Đang chế biến" FontSize="13" Foreground="White" FontWeight="SemiBold"/>
                                 <TextBlock Text=" ⟳" FontSize="14" Foreground="White" Margin="5,0,0,0"/>
@@ -137,19 +170,87 @@
                 <DockPanel Margin="0,0,0,15">
                     <TextBlock Text="Menu (Tổng số món)" FontSize="18" FontWeight="SemiBold" DockPanel.Dock="Left"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <TextBox Width="300" Height="40" Background="White" BorderBrush="#DDD" BorderThickness="1" 
-                                 Padding="15,10" FontSize="14" Text="chỉ admin mới có quyền sửa"/>
-                        <Button Width="40" Height="40" Background="White" BorderBrush="#DDD" BorderThickness="1" Margin="10,0">
+                        <TextBox Width="300"
+         Height="40"
+         Background="White"
+         BorderBrush="#DDD"
+         BorderThickness="1"
+         Padding="15,10"
+         FontSize="14"
+         Text="Search menu">
+                            <TextBox.Template>
+                                <ControlTemplate TargetType="TextBox">
+                                    <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="15">
+                                        <ScrollViewer x:Name="PART_ContentHost"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </TextBox.Template>
+                        </TextBox>
+                        <!-- Nút Search -->
+                        <Button Width="40"
+        Height="40"
+        Background="White"
+        BorderBrush="#DDD"
+        BorderThickness="1"
+        Margin="10,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="20">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+
                             <TextBlock Text="🔍" FontSize="18"/>
                         </Button>
-                        <Button Width="40" Height="40" Background="#4A7BF7" BorderThickness="0">
+
+                        <!-- Nút "+" -->
+                        <Button Width="40"
+        Height="40"
+        Background="#4A7BF7"
+        BorderThickness="0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                    CornerRadius="20"
+                    Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+
                             <TextBlock Text="+" FontSize="24" Foreground="White" FontWeight="Bold"/>
                         </Button>
+
                     </StackPanel>
                 </DockPanel>
 
                 <!-- Category Tabs -->
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <StackPanel.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="20"
+                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </StackPanel.Resources>
                     <Button Background="#4A7BF7" BorderThickness="0" Padding="20,10" Margin="0,0,10,0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="📦" FontSize="16" Margin="0,0,8,0"/>
@@ -190,10 +291,11 @@
             </StackPanel>
 
             <!-- Menu Items Grid -->
+            
             <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
                 <WrapPanel Orientation="Horizontal">
                     <!-- Menu Item 1 - Selected -->
-                    <Border Background="White" Width="220" Margin="0,0,15,15" BorderBrush="#4A7BF7" BorderThickness="2">
+                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15" BorderBrush="#4A7BF7" BorderThickness="2">
                         <Grid>
                             <StackPanel>
                                 <!-- Delete Button -->
@@ -211,13 +313,34 @@
 
                                     <!-- Quantity Control -->
                                     <DockPanel>
-                                        <Button Background="#4A7BF7" BorderThickness="0" 
-                                                Padding="25,8" DockPanel.Dock="Left">
+                                        <Button Background="#4A7BF7"
+        BorderThickness="0"
+        Padding="25,8"
+        DockPanel.Dock="Left">
+
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}"
+                    CornerRadius="20"
+                    Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Button.Template>
+
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Đã chọn" FontSize="13" Foreground="White" Margin="0,0,5,0"/>
-                                                <TextBlock Text="✓" FontSize="13" Foreground="White"/>
+                                                <TextBlock Text="Đã chọn"
+                   FontSize="13"
+                   Foreground="White"
+                   Margin="0,0,5,0"/>
+                                                <TextBlock Text="✓"
+                   FontSize="13"
+                   Foreground="White"/>
                                             </StackPanel>
+
                                         </Button>
+
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                             <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="−" 
@@ -233,7 +356,7 @@
                     </Border>
 
                     <!-- Menu Item 2 - Add Item -->
-                    <Border Background="White" Width="220" Margin="0,0,15,15">
+                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15">
                         <StackPanel>
                             <Border Height="150" Background="#E0E0E0" Margin="15,15,15,10"/>
                             <StackPanel Margin="15,0,15,15">
@@ -250,19 +373,38 @@
                     </Border>
 
                     <!-- Menu Item 3 - Selected -->
-                    <Border Background="White" Width="220" Margin="0,0,15,15" BorderBrush="#4A7BF7" BorderThickness="2">
+                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15" BorderBrush="#4A7BF7" BorderThickness="2">
                         <StackPanel>
                             <Border Height="150" Background="#E0E0E0" Margin="15,15,15,10"/>
                             <StackPanel Margin="15,0,15,15">
                                 <TextBlock Text="Tên món (Giá tiền)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
                                 <DockPanel>
-                                    <Button Background="#4A7BF7" BorderThickness="0" 
-                                            Padding="25,8" DockPanel.Dock="Left">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="Đã chọn" FontSize="13" Foreground="White" Margin="0,0,5,0"/>
-                                            <TextBlock Text="✓" FontSize="13" Foreground="White"/>
-                                        </StackPanel>
+                                    <Button Background="#4A7BF7"
+                    BorderThickness="0"
+                    Padding="25,8"
+                    DockPanel.Dock="Left">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}"
+                                CornerRadius="20"
+                                Padding="{TemplateBinding Padding}">
+                                                                <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Đã chọn"
+                               FontSize="13"
+                               Foreground="White"
+                               Margin="0,0,5,0"/>
+                                                    <TextBlock Text="✓"
+                               FontSize="13"
+                               Foreground="White"/>
+                                                </StackPanel>   
                                     </Button>
+
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="−" 
                                                 FontSize="18" FontWeight="Bold" Margin="5,0"/>
@@ -276,19 +418,38 @@
                     </Border>
 
                     <!-- Menu Item 4 -->
-                    <Border Background="White" Width="220" Margin="0,0,15,15">
+                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15">
                         <StackPanel>
                             <Border Height="150" Background="#E0E0E0" Margin="15,15,15,10"/>
                             <StackPanel Margin="15,0,15,15">
                                 <TextBlock Text="Tên món (Giá tiền)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
                                 <DockPanel>
-                                    <Button Background="#4A7BF7" BorderThickness="0" 
-                                            Padding="25,8" DockPanel.Dock="Left">
+                                    <Button Background="#4A7BF7"
+        BorderThickness="0"
+        Padding="25,8"
+        DockPanel.Dock="Left">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                    CornerRadius="20"
+                    Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="Đã chọn" FontSize="13" Foreground="White" Margin="0,0,5,0"/>
-                                            <TextBlock Text="✓" FontSize="13" Foreground="White"/>
+                                            <TextBlock Text="Đã chọn"
+                   FontSize="13"
+                   Foreground="White"
+                   Margin="0,0,5,0"/>
+                                            <TextBlock Text="✓"
+                   FontSize="13"
+                   Foreground="White"/>
                                         </StackPanel>
                                     </Button>
+
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="−" 
                                                 FontSize="18" FontWeight="Bold" Margin="5,0"/>
@@ -302,7 +463,7 @@
                     </Border>
 
                     <!-- Menu Item 5 - Add -->
-                    <Border Background="White" Width="220" Margin="0,0,15,15">
+                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15">
                         <StackPanel>
                             <Border Height="150" Background="#E0E0E0" Margin="15,15,15,10"/>
                             <StackPanel Margin="15,0,15,15">
@@ -319,7 +480,7 @@
                     </Border>
 
                     <!-- Menu Item 6 -->
-                    <Border Background="White" Width="220" Margin="0,0,15,15">
+                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15">
                         <StackPanel>
                             <Border Height="150" Background="#E0E0E0" Margin="15,15,15,10"/>
                             <StackPanel Margin="15,0,15,15">
@@ -449,20 +610,32 @@
                 </StackPanel>
 
                 <!-- Save Button -->
-                <Button Grid.Row="4" Background="#4A7BF7" BorderThickness="0" 
-                        Height="50" Margin="0,20,0,0">
-                    <TextBlock Text="Lưu đơn hàng" FontSize="15" Foreground="White" FontWeight="SemiBold"/>
+                <Button Grid.Row="4"
+        Background="#4A7BF7"
+        BorderThickness="0"
+        Height="50"
+        Margin="0,20,0,0">
+
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                    CornerRadius="20"
+                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                    <TextBlock Text="Lưu đơn hàng"
+               FontSize="15"
+               Foreground="White"
+               FontWeight="SemiBold"/>
                 </Button>
             </Grid>
         </Border>
 
         <!-- User Info (Top Right) -->
-        <Border Grid.Column="2" Background="Transparent" Height="60" VerticalAlignment="Top" 
-                HorizontalAlignment="Right" Margin="0,20,40,0" Width="98">
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
-                <TextBlock Text="Tên admin/user" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
-                <TextBlock Text="Mã NV/ADMIN" FontSize="12" Foreground="#666" HorizontalAlignment="Right" Margin="0,2,0,0"/>
-            </StackPanel>
-        </Border>
+
     </Grid>
 </UserControl>

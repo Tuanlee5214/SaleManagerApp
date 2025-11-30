@@ -198,6 +198,7 @@
     <Resource Include="Assets\Images\bell.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Assets\Images\Search.png" />
     <Content Include="DataBaseScript\SaleManagement1.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
