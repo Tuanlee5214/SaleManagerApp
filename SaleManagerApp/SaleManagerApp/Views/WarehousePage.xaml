@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="SaleManagerApp.Views.KitchenToolsPage"
+﻿<UserControl x:Class="SaleManagerApp.Views.WarehousePage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -84,7 +84,6 @@
     <Grid Margin="20">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="70"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -94,15 +93,7 @@
         </Grid.RowDefinitions>
 
         <!-- SIDEBAR -->
-        <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Background="White">
-            <Image Source="/Assets/Images/logo.jpg" Width="48" Margin="10"/>
-            <StackPanel Margin="0,20,0,0">
-                <Image Source="/Assets/Images/house.png" Width="32" Margin="0,15"/>
-                <Image Source="/Assets/Images/shopping.png" Width="30" Margin="0,15"/>
-                <Image Source="/Assets/Images/user.png" Width="28" Margin="0,15"/>
-                <Image Source="/Assets/Images/icon.png" Width="24" Margin="0,15"/>
-            </StackPanel>
-        </StackPanel>
+      
 
         <!-- HEADER / NAV -->
         <Grid Grid.Column="1" Grid.Row="0" Margin="10,0,0,10" Background="White" Height="70">
@@ -146,39 +137,38 @@
 
         <!-- MAIN CONTENT -->
         <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- FILTER + SEARCH ROW -->
-            <DockPanel Grid.Row="0" LastChildFill="False" Margin="10,6">
+            <DockPanel Grid.Row="0" LastChildFill="False" Margin="10,6,10,6">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
                     <!-- Tag buttons with small icons -->
                     <Button Style="{StaticResource TagButtonSelected}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Assets/Images/box.png" Width="18" Height="18" Margin="0,0,6,0"/>
                             <TextBlock Text="Tất cả" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <Button Style="{StaticResource TagButton}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Assets/Images/knife.png" Width="16" Height="16" Margin="0,0,6,0"/>
                             <TextBlock Text="Đồ làm bếp" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <Button Style="{StaticResource TagButton}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Assets/Images/machine.png" Width="16" Height="16" Margin="0,0,6,0"/>
                             <TextBlock Text="Máy móc" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <Button Style="{StaticResource TagButton}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="/Assets/Images/other.png" Width="16" Height="16" Margin="0,0,6,0"/>
                             <TextBlock Text="Khác" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
@@ -195,7 +185,6 @@
 
                             <Viewbox Margin="8" VerticalAlignment="Center">
                                 <!-- search icon -->
-                                <Image Source="/Assets/Images/search.png" Width="16" Height="16"/>
                             </Viewbox>
 
                             <TextBox Grid.Column="1" x:Name="SearchBox" BorderThickness="0" VerticalContentAlignment="Center" Padding="6,0" Background="Transparent" Foreground="#222"/>
@@ -274,14 +263,14 @@
                                 <!-- Available -->
                                 <DataTrigger Binding="{Binding Status}" Value="Available">
                                     <Setter TargetName="StatusPill" Property="Background" Value="#3F7BFF"/>
-                                    <Setter TargetName="StatusIcon" Property="Source" Value="/Assets/Images/check-white.png"/>
+                                    <!--<Setter TargetName="StatusIcon" Property="Source" Value="/Assets/Images/check-white.png"/>-->
                                     <Setter TargetName="StatusText" Property="Foreground" Value="White"/>
                                 </DataTrigger>
 
                                 <!-- Empty -->
                                 <DataTrigger Binding="{Binding Status}" Value="Empty">
                                     <Setter TargetName="StatusPill" Property="Background" Value="#E7E7E7"/>
-                                    <Setter TargetName="StatusIcon" Property="Source" Value="/Assets/Images/close-gray.png"/>
+                                    <!--<Setter TargetName="StatusIcon" Property="Source" Value="/Assets/Images/close-gray.png"/>-->
                                     <Setter TargetName="StatusText" Property="Foreground" Value="#666"/>
                                 </DataTrigger>
                             </DataTemplate.Triggers>

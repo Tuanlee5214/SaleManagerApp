@@ -18,7 +18,7 @@ namespace SaleManagerApp.Views
     /// <summary>
     /// Interaction logic for UserPage.xaml
     /// </summary>
-    public partial class UserPage : Page
+    public partial class UserPage : UserControl
     {
         public UserPage()
         {

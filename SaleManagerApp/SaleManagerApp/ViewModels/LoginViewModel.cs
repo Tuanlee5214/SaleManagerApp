@@ -53,7 +53,7 @@ namespace SaleManagerApp.ViewModels
 
             UserSession.SetUser(result.user);
             SuccessMessage = result.SuccesMessage;
-            NavigationService.Navigate(new HomePageViewModel());
+            NavigationService.Navigate(new MainLayoutViewModel());
         }
 
     }

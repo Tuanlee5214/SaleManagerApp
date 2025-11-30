@@ -13,5 +13,21 @@
         <DataTemplate DataType="{x:Type vm:HomePageViewModel}">
             <v:HomePage />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:MainLayoutViewModel}">
+            <v:MainLayout />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:MenuPageViewModel}">
+            <v:MenuPage />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:UserPageViewModel}">
+                <v:UserPage />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:WareHousePageViewModel}">
+            <v:WarehousePage />
+        </DataTemplate>
     </Application.Resources>
 </Application>

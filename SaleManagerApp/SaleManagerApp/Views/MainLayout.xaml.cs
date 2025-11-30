@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace SaleManagerApp.Views
 {
     /// <summary>
-    /// Interaction logic for WarehousePage.xaml
+    /// Interaction logic for MainLayout.xaml
     /// </summary>
-    public partial class WarehousePage : UserControl
+    public partial class MainLayout : UserControl
     {
-        public WarehousePage()
+        public MainLayout()
         {
             InitializeComponent();
         }

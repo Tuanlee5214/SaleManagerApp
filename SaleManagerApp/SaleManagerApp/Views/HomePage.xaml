@@ -21,22 +21,11 @@
             <ColumnDefinition Width="Auto"/>
             <!-- Sidebar -->
             <ColumnDefinition Width="71*"/>
-            <ColumnDefinition Width="1049*"/>
             <!-- Main content -->
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <StackPanel Grid.Row="0" Grid.RowSpan="4" Width="60" Background="White" Margin="-20,-18,0,-16" HorizontalAlignment="Left">
-            <!-- Logo -->
-            <Image Source="/Assets/Images/logo.jpg" Width="50" Height="50" Margin="0"/>
-            <!-- Icons Placeholder -->
-            <StackPanel Margin="0,2,0,0">
-                <Image Width="42" Height="41" Source="/Assets/Images/house.png" Margin="0,10"/>
-                <Image Width="40" Height="40" Source="/Assets/Images/shopping.png" Margin="0,10"/>
-                <Image Width="30" Height="32" Source="/Assets/Images/user.png" Margin="0,10"/>
-                <Image Width="24" Height="34" Source="/Assets/Images/icon.png" Margin="0,10"/>
-            </StackPanel>
-        </StackPanel>
+
 
         <!-- Header -->
         <DockPanel Grid.Row="0" Grid.Column="1" Background="White" LastChildFill="True" Margin="1,-18,-18,12" Grid.ColumnSpan="2">

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SaleManagerApp.ViewModels
 {
-    public class MenuPageViewModel:BaseViewModel
+    public class WareHousePageViewModel:BaseViewModel
     {
     }
 }

@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="SaleManagerApp.Views.MainLayout"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SaleManagerApp.Views" xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainLayoutViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Background="White" HorizontalAlignment="Left" Width="63">
+            <!-- Logo -->
+            <Image Source="/Assets/Images/logo.jpg" Width="50" Height="50" Margin="0"/>
+            <!-- Icons Placeholder -->
+            <StackPanel Margin="0,5,0,0">
+                <Button Width="40" Height="40" Background="White" Content="🏠︎" Command="{Binding ShowHomeCommand}" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 6"/>
+                <Button Width="40" Height="40" Background="White" Content="🛍️" Command="{Binding ShowMenuCommand}" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 6"/>
+                <Button Width="40" Height="40" Background="White" Content="👷" Command="{Binding ShowUserCommand}" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 6"/>
+                <Button Width="40" Height="40" Background="White" Content="📦" Command="{Binding ShowWareHouseCommand}" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 105"/>
+                <Button Width="40" Height="40" Background="White" Content="⚙️" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 6"/>
+                <Button Width="40" Height="40" Background="White" Content= "⏻" FontSize="24" Foreground="Red" FontWeight="Bold" BorderThickness="0" Margin="0, 0, 0, 6"/>
+            </StackPanel>
+        </StackPanel>
+
+        <ContentControl Grid.Column="1"
+                    Content="{Binding CurrentViewModel}"/>
+    </Grid>
+</UserControl>
