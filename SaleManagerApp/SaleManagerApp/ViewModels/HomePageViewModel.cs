@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SaleManagerApp.ViewModels
 {
-    internal class HomePageViewModel
+    public class HomePageViewModel : BaseViewModel
     {
     }
 }

@@ -1,4 +1,6 @@
-﻿using SaleManagerApp.Views;
+﻿using SaleManagerApp.Navigation;
+using SaleManagerApp.ViewModels;
+using SaleManagerApp.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace SaleManagerApp
@@ -24,7 +25,12 @@ namespace SaleManagerApp
         public MainWindow()
         {
             InitializeComponent();
-            MainContent.Content = new LoginScreen();
+
+            NavigationService.NavigateAction = vm =>
+            {
+                DataContext = vm;
+            };
+            MainContent.Content = new LoginViewModel();
         }
     }
 }

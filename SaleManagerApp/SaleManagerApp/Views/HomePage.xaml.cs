@@ -24,7 +24,7 @@ namespace SaleManagerApp.Views
         public HomePage()
         {
             InitializeComponent();
-            this.DataContext = new HomePageViewModel();
+            //this.DataContext = new HomePageViewModel();
         }
     }
 }

@@ -59,7 +59,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\CornerRadiusHelper.cs" />
+    <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Services\DBConnectionService.cs" />
+    <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\UserSession.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="Views\HomePage.xaml.cs">
@@ -119,7 +124,6 @@
     <Folder Include="Data\Migrations\" />
     <Folder Include="Data\Repositories\" />
     <Folder Include="Infrastructure\" />
-    <Folder Include="Services\" />
     <Folder Include="Utils\Converters\" />
   </ItemGroup>
   <ItemGroup>

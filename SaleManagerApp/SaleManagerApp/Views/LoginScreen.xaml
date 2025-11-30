@@ -49,7 +49,7 @@
                            FontSize="15"
                            Foreground="#4B5563"
                            Margin="0,0,0,8"/>
-                <TextBox x:Name="txtUsername"
+                <TextBox Text="{Binding Username}"
                          Height="48"
                          Width="380"
                          Padding="16,0"
@@ -58,7 +58,7 @@
                          BorderThickness="0"
                          VerticalContentAlignment="Center"
                          Margin="0,0,0,20"
-                         HorizontalAlignment="Center">
+                         HorizontalAlignment="Center"
                     <TextBox.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="24"/>
