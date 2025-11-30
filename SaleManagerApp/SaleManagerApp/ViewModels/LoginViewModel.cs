@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using SaleManagerApp.Services;
 using System.Windows.Input;
-using System.Windows.Navigation;
+using SaleManagerApp.Navigation;
+using System.Reflection;
+using System.Windows.Controls;
 
 namespace SaleManagerApp.ViewModels
 {
@@ -14,15 +16,22 @@ namespace SaleManagerApp.ViewModels
         private readonly UserService _userService = new UserService();
 
         public string Username { get; set; }
-        public string Password { get; set; }
 
         private string _errorMessage;
+        private string _successMessage;
         public string ErrorMessage
         {
             get => _errorMessage;
             set { _errorMessage = value; OnPropertyChanged(); }
         }
-        
+
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set { _successMessage = value; OnPropertyChanged(); }
+        }
+
+
         public ICommand LoginCommand { get; }
 
         public LoginViewModel()
@@ -32,16 +41,18 @@ namespace SaleManagerApp.ViewModels
 
         public void Login(object obj)
         {
-            var user = _userService.Login(Username, Password);
+            var pwdBox = obj as PasswordBox;
+            string Password = pwdBox?.Password ?? "";
+            var result = _userService.Login(Username, Password); 
 
-            if(user == null)
+            if(!result.Success)
             {
-                ErrorMessage = "Tên đăng nhập hoặc mật khẩu không đúng";
-                return;
+                ErrorMessage = result.ErrorMessage;
+                return;  
             }
 
-            UserSession.SetUser(user);
-
+            UserSession.SetUser(result.user);
+            SuccessMessage = result.SuccesMessage;
             NavigationService.Navigate(new HomePageViewModel());
         }
 

@@ -26,11 +26,16 @@ namespace SaleManagerApp
         {
             InitializeComponent();
 
-            NavigationService.NavigateAction = vm =>
+            var mainVM = new MainViewModel();
+            DataContext = mainVM;
+
+            NavigationService.NavigateAction = (vm) =>
             {
-                DataContext = vm;
+                mainVM.CurrentViewModel = vm;
             };
-            MainContent.Content = new LoginViewModel();
+
+            mainVM.CurrentViewModel = new LoginViewModel();
+            
         }
     }
 }

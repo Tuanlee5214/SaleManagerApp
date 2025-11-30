@@ -58,15 +58,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Command\RelayCommand.cs" />
     <Compile Include="Helpers\CornerRadiusHelper.cs" />
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\DBConnectionService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\UserSession.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>

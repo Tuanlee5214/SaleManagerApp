@@ -24,7 +24,7 @@ namespace SaleManagerApp.Views
         public LoginScreen()
         {
             InitializeComponent();
-            this.DataContext = new LoginViewModel();
+            //this.DataContext = new LoginViewModel();
         }
 
         private void chkShowPassword_Checked(object sender, RoutedEventArgs e)

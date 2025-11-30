@@ -49,7 +49,7 @@
                            FontSize="15"
                            Foreground="#4B5563"
                            Margin="0,0,0,8"/>
-                <TextBox Text="{Binding Username}"
+                <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                          Height="48"
                          Width="380"
                          Padding="16,0"
@@ -58,7 +58,7 @@
                          BorderThickness="0"
                          VerticalContentAlignment="Center"
                          Margin="0,0,0,20"
-                         HorizontalAlignment="Center"
+                         HorizontalAlignment="Center">
                     <TextBox.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="24"/>
@@ -126,29 +126,44 @@
 
                 <!-- Nút đăng nhập -->
                 <Button Content="Đăng nhập"
-                        Height="50"
-                        Width="200"
-                        FontSize="16"
-                        FontWeight="SemiBold"
-                        Background="#3B82F6"
-                        Foreground="White"
-                        Cursor="Hand"
-                        Margin="0,0,0,20"
-                        HorizontalAlignment="Center">
+        Height="50"
+        Width="200"
+        FontSize="16"
+        FontWeight="SemiBold"
+        Background="#3B82F6"
+        Foreground="White"
+        Cursor="Hand"
+        Margin="0,0,0,20"
+        HorizontalAlignment="Center"
+        Command="{Binding LoginCommand}"
+        CommandParameter="{Binding ElementName=pwdHidden}">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Button">
                                         <Border Background="{TemplateBinding Background}"
-                                                CornerRadius="25">
+                                CornerRadius="25">
                                             <ContentPresenter HorizontalAlignment="Center"
-                                                              VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"/>
                                         </Border>
                                         <ControlTemplate.Triggers>
+                                            <!-- Hiệu ứng hover -->
                                             <Trigger Property="IsMouseOver" Value="True">
                                                 <Setter Property="Background" Value="#2563EB"/>
                                             </Trigger>
+
+                                            <!-- Hiệu ứng nhấn -->
+                                            <EventTrigger RoutedEvent="PreviewMouseLeftButtonDown">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                         From="1" To="0.6"
+                                                         Duration="0:0:0.1"
+                                                         AutoReverse="True"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </Setter.Value>
@@ -157,8 +172,11 @@
                     </Button.Style>
                 </Button>
 
-                <!-- Quên mật khẩu -->
-                
+
+                <TextBlock Text="{Binding ErrorMessage}" HorizontalAlignment="Center" FontSize="18" Foreground ="Red"/>
+                <TextBlock Text="{Binding SuccessMessage}" HorizontalAlignment="Center" FontSize="18" Foreground ="Green"/>
+
+              
 
             </StackPanel>
         </Border>

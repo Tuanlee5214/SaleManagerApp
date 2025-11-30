@@ -17,6 +17,9 @@ CREATE TABLE [User]
 	updateAt datetime
 )
 
+EXEC sp_RENAME '[User].updateAt', 'updatedAt', 'COLUMN';
+
+
 CREATE TABLE [Group]
 (
 	groupId char(7) primary key,
@@ -533,3 +536,25 @@ FOREIGN KEY (customerId) REFERENCES Customer(customerId);
 ALTER TABLE Feedback
 ADD CONSTRAINT FK_Feedback_Order
 FOREIGN KEY (orderId) REFERENCES [Order](orderId);
+
+INSERT INTO [User]
+VALUES
+(
+ 'AD00001',
+ N'Hoàng Tiến Đạt',
+ 'admin1',
+ '240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9',
+ null,
+ null,
+ '0789221342',
+ 'TienDatFoundIn@gmail.com',
+ null,
+ getdate(),
+ getdate()
+);
+
+UPDATE [User]
+SET hashedPassword = 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk='
+WHERE userId = 'AD00001'
+
+select * from [User]
