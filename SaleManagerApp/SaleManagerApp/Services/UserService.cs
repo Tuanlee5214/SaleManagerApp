@@ -15,63 +15,63 @@ namespace SaleManagerApp.Services
 
         public LoginResult Login(string username, string password)
         {
-            SqlConnection conn = null;
-            SqlCommand cmd = null;
-            SqlDataReader reader = null;
-
             try
             {
-                conn = _db.GetConnection();
-                cmd = new SqlCommand(
-                    "SELECT * FROM [User] WHERE userName = @u AND hashedPassword = @p",
-                    conn
-                );
-
-                cmd.Parameters.Add("@u", System.Data.SqlDbType.VarChar, 20).Value = username;
-                cmd.Parameters.Add("@p", System.Data.SqlDbType.VarChar, 100).Value = PasswordHasher.Hash(password);
-
-                reader = cmd.ExecuteReader();
-                if (!reader.Read())
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
                 {
-                    return new LoginResult { Success = false, ErrorMessage = "Tài khoản hoặc mật khẩu không đúng" };
-                }
-                else
-                {
-                    var user = new User();
-                    user.userId = reader["userId"].ToString();
-                    user.fullName = reader["fullName"].ToString();
-                    user.userName = reader["userName"].ToString();
-                    user.hashedPassword = reader["hashedPassword"].ToString();
-                    user.avatarUrl = reader["avatarUrl"].ToString();
-                    user.avatarId = reader["avatarId"].ToString();
-                    user.phone = reader["phone"].ToString();
-                    user.email = reader["email"].ToString();
-                    user.groupId = reader["groupId"].ToString();
-                    user.createdAt = Convert.ToDateTime(reader["createdAt"]);
-                    user.updatedAt = Convert.ToDateTime(reader["updatedAt"]);
+                    cmd.CommandText =
+                        "SELECT * FROM [User] WHERE userName = @u AND hashedPassword = @p";
 
-                    Console.WriteLine("user value: " + user.fullName);
+                    cmd.Parameters.Add("@u", System.Data.SqlDbType.VarChar, 20).Value = username;
+                    cmd.Parameters.Add("@p", System.Data.SqlDbType.VarChar, 100).Value = PasswordHasher.Hash(password);
 
-                    return new LoginResult { Success = true, SuccesMessage = "Đăng nhập thành công",user = user };
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                        {
+                            return new LoginResult
+                            {
+                                Success = false,
+                                ErrorMessage = "Tài khoản hoặc mật khẩu không đúng"
+                            };
+                        }
+
+                        var user = new User
+                        {
+                            userId = reader["userId"].ToString(),
+                            fullName = reader["fullName"].ToString(),
+                            userName = reader["userName"].ToString(),
+                            hashedPassword = reader["hashedPassword"].ToString(),
+                            avatarUrl = reader["avatarUrl"].ToString(),
+                            avatarId = reader["avatarId"].ToString(),
+                            phone = reader["phone"].ToString(),
+                            email = reader["email"].ToString(),
+                            groupId = reader["groupId"].ToString(),
+                            createdAt = Convert.ToDateTime(reader["createdAt"]),
+                            updatedAt = Convert.ToDateTime(reader["updatedAt"])
+                        };
+
+                        return new LoginResult
+                        {
+                            Success = true,
+                            SuccesMessage = "Đăng nhập thành công",
+                            user = user
+                        };
+                    }
                 }
-               
             }
             catch (SqlException ex)
             {
                 Console.WriteLine("SQL Error: " + ex.Message);
-                return new LoginResult { Success = false, ErrorMessage = "Lỗi kết nối tới máy chủ" };
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Unexpected Error: " + ex.Message);
-                return new LoginResult { Success = false, ErrorMessage = ex.Message };
-            }
-            finally
-            {
-                if (reader != null && !reader.IsClosed) reader.Close();
-                if (conn != null && conn.State == System.Data.ConnectionState.Open) conn.Close();
+                return new LoginResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới máy chủ"
+                };
             }
         }
+
 
     }
 

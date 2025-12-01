@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
-             d:DesignHeight="900" d:DesignWidth="1400"
+             d:DesignHeight="800" d:DesignWidth="1200"
              Background="#F5F5F5">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -68,7 +68,7 @@
             </Grid.RowDefinitions>
 
             <!-- Header -->
-            <DockPanel Grid.Row="0" Margin="0,0,0,20" LastChildFill="False" Background="White">
+            <DockPanel Grid.Row="0" Margin="0,-17,0,20" LastChildFill="False" Background="White">
 
                 <!-- BÊN TRÁI: Title -->
                 <TextBlock Text="Dashboard"

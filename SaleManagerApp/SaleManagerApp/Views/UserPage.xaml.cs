@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SaleManagerApp.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,9 +24,10 @@ namespace SaleManagerApp.Views
         public UserPage()
         {
             InitializeComponent();
+            this.DataContext = new UserPageViewModel();
         }
 
-        private void DataGrid_SelectionChanged(SelectionChangedEventArgs e)
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }

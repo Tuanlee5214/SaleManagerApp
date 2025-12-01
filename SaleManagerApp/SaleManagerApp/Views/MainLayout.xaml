@@ -3,30 +3,82 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SaleManagerApp.Views" xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainLayoutViewModel}"
+             xmlns:local="clr-namespace:SaleManagerApp.Views" 
+             xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:MainLayoutViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="800" d:DesignWidth="1200">
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Background="White" HorizontalAlignment="Left" Width="63">
+        <!-- Sidebar -->
+        <StackPanel Grid.Column="0" Background="White" HorizontalAlignment="Center" Width="80">
+
             <!-- Logo -->
-            <Image Source="/Assets/Images/logo.jpg" Width="50" Height="50" Margin="0"/>
-            <!-- Icons Placeholder -->
-            <StackPanel Margin="0,5,0,0">
-                <Button Width="40" Height="40" Background="White" Content="🏠︎" Command="{Binding ShowHomeCommand}" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 6"/>
-                <Button Width="40" Height="40" Background="White" Content="🛍️" Command="{Binding ShowMenuCommand}" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 6"/>
-                <Button Width="40" Height="40" Background="White" Content="👷" Command="{Binding ShowUserCommand}" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 6"/>
-                <Button Width="40" Height="40" Background="White" Content="📦" Command="{Binding ShowWareHouseCommand}" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 105"/>
-                <Button Width="40" Height="40" Background="White" Content="⚙️" FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0, 0, 0, 6"/>
-                <Button Width="40" Height="40" Background="White" Content= "⏻" FontSize="24" Foreground="Red" FontWeight="Bold" BorderThickness="0" Margin="0, 0, 0, 6"/>
-            </StackPanel>
+            <Image Source="/Assets/Images/logo.jpg" Width="58" Height="58" Margin="0,10,0,10"/>
+
+            <!-- Sidebar nội dung -->
+            <Grid Margin="0,5,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="320"/>
+                    <!-- nhóm nút trên -->
+                    <RowDefinition Height="*"/>
+                    <!-- khoảng trống -->
+                    <RowDefinition Height="130" MinHeight="115"/>
+                    <!-- nhóm nút dưới -->
+                </Grid.RowDefinitions>
+
+                <!-- 4 nút trên -->
+                <StackPanel Grid.Row="0">
+                    <Button Width="40" Height="40" Background="White" Content="🏠︎"
+                            Command="{Binding ShowHomeCommand}"
+                            FontSize="21" Foreground="#697D96" BorderThickness="0" Margin="0,0,0,20"/>
+
+                    <Button Width="40" Height="40" Background="White" Content="🛍️"
+                            Command="{Binding ShowMenuCommand}"
+                            FontSize="22" Foreground="#697D96" BorderThickness="0" Margin="0,0,0,20"/>
+
+                    <Button Width="40" Height="40" Background="White" Content="👷"
+                            Command="{Binding ShowUserCommand}"
+                            FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0,0,0,20"/>
+
+                    <Button Width="40" Height="40" Background="White" Content="📦"
+                            Command="{Binding ShowWareHouseCommand}"
+                            FontSize="24" Foreground="#697D96" BorderThickness="0" Margin="0,0,0,16"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Height="250">
+                    
+                </StackPanel>
+
+                <!-- 2 nút dưới -->
+                <StackPanel Grid.Row="2" Margin="0,20,0,3" RenderTransformOrigin="0.406,1.467">
+                    <Button Width="40" Height="40" Background="White" Content="⚙️"
+                            FontSize="21" Foreground="#697D96" BorderThickness="0" Margin="0,0,0,13" RenderTransformOrigin="0.5,0.5" Click="Button_Click">
+                        <Button.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform AngleX="-0.728"/>
+                                <RotateTransform/>
+                                <TranslateTransform X="-0.254"/>
+                            </TransformGroup>
+                        </Button.RenderTransform>
+                    </Button>
+
+                    <Button Width="40" Height="40" Background="White" Content="⏻"
+                            FontSize="21" Foreground="Red" FontWeight="Bold"
+                            BorderThickness="0" Margin="0,6,0,6"/>
+                </StackPanel>
+
+            </Grid>
         </StackPanel>
 
+        <!-- Content -->
         <ContentControl Grid.Column="1"
-                    Content="{Binding CurrentViewModel}"/>
+                        Content="{Binding CurrentViewModel}"/>
     </Grid>
 </UserControl>
