@@ -36,25 +36,43 @@ namespace SaleManagerApp.ViewModels
 
         public LoginViewModel()
         {
-            LoginCommand = new RelayCommand(Login);
+            LoginCommand = new RelayCommand(async (obj) => await LoginAsync(obj));
         }
 
-        public void Login(object obj)
+        private bool _overlayVisible;
+        public bool OverlayVisible
         {
+            get => _overlayVisible;
+            set { _overlayVisible = value; OnPropertyChanged(); }
+        }
+
+
+        public async Task LoginAsync(object obj)
+        {
+            OverlayVisible = true; 
+
             var pwdBox = obj as PasswordBox;
             string Password = pwdBox?.Password ?? "";
-            var result = _userService.Login(Username, Password); 
 
-            if(!result.Success)
+            var result = await Task.Run(() =>
+            {
+                return _userService.Login(Username, Password);
+            });
+
+            OverlayVisible = false; 
+
+            if (!result.Success)
             {
                 ErrorMessage = result.ErrorMessage;
-                return;  
+                return;
             }
 
             UserSession.SetUser(result.user);
             SuccessMessage = result.SuccesMessage;
+
             NavigationService.Navigate(new MainLayoutViewModel());
         }
+
 
     }
 }
