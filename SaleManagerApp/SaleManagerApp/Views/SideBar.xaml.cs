@@ -1,5 +1,4 @@
-﻿using SaleManagerApp.Helpers;
-using SaleManagerApp.ViewModels;
+﻿using SaleManagerApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +17,14 @@ using System.Windows.Shapes;
 namespace SaleManagerApp.Views
 {
     /// <summary>
-    /// Interaction logic for MainLayout.xaml
+    /// Interaction logic for SideBar.xaml
     /// </summary>
-    public partial class MainLayout : UserControl
+    public partial class SideBar : UserControl
     {
-        public MainLayout()
+        public SideBar()
         {
             InitializeComponent();
-            Console.WriteLine("DC = " + DataContext?.GetType().Name);
-            ToastService.Initialize(this.ContentRoot);
+          
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

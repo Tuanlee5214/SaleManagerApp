@@ -29,5 +29,9 @@
         <DataTemplate DataType="{x:Type vm:WareHousePageViewModel}">
             <v:WarehousePage />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:SideBarViewModel}">
+            <v:SideBar />
+        </DataTemplate>
     </Application.Resources>
 </Application>

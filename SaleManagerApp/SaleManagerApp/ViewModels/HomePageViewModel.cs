@@ -8,5 +8,6 @@ namespace SaleManagerApp.ViewModels
 {
     public class HomePageViewModel : BaseViewModel
     {
+
     }
 }

@@ -10,8 +10,17 @@ using System.Windows.Input;
 
 namespace SaleManagerApp.ViewModels
 {
+
     public class MainLayoutViewModel: BaseViewModel
     {
+        private string _selectedMenu = "Home";
+        public string SelectedMenu
+        {
+            get => _selectedMenu;
+            set { _selectedMenu = value; OnPropertyChanged();}
+        }
+
+
         private BaseViewModel _currentViewModel;
         public BaseViewModel CurrentViewModel
         {
@@ -21,7 +30,6 @@ namespace SaleManagerApp.ViewModels
                 IsVisibleToastLoginSuccess();
             }
         }
-
         public void IsVisibleToastLoginSuccess()
         {
             if(CurrentViewModel is HomePageViewModel && UserSession.JustLoggedIn)
@@ -44,11 +52,33 @@ namespace SaleManagerApp.ViewModels
         {
             // Trang mặc định
             CurrentViewModel = new HomePageViewModel();
+            SelectedMenu = "Home";
 
-            ShowHomeCommand = new RelayCommand(o => CurrentViewModel = new HomePageViewModel());
-            ShowMenuCommand = new RelayCommand(o => CurrentViewModel = new MenuPageViewModel());
-            ShowUserCommand = new RelayCommand(o => CurrentViewModel = new UserPageViewModel());
-            ShowWareHouseCommand = new RelayCommand(o => CurrentViewModel = new WareHousePageViewModel());
+            ShowHomeCommand = new RelayCommand(o =>
+            {
+                CurrentViewModel = new HomePageViewModel();
+                SelectedMenu = "Home";
+                Console.WriteLine("SELECTED = HOME");
+
+            });  
+            ShowMenuCommand = new RelayCommand(o => {
+                CurrentViewModel = new MenuPageViewModel();
+                SelectedMenu = "Menu";
+                Console.WriteLine("SELECTED = menu");
+
+            });
+            ShowUserCommand = new RelayCommand(o => {
+                CurrentViewModel = new UserPageViewModel();
+                SelectedMenu = "Staff";
+                Console.WriteLine("SELECTED = user");
+
+            });
+            ShowWareHouseCommand = new RelayCommand(o => {
+                CurrentViewModel = new WareHousePageViewModel();
+                SelectedMenu = "WareHouse";
+                Console.WriteLine("SELECTED = warehouse");
+
+            });
 
         }
     }

@@ -74,6 +74,7 @@
     <Compile Include="ViewModels\MainLayoutViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MenuPageViewModel.cs" />
+    <Compile Include="ViewModels\SideBarViewModel.cs" />
     <Compile Include="ViewModels\UserPageViewModel.cs" />
     <Compile Include="ViewModels\WareHousePageViewModel.cs" />
     <Compile Include="Views\HomePage.xaml.cs">
@@ -87,6 +88,9 @@
     </Compile>
     <Compile Include="Views\MenuPage.xaml.cs">
       <DependentUpon>MenuPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SideBar.xaml.cs">
+      <DependentUpon>SideBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserPage.xaml.cs">
       <DependentUpon>UserPage.xaml</DependentUpon>
@@ -119,6 +123,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MenuPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SideBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
