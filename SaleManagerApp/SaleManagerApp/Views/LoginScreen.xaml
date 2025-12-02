@@ -45,7 +45,7 @@
                 <!-- Tiêu đề -->
                 <TextBlock Text="ĐĂNG NHẬP"
                            FontSize="28"
-                           FontWeight="Bold"
+                           FontWeight="SemiBold"
                            Foreground="#1F2937"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,25"/>
@@ -53,6 +53,7 @@
                 <!-- Username -->
                 <TextBlock Text="Tài khoản:"
                            FontSize="15"
+                           FontWeight="Bold"
                            Foreground="#4B5563"
                            Margin="0,0,0,8"/>
                 <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
@@ -75,6 +76,7 @@
                 <!-- Mật khẩu -->
                 <TextBlock Text="Mật khẩu:"
                            FontSize="15"
+                           FontWeight="SemiBold"
                            Foreground="#4B5563"
                            Margin="0,0,0,8"/>
 
@@ -83,6 +85,8 @@
 
                     <!-- Password ẩn -->
                     <PasswordBox x:Name="pwdHidden"
+                                 PasswordChanged="pwdHidden_PasswordChanged"
+                                 Visibility="Visible"
                                  Width="380"
                                  Height="48"
                                  Padding="16,0"
@@ -103,6 +107,8 @@
 
                     <!-- Password hiện -->
                     <TextBox x:Name="pwdVisible"
+                             TextChanged="pwdVisible_TextChanged"
+                             Visibility="Collapsed"
                              Width="380"
                              Height="48"
                              Padding="16,0"
@@ -110,7 +116,6 @@
                              BorderThickness="0"
                              VerticalContentAlignment="Center"
                              HorizontalAlignment="Center"
-                             Visibility="Collapsed"
                              Margin="0,0,0,40">
                         <TextBox.Resources>
                             <Style TargetType="Border">
@@ -141,8 +146,7 @@
         Cursor="Hand"
         Margin="0,0,0,0"
         HorizontalAlignment="Center"
-        Command="{Binding LoginCommand}"
-        CommandParameter="{Binding ElementName=pwdHidden}">
+        Click="LoginButton_Click">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Template">
@@ -179,7 +183,7 @@
                 </Button>
 
 
-                <TextBlock Text="{Binding ErrorMessage}" HorizontalAlignment="Center" FontSize="18" Foreground ="Red"/>
+                <TextBlock Text="{Binding ErrorMessage}" HorizontalAlignment="Center" FontSize="18" Foreground ="Red" />
                 <TextBlock Text="{Binding SuccessMessage}" HorizontalAlignment="Center" FontSize="18" Foreground ="Green"/>
 
                 <Grid x:Name="OverlayGrid"

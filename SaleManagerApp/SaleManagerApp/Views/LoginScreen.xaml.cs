@@ -41,6 +41,36 @@ namespace SaleManagerApp.Views
             pwdVisible.Visibility = Visibility.Collapsed;
         }
 
+        private void pwdHidden_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (pwdVisible.Visibility == Visibility.Visible)
+            {
+                pwdVisible.Text = pwdHidden.Password;
+            }
+        }
+
+        private void pwdVisible_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (pwdHidden.Visibility == Visibility.Visible)
+            {
+                pwdHidden.Password = pwdVisible.Text;
+            }
+        }
+
+        private string GetCurrentPassword()
+        {
+            return (pwdHidden.Visibility == Visibility.Visible) ? pwdHidden.Password : pwdVisible.Text;
+        }
+
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            string password = GetCurrentPassword();
+
+            var vm = DataContext as LoginViewModel;
+            vm?.LoginAsync(password);
+        }
+
+
         private void ForgotPassword_Click(object sender, MouseButtonEventArgs e)
         {
             MessageBox.Show("Tính năng đang phát triển.");

@@ -36,7 +36,7 @@ namespace SaleManagerApp.ViewModels
 
         public LoginViewModel()
         {
-            LoginCommand = new RelayCommand(async (obj) => await LoginAsync(obj));
+            //LoginCommand = new RelayCommand(async (obj) => await LoginAsync(obj));
         }
 
         private bool _overlayVisible;
@@ -47,12 +47,12 @@ namespace SaleManagerApp.ViewModels
         }
 
 
-        public async Task LoginAsync(object obj)
+        public async Task LoginAsync(string Password)
         {
-            OverlayVisible = true; 
+            OverlayVisible = true;
 
-            var pwdBox = obj as PasswordBox;
-            string Password = pwdBox?.Password ?? "";
+            ErrorMessage = " ";
+            SuccessMessage = " ";
 
             var result = await Task.Run(() =>
             {
