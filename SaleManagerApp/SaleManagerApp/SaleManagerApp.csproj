@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SaleManagerApp.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -55,9 +58,45 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Command\RelayCommand.cs" />
+    <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
+    <Compile Include="Helpers\CornerRadiusHelper.cs" />
+    <Compile Include="Helpers\PasswordHasher.cs" />
+    <Compile Include="Helpers\ToastService.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Services\NavigationService.cs" />
+    <Compile Include="Services\DBConnectionService.cs" />
+    <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\UserSession.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\MainLayoutViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\MenuPageViewModel.cs" />
+    <Compile Include="ViewModels\SideBarViewModel.cs" />
+    <Compile Include="ViewModels\UserPageViewModel.cs" />
+    <Compile Include="ViewModels\WareHousePageViewModel.cs" />
+    <Compile Include="Views\HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoginScreen.xaml.cs">
       <DependentUpon>LoginScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainLayout.xaml.cs">
+      <DependentUpon>MainLayout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MenuPage.xaml.cs">
+      <DependentUpon>MenuPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SideBar.xaml.cs">
+      <DependentUpon>SideBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserPage.xaml.cs">
+      <DependentUpon>UserPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WarehousePage.xaml.cs">
+      <DependentUpon>WarehousePage.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -71,7 +110,31 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoginScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainLayout.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MenuPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SideBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WarehousePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -106,10 +169,47 @@
     <Folder Include="Data\Migrations\" />
     <Folder Include="Data\Repositories\" />
     <Folder Include="Infrastructure\" />
-    <Folder Include="Models\" />
-    <Folder Include="Services\Implementations\" />
-    <Folder Include="Services\Interfaces\" />
     <Folder Include="Utils\Converters\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\logo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\anh1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\anh2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\PieChart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\PieChart %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\BarLineChart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\anh3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\shopping.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\user.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\house.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\bell.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Images\Search.png" />
+    <Content Include="DataBaseScript\SaleManagement1.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

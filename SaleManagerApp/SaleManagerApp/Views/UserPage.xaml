@@ -1,0 +1,212 @@
+﻿<UserControl x:Class="SaleManagerApp.Views.UserPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="1200"
+             Background="#F5F5F5">
+
+    <Grid Margin="20">
+
+        <!-- ROW / COLUMN SETUP -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Main content -->
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <!-- Sidebar -->
+            <ColumnDefinition Width="*"/>
+            <!-- Main UI -->
+        </Grid.ColumnDefinitions>
+
+        <!-- SIDEBAR -->
+        
+
+        <!-- HEADER -->
+        <Grid Grid.Row="0" Background="White" Height="80">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/> <!-- Cột trái: Title -->
+        <ColumnDefinition Width="*"/>    <!-- Cột giữa: Menu -->
+        <ColumnDefinition Width="Auto"/> <!-- Cột phải: User info -->
+    </Grid.ColumnDefinitions>
+
+    <!-- Cột trái: Title -->
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="30,0,20,0" Grid.Column="0">
+        <TextBlock Text="Staff Management" FontWeight="SemiBold" FontSize="22" VerticalAlignment="Center"/>
+    </StackPanel>
+
+    <!-- Cột giữa: Menu / navigation -->
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
+        <StackPanel Margin="20,0" VerticalAlignment="Center">
+            <TextBlock Text="Quản lý" FontSize="16" HorizontalAlignment="Center" Foreground="#888"/>
+        </StackPanel>
+
+        <StackPanel Margin="20,0" VerticalAlignment="Center">
+            <TextBlock Text="Phụ bếp" FontSize="16" HorizontalAlignment="Center" Foreground="#5B7FFF" FontWeight="SemiBold"/>
+            <Border Height="3" Background="#5B7FFF" CornerRadius="2" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <StackPanel Margin="20,0" VerticalAlignment="Center">
+            <TextBlock Text="Phục vụ" FontSize="16" HorizontalAlignment="Center" Foreground="#888"/>
+        </StackPanel>
+    </StackPanel>
+
+    <!-- Cột phải: User info -->
+    <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" Grid.Column="2">
+        <TextBlock Text="Tên admin/user" FontWeight="Bold" HorizontalAlignment="Right"/>
+        <TextBlock Text="Mã NV/ADMIN" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
+    </StackPanel>
+</Grid>
+
+
+
+        <!-- MAIN CONTENT -->
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Button Row -->
+                <RowDefinition Height="*"/>
+                <!-- Table -->
+            </Grid.RowDefinitions>
+
+            <!-- BUTTON ROW -->
+            <DockPanel Grid.Row="0" Margin="0,0,0,10">
+
+                <!-- Search box with placeholder implemented by overlay TextBlock -->
+                <Grid Width="220" Height="34" Margin="10" VerticalAlignment="Center">
+                    <Image Source="/Assets/Images/Search.png"
+                           Width="16"
+                           Height="16"
+                           Opacity="0.3"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Margin="8,0,0,0"/>
+                    
+                    <!-- Actual TextBox -->
+                    <TextBox x:Name="SearchBox"
+                             VerticalAlignment="Center"
+                             Padding="28,4,6,4"
+                             Background="White"
+                             BorderBrush="#D0D0D0"
+                             BorderThickness="1" TextChanged="SearchBox_TextChanged"/>
+
+                    <!-- Placeholder TextBlock (shows only when TextBox.Text is empty) -->
+                    <TextBlock Text="Tìm kiếm nhân viên"
+                               Margin="28,0,0,0"
+                               VerticalAlignment="Center"
+                               Foreground="Gray"
+                               IsHitTestVisible="False"
+                               Visibility="Collapsed">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <!-- If SearchBox.Text == empty string show the placeholder -->
+                                    <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <!-- Also handle null (initial) -->
+                                    <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+
+                <!-- Chấm công -->
+                <Button Content="Chấm công"
+                        Width="120"
+                        Height="36"
+                        Margin="10"
+                        Background="#407BFF"
+                        Foreground="White">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="18"
+                    Background="{TemplateBinding Background}"
+                    Padding="10"
+                    SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  RecognizesAccessKey="True"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+
+                <!-- Thêm nhân viên -->
+                <Button Content="+ Thêm nhân viên"
+                        Width="150"
+                        Height="36"
+                        Margin="10"
+                        Background="#407BFF"
+                        Foreground="White"
+                        HorizontalAlignment="Right"
+                        DockPanel.Dock="Right" Click="Button_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="18"
+                    Background="{TemplateBinding Background}"
+                    Padding="10"
+                    SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  RecognizesAccessKey="True"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </DockPanel>
+
+            <!-- TABLE -->
+            <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="10">
+                <DataGrid AutoGenerateColumns="False"
+                          HeadersVisibility="Column"
+                          FontSize="14"
+                          RowHeight="48"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          ItemsSource="{Binding StaffList}" SelectionChanged="DataGrid_SelectionChanged">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Tên nhân viên" Binding="{Binding Name}" Width="2*"/>
+                        <DataGridTextColumn Header="Mã nhân viên" Binding="{Binding Code}" Width="*" />
+                        <DataGridTextColumn Header="Ngày sinh" Binding="{Binding Birthday}" Width="*" />
+                        <DataGridTextColumn Header="Ngày vào làm" Binding="{Binding StartDate}" Width="*" />
+
+                        <DataGridTemplateColumn Header="Thông tin liên lạc" Width="2*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Phone}"/>
+                                        <TextBlock Text="{Binding Email}" FontSize="12" Foreground="Gray"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Khác" Width="70">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Width="32" Height="32" Background="Transparent" BorderThickness="0" Cursor="Hand">
+                                        <Image Source="/Assets/Images/menu-dots.png" Width="20"/>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+
+                </DataGrid>
+            </Border>
+        </Grid>
+
+    </Grid>
+
+</UserControl>

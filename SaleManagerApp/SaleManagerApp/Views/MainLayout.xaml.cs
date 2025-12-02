@@ -1,6 +1,5 @@
-﻿using SaleManagerApp.Navigation;
+﻿using SaleManagerApp.Helpers;
 using SaleManagerApp.ViewModels;
-using SaleManagerApp.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,29 +12,26 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SaleManagerApp
+namespace SaleManagerApp.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainLayout.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainLayout : UserControl
     {
-        public MainWindow()
+        public MainLayout()
         {
             InitializeComponent();
+            Console.WriteLine("DC = " + DataContext?.GetType().Name);
+            ToastService.Initialize(this.ContentRoot);
+        }
 
-            var mainVM = new MainViewModel();
-            DataContext = mainVM;
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
 
-            NavigationService.NavigateAction = (vm) =>
-            {
-                mainVM.CurrentViewModel = vm;
-            };
-
-            mainVM.CurrentViewModel = new LoginViewModel();
-            
         }
     }
 }
