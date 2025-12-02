@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1200">
 
-    <Grid>
+    <Grid x:Name="RootGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80"/>
             <ColumnDefinition Width="*"/>
@@ -78,7 +78,9 @@
         </StackPanel>
 
         <!-- Content -->
-        <ContentControl Grid.Column="1"
-                        Content="{Binding CurrentViewModel}"/>
+        <Grid Grid.Column="1" x:Name="ContentRoot">
+            <ContentControl Content="{Binding CurrentViewModel}" />
+        </Grid>
+
     </Grid>
 </UserControl>

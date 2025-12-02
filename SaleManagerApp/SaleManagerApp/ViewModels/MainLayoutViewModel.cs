@@ -1,8 +1,11 @@
-﻿using System;
+﻿using SaleManagerApp.Helpers;
+using SaleManagerApp.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SaleManagerApp.ViewModels
@@ -13,7 +16,22 @@ namespace SaleManagerApp.ViewModels
         public BaseViewModel CurrentViewModel
         {
             get => _currentViewModel;
-            set { _currentViewModel = value; OnPropertyChanged(); }
+            set { _currentViewModel = value; OnPropertyChanged();
+
+                IsVisibleToastLoginSuccess();
+            }
+        }
+
+        public void IsVisibleToastLoginSuccess()
+        {
+            if(CurrentViewModel is HomePageViewModel && UserSession.JustLoggedIn)
+            {
+                Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    ToastService.Show("Đăng nhập thành công!");
+                    UserSession.JustLoggedIn = false;
+                }, System.Windows.Threading.DispatcherPriority.Loaded);
+            }
         }
 
         public ICommand ShowHomeCommand { get; }

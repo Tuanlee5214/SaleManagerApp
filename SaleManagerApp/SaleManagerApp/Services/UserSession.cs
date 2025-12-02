@@ -12,9 +12,12 @@ namespace SaleManagerApp.Services
         public static User CurrentUser { get; private set;}
         public static DateTime LoginTime { get; private set; }
 
+        public static bool JustLoggedIn { get;  set; }
+
         public static void SetUser(User user)
         {
             CurrentUser = user;
+            JustLoggedIn = true;
             LoginTime = DateTime.Now;
         }
 
