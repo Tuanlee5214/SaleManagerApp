@@ -295,11 +295,11 @@ CREATE TABLE ImportOrderDetail
 (
   importOrderId char(7) not null,
   ingredientId char(7) not null,
+  unitPrice money not null,
   quantity int not null,
-  supplierId char(7) not null,
   createdAt datetime default getdate(),
   updatedAt datetime,
-  primary key(importOrderId, ingredientId, supplierId)
+  primary key(importOrderId, ingredientId)
 )
 
 CREATE TABLE ExportOrder
@@ -373,6 +373,7 @@ ALTER TABLE Ingredient ADD CHECK(quantity >= 0)
 ALTER TABLE Ingredient ADD CHECK(minQuantity >= 0)
 ALTER TABLE IngredientSupplier ADD CHECK(unitPrice > 0)
 ALTER TABLE ImportOrder ADD CHECK(totalAmount >= 0)
+ALTER TABLE ImportOrderDetail ADD CHECK(unitPrice >= 0)
 ALTER TABLE ImportOrderDetail ADD CHECK(quantity >= 0)
 ALTER TABLE ExportOrderDetail ADD CHECK(quantity >= 0)
 ALTER TABLE Feedback ADD CHECK(rating between 1 and 5)
@@ -487,6 +488,7 @@ ALTER TABLE IngredientSupplier
 ADD CONSTRAINT FK_IngredientSupplier_Ingredient
 FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
 
+
 -- IngredientSupplier → Supplier
 ALTER TABLE IngredientSupplier
 ADD CONSTRAINT FK_IngredientSupplier_Supplier
@@ -496,6 +498,11 @@ FOREIGN KEY (supplierId) REFERENCES Supplier(supplierId);
 ALTER TABLE ImportOrder
 ADD CONSTRAINT FK_ImportOrder_Employee
 FOREIGN KEY (employeeId) REFERENCES Employee(employeeId);
+
+-- ImportOrder → Supplier
+ALTER TABLE ImportOrder
+ADD CONSTRAINT FK_ImportOrder_Supplier
+FOREIGN KEY (supplierId) REFERENCES Supplier(supplierId);
 
 -- ImportOrderDetail → ImportOrder
 ALTER TABLE ImportOrderDetail
@@ -507,10 +514,9 @@ ALTER TABLE ImportOrderDetail
 ADD CONSTRAINT FK_ImportOrderDetail_Ingredient
 FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
 
--- ImportOrderDetail → Supplier
+
 ALTER TABLE ImportOrderDetail
-ADD CONSTRAINT FK_ImportOrderDetail_Supplier
-FOREIGN KEY (supplierId) REFERENCES Supplier(supplierId);
+DROP CONSTRAINT FK_ImportOrderDetail_Supplier
 
 -- ExportOrder → Employee
 ALTER TABLE ExportOrder
@@ -562,3 +568,6 @@ SET hashedPassword = 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk='
 WHERE userId = 'AD00001'
 
 select * from [User]
+
+ALTER TABLE ImportOrder
+ADD supplierId char(7)
