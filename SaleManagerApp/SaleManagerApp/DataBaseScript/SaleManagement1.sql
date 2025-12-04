@@ -37,6 +37,16 @@ CREATE TABLE Permission
 	updatedAt datetime
 )
 
+CREATE TABLE ImportMoneyPerMonth
+(
+	importMoneyPerMonthId char(7) primary key not null,
+	[month] int not null,
+	[year] int not null,
+	totalAmount money,
+	createdAt datetime default getdate(),
+	updatedAt datetime
+)
+
 CREATE TABLE TotalDrink 
 (
 	totalDrinkId char(7) primary key,
@@ -359,6 +369,9 @@ ALTER TABLE Revenue ADD CHECK([year] > 0)
 ALTER TABLE Revenue ADD CHECK(totalAmount >= 0)
 ALTER TABLE MenuItem ADD CHECK(unitPrice >= 0)
 ALTER TABLE MenuItem ADD CHECK([description] IN ('Đồ ăn', 'Nước uống'))
+ALTER TABLE ImportMoneyPerMonth ADD CHECK(totalAmount >= 0)
+ALTER TABLE ImportMoneyPerMonth ADD CHECK([month] between 1 and 12)
+ALTER TABLE ImportMoneyPerMonth ADD CHECK([year] > 0)
 ALTER TABLE MenuItemDetail ADD CHECK(quantity >= 0)
 ALTER TABLE Attendance ADD CHECK(totalHours >= 0) 
 ALTER TABLE PayRoll ADD CHECK([month] between 1 and 12)
