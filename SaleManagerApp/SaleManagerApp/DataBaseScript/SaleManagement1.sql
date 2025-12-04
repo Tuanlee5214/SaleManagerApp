@@ -580,7 +580,5 @@ UPDATE [User]
 SET hashedPassword = 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk='
 WHERE userId = 'AD00001'
 
-select * from [User]
-
 ALTER TABLE ImportOrder
 ADD supplierId char(7)
