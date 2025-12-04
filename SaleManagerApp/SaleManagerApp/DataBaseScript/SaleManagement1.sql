@@ -582,3 +582,41 @@ WHERE userId = 'AD00001'
 
 ALTER TABLE ImportOrder
 ADD supplierId char(7)
+
+--Generate Id automatically
+CREATE PROCEDURE sp_GenerateId
+    @prefix     CHAR(2),        -- 2 ký tự đầu ID
+    @tableName  SYSNAME,        -- tên bảng cần tạo ID
+    @idColumn   SYSNAME,        -- tên cột ID trong bảng
+    @idLength   INT,            -- tổng chiều dài ID (7)
+    @newId      VARCHAR(20) OUTPUT
+AS
+BEGIN
+    DECLARE @sql NVARCHAR(MAX);
+    DECLARE @maxId VARCHAR(20);
+    DECLARE @numberPart INT;
+    DECLARE @numberLength INT = @idLength - LEN(@prefix);  -- = 5
+
+    -- Lấy MAX(ID) trong bảng theo prefix
+    SET @sql = N'
+        SELECT @maxId_OUT = MAX(' + QUOTENAME(@idColumn) + N')
+        FROM ' + QUOTENAME(@tableName) + N'
+        WHERE ' + QUOTENAME(@idColumn) + N' LIKE ''' + @prefix + '%'';';
+
+    EXEC sp_executesql
+        @sql,
+        N'@maxId_OUT VARCHAR(20) OUTPUT',
+        @maxId_OUT = @maxId OUTPUT;
+    -- Nếu chưa có ID -> sinh cái đầu tiên
+    IF @maxId IS NULL
+    BEGIN
+        SET @numberPart = 1;
+    END
+    ELSE
+    BEGIN
+        SET @numberPart = CAST(SUBSTRING(@maxId, LEN(@prefix)+1, @numberLength) AS INT) + 1;
+    END
+    -- Tạo ID cuối cùng: prefix + số dạng 00001
+    SET @newId = @prefix + RIGHT(REPLICATE('0', @numberLength) + CAST(@numberPart AS VARCHAR), @numberLength);
+END;
+GO
