@@ -620,3 +620,18 @@ BEGIN
     SET @newId = @prefix + RIGHT(REPLICATE('0', @numberLength) + CAST(@numberPart AS VARCHAR), @numberLength);
 END;
 GO
+
+
+ALTER TABLE Employee 
+DROP CONSTRAINT FK_Employee_User
+
+
+ALTER TABLE Employee
+DROP COLUMN userId
+
+ALTER TABLE [User]
+ADD employeeId char(7)
+
+ALTER TABLE [User]
+ADD CONSTRAINT FK_Employee_User
+FOREIGN KEY (employeeId) REFERENCES Employee(employeeId)
