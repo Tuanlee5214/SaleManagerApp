@@ -5,7 +5,7 @@ USE SaleManagement2025
 CREATE TABLE [User]
 (
 	userId char(7) primary key,
-	fullName nvarchar(30) not null,
+	fullName nvarchar(30) not nu	ll,
 	userName varchar(20) not null unique,
 	hashedPassword varchar(100) not null,
 	avatarUrl varchar(100),
@@ -635,3 +635,511 @@ ADD employeeId char(7)
 ALTER TABLE [User]
 ADD CONSTRAINT FK_Employee_User
 FOREIGN KEY (employeeId) REFERENCES Employee(employeeId)
+
+GO
+
+--Thêm nhân viên vào db (chạy rồi)
+CREATE PROCEDURE sp_InsertEmployee
+    @FullName   NVARCHAR(30),
+    @Position   VARCHAR(20),
+	@DateOfBirth DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @EmpId CHAR(7);
+
+    -- Tạo ID cho Employee
+    EXEC sp_GenerateId 
+        @prefix    = 'EM',        
+        @tableName = 'Employee', 
+        @idColumn  = 'employeeId',
+        @idLength  = 7,
+        @newId     = @EmpId OUTPUT;
+
+    INSERT INTO Employee(
+        employeeId, fullName,dateOfBirth, position, createdAt, updatedAt
+    )
+    VALUES(
+        @EmpId, @FullName, @DateOfBirth, @Position, GETDATE(), GETDATE()
+    );
+END;
+GO
+
+ALTER TABLE [User]
+ALTER COLUMN fullName nvarchar(30) null
+
+ALTER TABLE Employee
+ADD dateOfBirth date
+
+ALTER TABLE [User]
+DROP COLUMN avatarId
+
+ALTER TABLE [User]
+ALTER COLUMN groupId char(7) not null 
+--TẠM THỜI ĐỂ ĐÂY NHƯNG MÀ GROUPID TRONG ĐÂY KO NÊN NULL PHẢI LUÔN NOT NULL, VÌ CHƯA CÓ DỮ
+-- LIỆU NÊN ĐỂ TẠM, NHƯNG MÀ VẪN CẦN PHẢI KIỂM TRA TRONG PROCEDURE TRƯỚC KHI INSERT LÀ NÓ KO ĐƯỢC 
+--PHÉP NULL NHÉ.
+
+--Thêm user vào trong db(đã chạy)
+CREATE PROCEDURE sp_InsertUser
+    @UserName       varchar(20),
+    @HashedPassword varchar(100),
+    @AvatarUrl      varchar(100) = NULL,
+    @Phone          varchar(25)  = NULL,
+    @Email          varchar(30)  = NULL,
+    @GroupId        char(7),
+    @EmployeeId     char(7) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @UserID char(7);
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        -- Kiểm tra username trùng
+        IF EXISTS (SELECT 1 FROM [User] WHERE userName = @UserName)
+        BEGIN
+            RAISERROR('Username already exists.', 16, 1);
+            ROLLBACK TRAN;
+            RETURN;
+        END
+
+        -- Kiểm tra GroupId
+        IF NOT EXISTS (SELECT 1 FROM [Group] WHERE groupId = @GroupId)
+        BEGIN
+            RAISERROR('GroupId does not exist.', 16, 1);
+            ROLLBACK TRAN;
+            RETURN;
+        END
+
+        -- Generate ID
+        EXEC sp_GenerateId 
+            @prefix    = 'US',
+            @tableName = '[User]',
+            @idColumn  = 'userId',
+            @idLength  = 7,
+            @newId     = @UserID OUTPUT;
+
+        -- Insert User
+        INSERT INTO [User](
+            userId, fullName, userName, hashedPassword, avatarUrl, phone, email,
+            groupId, createdAt, updatedAt, employeeId
+        )
+        VALUES (
+            @UserID, NULL, @UserName, @HashedPassword, @AvatarUrl, @Phone, @Email,
+            @GroupId, GETDATE(), GETDATE(), @EmployeeId
+        );
+
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRAN;
+        THROW;
+    END CATCH
+END;
+GO
+
+--Thêm MenuItem vào hệ thống (đã chạy)
+CREATE PROCEDURE sp_InsertMenuItem
+    @MenuItemName      NVARCHAR(30),
+    @UnitPrice         MONEY,
+    @ImageUrl          VARCHAR(100),
+    @Size              VARCHAR(7),
+    @SpecialInfo       NVARCHAR(75),
+    @Description       NVARCHAR(15),
+    @TtDrinkDetailId   CHAR(7),
+    @TtFoodDetailId    CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Kiểm tra khóa ngoại TotalDrinkDetail
+    IF NOT EXISTS (SELECT 1 FROM TotalDrinkDetail WHERE ttDrinkDetailId = @TtDrinkDetailId)
+    BEGIN
+        RAISERROR('ttDrinkDetailId không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    -- Kiểm tra khóa ngoại TotalFoodDetail
+    IF NOT EXISTS (SELECT 1 FROM TotalFoodDetail WHERE ttFoodDetailId = @TtFoodDetailId)
+    BEGIN
+        RAISERROR('ttFoodDetailId không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    DECLARE @MenuItemId CHAR(7);
+    EXEC sp_GenerateId
+        @prefix    = 'MI',
+        @tableName = 'MenuItem',
+        @idColumn  = 'menuItemId',
+        @idLength  = 7,
+        @newId     = @MenuItemId OUTPUT;
+
+    INSERT INTO MenuItem(
+        menuItemId, menuItemName, unitPrice, imageUrl, size, specialInfo, [description],
+        ttDrinkDetailId, ttFoodDetailId, createdAt, updatedAt
+    )
+    VALUES (
+        @MenuItemId, @MenuItemName, @UnitPrice, @ImageUrl, @Size, @SpecialInfo, @Description,
+        @TtDrinkDetailId, @TtFoodDetailId,
+        GETDATE(), GETDATE()
+    );
+END;
+GO
+
+--Thêm menu vào hệ thống(đã chạy)
+CREATE PROCEDURE sp_InsertMenu
+    @MenuName NVARCHAR(30)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @MenuId CHAR(7);
+    EXEC sp_GenerateId
+        @prefix    = 'MN',
+        @tableName = 'Menu',
+        @idColumn  = 'menuId',
+        @idLength  = 7,
+        @newId     = @MenuId OUTPUT;
+
+    INSERT INTO Menu (menuId, menuName, createdAt, updatedAt)
+    VALUES (
+        @MenuId,
+        @MenuName,
+        GETDATE(),
+        GETDATE()
+    );
+END;
+GO
+
+--Thêm món vào menu trong hệ thống (đã thêm)
+CREATE PROCEDURE sp_InsertMenuDetail
+    @MenuId      CHAR(7),
+    @MenuItemId  CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Kiểm tra menu có tồn tại
+    IF NOT EXISTS (SELECT 1 FROM Menu WHERE menuId = @MenuId)
+    BEGIN
+        RAISERROR('MenuId không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    -- Kiểm tra menuItem có tồn tại
+    IF NOT EXISTS (SELECT 1 FROM MenuItem WHERE menuItemId = @MenuItemId)
+    BEGIN
+        RAISERROR('MenuItemId không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    -- Kiểm tra trùng khóa chính (MenuId + MenuItemId)
+    IF EXISTS (SELECT 1 FROM MenuDetail WHERE menuId = @MenuId AND menuItemId = @MenuItemId)
+    BEGIN
+        RAISERROR('Món này đã tồn tại trong Menu.', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO MenuDetail(menuId, menuItemId, createdAt, updatedAt)
+    VALUES (
+        @MenuId, @MenuItemId,
+        GETDATE(), GETDATE()
+    );
+END;
+GO
+
+--Thêm customer vào hệ thống(đã thêm)
+CREATE PROCEDURE sp_InsertCustomer
+	@FullName nvarchar(30),
+	@Phone varchar(25),
+	@Email varchar(30),
+	@Location nvarchar(100)
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @CustomerId CHAR(7);
+    EXEC sp_GenerateId
+        @prefix    = 'CU',
+        @tableName = 'Customer',
+        @idColumn  = 'customerId',
+        @idLength  = 7,
+        @newId     = @CustomerId OUTPUT;
+
+	INSERT INTO Customer(customerId, fullName, phone, email, [location], createdAt, updatedAt)
+	VALUES (@CustomerId, @FullName, @Phone, @Email, @Location, getdate(), getdate());
+END;
+GO
+
+--Thêm đơn đặt bàn vào hệ thống (đã thêm)
+CREATE PROCEDURE sp_InsertTableReservation
+    @ArrivalTime       DATETIME,
+    @HoldUntil         DATETIME,
+    @GuestCount        INT,
+    @CustomerId        CHAR(7),
+    @EmployeeId        CHAR(7),
+    @TableId           CHAR(7),     
+    @SpecialRequest  NVARCHAR(30)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        -- Kiểm tra Customer
+        IF NOT EXISTS (SELECT 1 FROM Customer WHERE customerId = @CustomerId)
+        BEGIN
+            RAISERROR('Khách hàng không tồn tại trong hệ thống', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        -- Kiểm tra Employee
+        IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+        BEGIN
+            RAISERROR('Nhân viên không tồn tại trong hệ thống', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        -- Kiểm tra table
+        IF NOT EXISTS (SELECT 1 FROM [Table] WHERE tableId = @TableId)
+        BEGIN
+            RAISERROR('Bàn không tồn tại trong hệ thống', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        -- Sinh TableReservationId
+        DECLARE @TableReservationId CHAR(7);
+        EXEC sp_GenerateId
+            @prefix    = 'TR',
+            @tableName = 'TableReservation',
+            @idColumn  = 'tableReservationId',
+            @idLength  = 7,
+            @newId     = @TableReservationId OUTPUT;
+
+        INSERT INTO TableReservation(
+            tableReservationId, customerId, tableId, employeeId, arrivalTime, holdUntil, guestCount,
+            specialRequest, createdAt, updatedAt)
+        VALUES (
+            @TableReservationId, @CustomerId, @TableId, @EmployeeId, @ArrivalTime, @HoldUntil, 
+            @GuestCount,@SpecialRequest, GETDATE(), GETDATE()
+        );
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH
+END;    
+GO
+
+
+ALTER TABLE [Order]
+ALTER COLUMN tableId char(7) null
+
+--Thêm nhà cung cấp vào hệ thống(đã thêm)
+CREATE PROCEDURE sp_InsertSupplier
+    @SupplierName NVARCHAR(30),
+    @Phone        VARCHAR(25),
+    @Email        VARCHAR(30),
+    @Address      NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        DECLARE @SupplierId CHAR(7);
+        EXEC sp_GenerateId
+            @prefix='SP',
+            @tableName='Supplier',
+            @idColumn='supplierId',
+            @idLength=7,
+            @newId=@SupplierId OUTPUT;
+
+        INSERT INTO Supplier(supplierId, supplierName, phone, email, [address], createdAt, updatedAt)
+        VALUES(@SupplierId, @SupplierName, @Phone, @Email, @Address, GETDATE(), GETDATE());
+
+        COMMIT;
+        SELECT @SupplierId AS supplierId;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT>0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+--Thêm nguyên liệu cho quán vào hệ thống (đã thêm)
+CREATE PROCEDURE sp_InsertIngredient
+    @IngredientName NVARCHAR(30),
+    @Unit           NVARCHAR(10),
+    @Quantity       INT = 0,
+    @MinQuantity    INT = 0
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        DECLARE @IngredientId CHAR(7);
+        EXEC sp_GenerateId
+            @prefix='IG',
+            @tableName='Ingredient',
+            @idColumn='ingredientId',
+            @idLength=7,
+            @newId=@IngredientId OUTPUT;
+
+        INSERT INTO Ingredient(ingredientId, ingredientName, unit, quantity, minQuantity, createdAt, updatedAt)
+        VALUES(@IngredientId, @IngredientName, @Unit, @Quantity, @MinQuantity, GETDATE(), GETDATE());
+
+        COMMIT;
+        SELECT @IngredientId AS ingredientId;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT>0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+--Thêm chi tiết nguyên liệu thuộc từng nhà cung cấp(đã thêm)
+CREATE PROCEDURE sp_InsertIngredientSupplier
+    @IngredientId CHAR(7),
+    @SupplierId   CHAR(7),
+    @UnitPrice    MONEY,
+    @Note         NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        IF NOT EXISTS (SELECT 1 FROM Ingredient WHERE ingredientId=@IngredientId)
+        BEGIN
+            RAISERROR('Nguyên liệu không tồn tại', 16, 1);
+            ROLLBACK; RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM Supplier WHERE supplierId=@SupplierId)
+        BEGIN
+            RAISERROR('Nhà cung cấp không tồn tại', 16, 1);
+            ROLLBACK; RETURN;
+        END
+
+        INSERT INTO IngredientSupplier(
+            ingredientId, supplierId, unitPrice, note, createdAt, updatedAt
+        )
+        VALUES(@IngredientId, @SupplierId, @UnitPrice, @Note, GETDATE(), GETDATE());
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT>0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+--Thêm đơn nhập cho hệ thống(Đã thêm)
+CREATE PROCEDURE sp_InsertImportOrder
+    @EmployeeId CHAR(7),
+    @SupplierId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        RAISERROR('Nhân viên không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM Supplier WHERE supplierId = @SupplierId)
+    BEGIN
+        RAISERROR('Nhà cung cấp không tồn tại.', 16, 1);
+        RETURN;
+    END
+
+    DECLARE @ImportOrderId CHAR(7);
+    EXEC sp_GenerateId
+        @prefix    = 'IO',
+        @tableName = 'ImportOrder',
+        @idColumn  = 'importOrderId',
+        @idLength  = 7,
+        @newId     = @ImportOrderId OUTPUT;
+
+    INSERT INTO ImportOrder(importOrderId, importDate, employeeId, supplierId, totalAmount, createdAt, updatedAt)
+    VALUES (@ImportOrderId, GETDATE(), @EmployeeId, @SupplierId, 0, GETDATE(), GETDATE());
+
+    SELECT @ImportOrderId AS NewImportOrderId;
+END;
+GO
+
+--Thêm đơn nhập chi tiết cho hệ thống (đã thêm)
+CREATE PROCEDURE sp_InsertImportOrderDetail
+    @ImportOrderId CHAR(7),
+    @IngredientId  CHAR(7),
+    @Quantity      INT,
+    @UnitPrice     MONEY
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        -- Kiểm tra đơn nhập
+        IF NOT EXISTS (SELECT 1 FROM ImportOrder WHERE importOrderId = @ImportOrderId)
+        BEGIN
+            RAISERROR('Đơn nhập không tồn tại.', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        -- Kiểm tra nguyên liệu
+        IF NOT EXISTS (SELECT 1 FROM Ingredient WHERE ingredientId = @IngredientId)
+        BEGIN
+            RAISERROR('Nguyên liệu không tồn tại.', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        -- 1. Thêm chi tiết đơn nhập
+        INSERT INTO ImportOrderDetail(importOrderId, ingredientId, quantity, unitPrice, createdAt, updatedAt)
+        VALUES (@ImportOrderId, @IngredientId, @Quantity, @UnitPrice, GETDATE(), GETDATE());
+
+        -- 2. Cập nhật tồn kho nguyên liệu
+        UPDATE Ingredient
+        SET quantity = quantity + @Quantity,
+            updatedAt = GETDATE()
+        WHERE ingredientId = @IngredientId;
+
+        -- 3. Cập nhật lại tổng tiền đơn nhập
+        UPDATE ImportOrder
+        SET totalAmount = (
+            SELECT SUM(quantity * unitPrice)
+            FROM ImportOrderDetail
+            WHERE importOrderId = @ImportOrderId
+        ),
+        updatedAt = GETDATE()
+        WHERE importOrderId = @ImportOrderId;
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
