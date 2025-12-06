@@ -589,7 +589,7 @@ CREATE PROCEDURE sp_GenerateId
     @tableName  SYSNAME,        -- tên bảng cần tạo ID
     @idColumn   SYSNAME,        -- tên cột ID trong bảng
     @idLength   INT,            -- tổng chiều dài ID (7)
-    @newId      VARCHAR(20) OUTPUT
+    @newId      CHAR(7) OUTPUT
 AS
 BEGIN
     DECLARE @sql NVARCHAR(MAX);
@@ -717,7 +717,7 @@ BEGIN
         -- Generate ID
         EXEC sp_GenerateId 
             @prefix    = 'US',
-            @tableName = '[User]',
+            @tableName = 'User',
             @idColumn  = 'userId',
             @idLength  = 7,
             @newId     = @UserID OUTPUT;
@@ -1094,7 +1094,7 @@ CREATE PROCEDURE sp_InsertImportOrderDetail
     @UnitPrice     MONEY
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT ON; 
 
     BEGIN TRY
         BEGIN TRAN;
@@ -1141,5 +1141,196 @@ BEGIN
         IF @@TRANCOUNT > 0 ROLLBACK;
         THROW;
     END CATCH
+END;
+GO
+
+ALTER TABLE Invoice
+ADD invoiceStatus nvarchar(30) not null
+
+--TẠO ĐƠN HÀNG TRƯỚC TIÊN (đã thêm)
+CREATE PROCEDURE sp_InsertOrder
+    @OrderStatus NVARCHAR(25),
+    @ServeStatus nvarchar(25),
+    @CustomerId char(7),
+    @TableId char(7),
+    @DeliveryLocation nvarchar(40),
+    @EmployeeId char(7)
+AS
+BEGIN
+    SET NOCOUNT ON
+    --Ktra khách hàng
+    IF NOT EXISTS(SELECT 1 FROM Customer WHERE customerId = @CustomerId)
+    BEGIN
+        RAISERROR('Khách hàng không tồn tại', 16, 1)
+        RETURN
+    END
+    
+    --Ktra nhân viên
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN 
+        RAISERROR('Nhân viên không tồn tại',16, 1)
+        RETURN
+    END
+
+    DECLARE @OrderId char(7)
+    EXEC sp_GenerateId
+        @prefix = 'OR',
+        @tableName = 'Order',
+        @idColumn = 'orderId',
+        @idLength = 7,
+        @newId = @OrderId OUTPUT
+
+    INSERT INTO [Order](orderId, orderStatus, serveStatus, customerId, tableId, deliveryLocation, 
+        employeeId, createdAt, updatedAt)
+    VALUES (@OrderId, @OrderStatus, @ServeStatus, @CustomerId, @TableId, @DeliveryLocation,
+        @EmployeeId, getdate(), getdate())
+END
+GO
+
+--THÊM MÓN VÀO HÓA ĐƠN (đã thêm)
+CREATE PROCEDURE sp_InsertMenuItemIntoOrderDetail
+    @OrderId char(7),
+    @MenuItemId char(7),
+    @Quantity int,
+    @CurrentPrice money
+AS 
+BEGIN
+    SET NOCOUNT ON
+    --Ktra orderId
+    IF NOT EXISTS(SELECT 1 FROM [Order] WHERE orderId = @OrderId)
+    BEGIN
+     RAISERROR ('Đơn hàng không tồn tại', 16, 1)
+     RETURN
+    END
+
+    --Ktra menuItemId
+    IF NOT EXISTS(SELECT 1 FROM MenuItem WHERE menuItemId = @MenuItemId)
+    BEGIN 
+        RAISERROR ('Món ăn không tồn tại', 16, 1)
+        RETURN
+    END
+
+    INSERT INTO OrderDetail(orderId, menuItemId, quantity, currentPrice, createdAt, updatedAt)
+    VALUES (@OrderId, @MenuItemId, @Quantity, @CurrentPrice, getdate(), getdate())
+END
+GO
+
+--THÊM HÓA ĐƠN VÀO HỆ THỐNG (đã thêm)
+CREATE PROCEDURE sp_InsertInvoice
+    @OrderId char(7),
+    @InvoiceStatus nvarchar(30),
+    @PayMentMethod nvarchar(20)
+AS
+BEGIN
+    SET NOCOUNT ON
+    --Ktra orderId
+    IF NOT EXISTS (SELECT 1 FROM [Order] WHERE orderId = @OrderId)
+    BEGIN 
+        RAISERROR('Đơn hàng không tồn tại', 16, 1)
+        RETURN
+    END
+    
+    --Set invoiceId
+    DECLARE @InvoiceId char(7)
+    EXEC sp_GenerateId
+        @prefix = 'IV',
+        @tableName = 'Invoice',
+        @idColumn = 'invoiceId',
+        @idLength = 7,
+        @newId = @InvoiceId OUTPUT
+    
+    --set totalAmount
+    DECLARE @TotalAmount money
+    SELECT @TotalAmount = ISNULL(SUM(quantity * currentPrice), 0)
+    FROM OrderDetail
+    WHERE orderId = @OrderId
+
+    INSERT INTO Invoice(invoiceId, orderId, invoiceStatus, paymentMethod, totalAmount, createdAt, updatedAt)
+    VALUES(@InvoiceId, @OrderId, @InvoiceStatus, @PayMentMethod, @TotalAmount, getdate(), getdate())
+END
+GO
+
+-- THÊM ĐƠN XUẤT
+CREATE PROCEDURE sp_ExportOrder
+    @EmployeeId char(7),
+    @ExportDate datetime
+AS
+BEGIN 
+    SET NOCOUNT ON;
+
+    -- Kiểm tra employeeId
+    IF NOT EXISTS(SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        RAISERROR(N'Không tồn tại nhân viên', 16, 1);
+        RETURN;
+    END;
+
+    DECLARE @ExportOrderId char(7);
+
+    EXEC sp_GenerateId
+        @prefix = 'EX',
+        @tableName = 'ExportOrder',
+        @idColumn = 'exportOrderId',
+        @idLength = 7,
+        @newId = @ExportOrderId OUTPUT;
+
+    INSERT INTO ExportOrder(employeeId, exportOrderId, exportDate, createdAt, updatedAt)
+    VALUES (@EmployeeId, @ExportOrderId, @ExportDate, GETDATE(), GETDATE());
+
+    SELECT @ExportOrderId AS ExportOrderId;
+END;
+GO
+
+
+-- THÊM CHI TIẾT ĐƠN XUẤT
+CREATE PROCEDURE sp_ExportOrderDetail
+    @ExportOrderId char(7),
+    @Quantity int,
+    @Note nvarchar(50),
+    @IngredientId char(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        -- Kiểm tra ExportOrder
+        IF NOT EXISTS (SELECT 1 FROM ExportOrder WHERE exportOrderId = @ExportOrderId)
+        BEGIN
+            RAISERROR(N'Đơn xuất hàng không tồn tại', 16, 1);
+            RETURN;
+        END;
+
+        -- Kiểm tra Ingredient
+        IF NOT EXISTS (SELECT 1 FROM Ingredient WHERE ingredientId = @IngredientId)
+        BEGIN
+            RAISERROR(N'Nguyên liệu không tồn tại', 16, 1);
+            RETURN;
+        END;
+
+        -- Kiểm tra đủ hàng
+        IF (SELECT quantity FROM Ingredient WHERE ingredientId = @IngredientId) < @Quantity
+        BEGIN
+            RAISERROR(N'Số lượng trong kho không đủ để xuất', 16, 1);
+            RETURN;
+        END;
+
+        -- Insert chi tiết xuất hàng
+        INSERT INTO ExportOrderDetail(exportOrderId, quantity, note, createdAt, updatedAt, ingredientId)
+        VALUES (@ExportOrderId, @Quantity, @Note, GETDATE(), GETDATE(), @IngredientId);
+
+        -- Trừ kho
+        UPDATE Ingredient
+        SET quantity = quantity - @Quantity,
+            updatedAt = GETDATE()
+        WHERE ingredientId = @IngredientId;
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH;
 END;
 GO
