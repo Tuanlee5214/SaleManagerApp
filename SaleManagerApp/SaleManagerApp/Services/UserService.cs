@@ -44,7 +44,6 @@ namespace SaleManagerApp.Services
                             userName = reader["userName"].ToString(),
                             hashedPassword = reader["hashedPassword"].ToString(),
                             avatarUrl = reader["avatarUrl"].ToString(),
-                            avatarId = reader["avatarId"].ToString(),
                             phone = reader["phone"].ToString(),
                             email = reader["email"].ToString(),
                             groupId = reader["groupId"].ToString(),
