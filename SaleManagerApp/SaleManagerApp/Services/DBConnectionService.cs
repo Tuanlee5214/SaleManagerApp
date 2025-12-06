@@ -11,7 +11,7 @@ namespace SaleManagerApp.Services
     public class DBConnectionService
     {
         private readonly string _connectString =
-            "Server=TUANLEE\\SQLEXPRESS;Database=SaleManagement2025;Trusted_Connection=True;";
+            "Server=TUANLEE\\SQLEXPRESS;Database=SaleManagement2025_11;Trusted_Connection=True;";
 
         public SqlConnection GetConnection()
         {

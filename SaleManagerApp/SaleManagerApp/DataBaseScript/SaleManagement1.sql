@@ -1,23 +1,22 @@
-﻿CREATE DATABASE SaleManagement2025
+﻿CREATE DATABASE SaleManagement2025_11
 
-USE SaleManagement2025
+USE SaleManagement2025_11
 
 CREATE TABLE [User]
 (
 	userId char(7) primary key,
-	fullName nvarchar(30) not nu	ll,
+	fullName nvarchar(30) null,
 	userName varchar(20) not null unique,
 	hashedPassword varchar(100) not null,
 	avatarUrl varchar(100),
-	avatarId varchar(25),
 	phone char(25) not null,
 	email varchar(30) not null,
-	groupId char(7),
+	groupId char(7) not null,
+    employeeId char(7),
 	createdAt datetime default getdate(),
-	updateAt datetime
+	updatedAt datetime
 )
 
-EXEC sp_RENAME '[User].updateAt', 'updatedAt', 'COLUMN';
 
 
 CREATE TABLE [Group]
@@ -131,7 +130,7 @@ CREATE TABLE [Order]
 	serveStatus nvarchar(25) not null,
 	customerId char(7) not null,
 	employeeId char(7) not null,
-	tableId char(7) not null,
+	tableId char(7),
 	deliveryLocation nvarchar(40),
 	createdAt datetime default getdate(), 
 	updatedAt datetime
@@ -203,8 +202,8 @@ CREATE TABLE MenuItemDetail
 CREATE TABLE Employee
 (
 	employeeId char(7) primary key,
-	userId char(7) not null,
 	fullName nvarchar(30) not null,
+    dateOfBirth date not null,
 	position varchar(20) not null,
 	createdAt datetime default getdate(), 
 	updatedAt datetime
@@ -243,7 +242,7 @@ CREATE TABLE Customer
 	fullName nvarchar(30) not null,
 	phone varchar(25) not null unique,
 	email varchar(30) not null unique,
-	[location] nvarchar(100),
+	[address] nvarchar(100),
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
@@ -254,6 +253,7 @@ CREATE TABLE Invoice
 	orderId char(7) not null, 
 	paymentMethod nvarchar(20) not null,
 	totalAmount money not null,
+    invoiceStatus nvarchar(30) not null,
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
@@ -297,6 +297,7 @@ CREATE TABLE ImportOrder
   importDate datetime not null,
   employeeId char(7) not null,
   totalAmount money not null,
+  supplierId char(7) not null,
   createdAt datetime default getdate(),
   updatedAt datetime
 )
@@ -382,6 +383,7 @@ ALTER TABLE PayRoll ADD CHECK(totalSalary >= 0)
 ALTER TABLE PayRoll ADD CHECK([status] IN ('Đã trả lương', 'Chưa trả lương'))
 ALTER TABLE Invoice ADD CHECK(paymentMethod IN ('Chuyển khoản', 'Tiền mặt'))
 ALTER TABLE Invoice ADD CHECK(totalAmount >= 0)
+ALTER TABLE Invoice ADD CHECK(invoiceStatus IN('Đã thanh toán', 'Chưa thanh toán', 'Đã hủy'))
 ALTER TABLE Ingredient ADD CHECK(quantity >= 0)
 ALTER TABLE Ingredient ADD CHECK(minQuantity >= 0)
 ALTER TABLE IngredientSupplier ADD CHECK(unitPrice > 0)
@@ -395,6 +397,12 @@ ALTER TABLE Feedback ADD CHECK(rating between 1 and 5)
 ALTER TABLE [User]
 ADD CONSTRAINT FK_User_Group
 FOREIGN KEY (groupId) REFERENCES [Group](groupId);
+
+-- User -> Employee
+ALTER TABLE [User]
+ADD CONSTRAINT FK_Employee_User
+FOREIGN KEY (employeeId) REFERENCES Employee(employeeId)
+
 
 -- Permission → Method
 ALTER TABLE Permission
@@ -476,11 +484,6 @@ ALTER TABLE MenuItemDetail
 ADD CONSTRAINT FK_MenuItemDetail_Ingredient
 FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
 
--- Employee → User
-ALTER TABLE Employee
-ADD CONSTRAINT FK_Employee_User
-FOREIGN KEY (userId) REFERENCES [User](userId);
-
 -- Attendance → Employee
 ALTER TABLE Attendance
 ADD CONSTRAINT FK_Attendance_Employee
@@ -527,10 +530,6 @@ ALTER TABLE ImportOrderDetail
 ADD CONSTRAINT FK_ImportOrderDetail_Ingredient
 FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
 
-
-ALTER TABLE ImportOrderDetail
-DROP CONSTRAINT FK_ImportOrderDetail_Supplier
-
 -- ExportOrder → Employee
 ALTER TABLE ExportOrder
 ADD CONSTRAINT FK_ExportOrder_Employee
@@ -559,31 +558,40 @@ FOREIGN KEY (orderId) REFERENCES [Order](orderId);
 ALTER DATABASE SaleManagement2025 SET AUTO_CLOSE OFF;
 ALTER DATABASE SaleManagement2025 SET AUTO_SHRINK OFF;
 
+--Tiến hành chạy lại database và tạo mới tất cả nhé
+--Thêm thông tin admin
+INSERT INTO [Group]
+VALUES ('GR00001', 'Admin', getdate(), getdate())
 
-INSERT INTO [User]
+INSERT INTO [User] (userId, fullName, userName, hashedPassword, avatarUrl, phone, email, employeeId,
+groupId, createdAt, updatedAt)
 VALUES
 (
  'AD00001',
  N'Hoàng Tiến Đạt',
  'admin1',
- '240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9',
- null,
+ 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=',
  null,
  '0789221342',
  'TienDatFoundIn@gmail.com',
  null,
+ 'GR00001',
  getdate(),
  getdate()
 );
 
-UPDATE [User]
-SET hashedPassword = 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk='
-WHERE userId = 'AD00001'
+--UPDATE [User]
+--SET hashedPassword = 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk='
+--WHERE userId = 'AD00001'
 
-ALTER TABLE ImportOrder
-ADD supplierId char(7)
 
---Generate Id automatically
+
+--TẠM THỜI ĐỂ ĐÂY NHƯNG MÀ GROUPID TRONG ĐÂY KO NÊN NULL PHẢI LUÔN NOT NULL, VÌ CHƯA CÓ DỮ
+-- LIỆU NÊN ĐỂ TẠM, NHƯNG MÀ VẪN CẦN PHẢI KIỂM TRA TRONG PROCEDURE TRƯỚC KHI INSERT LÀ NÓ KO ĐƯỢC 
+--PHÉP NULL NHÉ.
+
+
+--GENERATE ID AUTOMATICALLY
 CREATE PROCEDURE sp_GenerateId
     @prefix     CHAR(2),        -- 2 ký tự đầu ID
     @tableName  SYSNAME,        -- tên bảng cần tạo ID
@@ -622,65 +630,7 @@ END;
 GO
 
 
-ALTER TABLE Employee 
-DROP CONSTRAINT FK_Employee_User
-
-
-ALTER TABLE Employee
-DROP COLUMN userId
-
-ALTER TABLE [User]
-ADD employeeId char(7)
-
-ALTER TABLE [User]
-ADD CONSTRAINT FK_Employee_User
-FOREIGN KEY (employeeId) REFERENCES Employee(employeeId)
-
-GO
-
---Thêm nhân viên vào db (chạy rồi)
-CREATE PROCEDURE sp_InsertEmployee
-    @FullName   NVARCHAR(30),
-    @Position   VARCHAR(20),
-	@DateOfBirth DATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    DECLARE @EmpId CHAR(7);
-
-    -- Tạo ID cho Employee
-    EXEC sp_GenerateId 
-        @prefix    = 'EM',        
-        @tableName = 'Employee', 
-        @idColumn  = 'employeeId',
-        @idLength  = 7,
-        @newId     = @EmpId OUTPUT;
-
-    INSERT INTO Employee(
-        employeeId, fullName,dateOfBirth, position, createdAt, updatedAt
-    )
-    VALUES(
-        @EmpId, @FullName, @DateOfBirth, @Position, GETDATE(), GETDATE()
-    );
-END;
-GO
-
-ALTER TABLE [User]
-ALTER COLUMN fullName nvarchar(30) null
-
-ALTER TABLE Employee
-ADD dateOfBirth date
-
-ALTER TABLE [User]
-DROP COLUMN avatarId
-
-ALTER TABLE [User]
-ALTER COLUMN groupId char(7) not null 
---TẠM THỜI ĐỂ ĐÂY NHƯNG MÀ GROUPID TRONG ĐÂY KO NÊN NULL PHẢI LUÔN NOT NULL, VÌ CHƯA CÓ DỮ
--- LIỆU NÊN ĐỂ TẠM, NHƯNG MÀ VẪN CẦN PHẢI KIỂM TRA TRONG PROCEDURE TRƯỚC KHI INSERT LÀ NÓ KO ĐƯỢC 
---PHÉP NULL NHÉ.
-
+--PROCEDURE INSERT DATA
 --Thêm user vào trong db(đã chạy)
 CREATE PROCEDURE sp_InsertUser
     @UserName       varchar(20),
@@ -738,6 +688,34 @@ BEGIN
         IF @@TRANCOUNT > 0 ROLLBACK TRAN;
         THROW;
     END CATCH
+END;
+GO
+
+--Thêm nhân viên vào db (chạy rồi)
+CREATE PROCEDURE sp_InsertEmployee
+    @FullName   NVARCHAR(30),
+    @Position   VARCHAR(20),
+	@DateOfBirth DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @EmpId CHAR(7);
+
+    -- Tạo ID cho Employee
+    EXEC sp_GenerateId 
+        @prefix    = 'EM',        
+        @tableName = 'Employee', 
+        @idColumn  = 'employeeId',
+        @idLength  = 7,
+        @newId     = @EmpId OUTPUT;
+
+    INSERT INTO Employee(
+        employeeId, fullName,dateOfBirth, position, createdAt, updatedAt
+    )
+    VALUES(
+        @EmpId, @FullName, @DateOfBirth, @Position, GETDATE(), GETDATE()
+    );
 END;
 GO
 
@@ -869,7 +847,7 @@ BEGIN
         @idLength  = 7,
         @newId     = @CustomerId OUTPUT;
 
-	INSERT INTO Customer(customerId, fullName, phone, email, [location], createdAt, updatedAt)
+	INSERT INTO Customer(customerId, fullName, phone, email, [address], createdAt, updatedAt)
 	VALUES (@CustomerId, @FullName, @Phone, @Email, @Location, getdate(), getdate());
 END;
 GO
@@ -940,9 +918,6 @@ BEGIN
 END;    
 GO
 
-
-ALTER TABLE [Order]
-ALTER COLUMN tableId char(7) null
 
 --Thêm nhà cung cấp vào hệ thống(đã thêm)
 CREATE PROCEDURE sp_InsertSupplier
@@ -1144,8 +1119,7 @@ BEGIN
 END;
 GO
 
-ALTER TABLE Invoice
-ADD invoiceStatus nvarchar(30) not null
+
 
 --TẠO ĐƠN HÀNG TRƯỚC TIÊN (đã thêm)
 CREATE PROCEDURE sp_InsertOrder
