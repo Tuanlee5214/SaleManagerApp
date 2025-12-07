@@ -1,6 +1,6 @@
-﻿CREATE DATABASE SaleManagement2025_11
+﻿CREATE DATABASE SaleManagement2025_12
 
-USE SaleManagement2025_11
+USE SaleManagement2025_12
 
 CREATE TABLE [User]
 (
@@ -16,7 +16,6 @@ CREATE TABLE [User]
 	createdAt datetime default getdate(),
 	updatedAt datetime
 )
-
 
 
 CREATE TABLE [Group]
@@ -183,6 +182,7 @@ CREATE TABLE MenuItem
 	size varchar(7),
 	specialInfo nvarchar(75),
 	[description] nvarchar(15) not null,
+    [type] nvarchar(30) not null,
 	ttDrinkDetailId char(7),
 	ttFoodDetailId char(7),
 	createdAt datetime default getdate(), 
@@ -580,6 +580,7 @@ VALUES
  getdate()
 );
 
+
 --UPDATE [User]
 --SET hashedPassword = 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk='
 --WHERE userId = 'AD00001'
@@ -726,7 +727,7 @@ CREATE PROCEDURE sp_InsertMenuItem
     @ImageUrl          VARCHAR(100),
     @Size              VARCHAR(7),
     @SpecialInfo       NVARCHAR(75),
-    @Description       NVARCHAR(15),
+    @Type              NVARCHAR(30),
     @TtDrinkDetailId   CHAR(7),
     @TtFoodDetailId    CHAR(7)
 AS
@@ -755,12 +756,22 @@ BEGIN
         @idLength  = 7,
         @newId     = @MenuItemId OUTPUT;
 
+    DECLARE @Description NVARCHAR(15)
+    IF(@Type <> 'Nước uống')
+        BEGIN
+           SET @Description = 'Đồ ăn'
+        END
+    ELSE 
+        BEGIN
+           SET @Description = 'Nước uống'
+        END
+
     INSERT INTO MenuItem(
-        menuItemId, menuItemName, unitPrice, imageUrl, size, specialInfo, [description],
+        menuItemId, menuItemName, unitPrice, imageUrl, size, specialInfo, [description], [type],
         ttDrinkDetailId, ttFoodDetailId, createdAt, updatedAt
     )
     VALUES (
-        @MenuItemId, @MenuItemName, @UnitPrice, @ImageUrl, @Size, @SpecialInfo, @Description,
+        @MenuItemId, @MenuItemName, @UnitPrice, @ImageUrl, @Size, @SpecialInfo, @Description, @Type,
         @TtDrinkDetailId, @TtFoodDetailId,
         GETDATE(), GETDATE()
     );
