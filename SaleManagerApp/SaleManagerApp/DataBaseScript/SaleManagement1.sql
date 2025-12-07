@@ -1,6 +1,6 @@
-﻿CREATE DATABASE SaleManagement2025_12
+﻿CREATE DATABASE SaleManagement20251_12
 
-USE SaleManagement2025_12
+USE SaleManagement20251_12
 
 CREATE TABLE [User]
 (
@@ -72,6 +72,7 @@ CREATE TABLE TotalDrinkDetail
 	quantity int, 
 	[month] int not null,
 	[year] int not null, 
+    menuItemId char(7) not null,
 	[percentage] float,
 	createdAt datetime default getdate(),
 	updatedAt datetime
@@ -83,6 +84,7 @@ CREATE TABLE TotalFoodDetail
 	quantity int, 
 	[month] int not null, 
 	[year] int not null,
+    menuItemId char(7) not null,
 	[percentage] float,
 	createdAt datetime default getdate(),
 	updatedAt datetime
@@ -183,8 +185,6 @@ CREATE TABLE MenuItem
 	specialInfo nvarchar(75),
 	[description] nvarchar(15) not null,
     [type] nvarchar(30) not null,
-	ttDrinkDetailId char(7),
-	ttFoodDetailId char(7),
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
@@ -464,15 +464,15 @@ ALTER TABLE MenuDetail
 ADD CONSTRAINT FK_MenuDetail_MenuItem
 FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 
--- MenuItem → TotalDrinkDetail
-ALTER TABLE MenuItem
-ADD CONSTRAINT FK_MenuItem_TotalDrinkDetail
-FOREIGN KEY (ttDrinkDetailId) REFERENCES TotalDrinkDetail(ttDrinkDetailId);
+-- TotalDrinkDetail → MenuItem
+ALTER TABLE TotalDrinkDetail
+ADD CONSTRAINT FK_TotalDrinkDetail_MenuItem
+FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 
--- MenuItem → TotalFoodDetail
-ALTER TABLE MenuItem
-ADD CONSTRAINT FK_MenuItem_TotalFoodDetail
-FOREIGN KEY (ttFoodDetailId) REFERENCES TotalFoodDetail(ttFoodDetailId);
+-- TotalFoodDetail → MenuItem
+ALTER TABLE TotalFoodDetail
+ADD CONSTRAINT FK_TotalFoodDetail_MenuItem
+FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 
 -- MenuItemDetail → MenuItem
 ALTER TABLE MenuItemDetail
@@ -727,26 +727,10 @@ CREATE PROCEDURE sp_InsertMenuItem
     @ImageUrl          VARCHAR(100),
     @Size              VARCHAR(7),
     @SpecialInfo       NVARCHAR(75),
-    @Type              NVARCHAR(30),
-    @TtDrinkDetailId   CHAR(7),
-    @TtFoodDetailId    CHAR(7)
+    @Type              NVARCHAR(30)
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    -- Kiểm tra khóa ngoại TotalDrinkDetail
-    IF NOT EXISTS (SELECT 1 FROM TotalDrinkDetail WHERE ttDrinkDetailId = @TtDrinkDetailId)
-    BEGIN
-        RAISERROR('ttDrinkDetailId không tồn tại.', 16, 1);
-        RETURN;
-    END
-
-    -- Kiểm tra khóa ngoại TotalFoodDetail
-    IF NOT EXISTS (SELECT 1 FROM TotalFoodDetail WHERE ttFoodDetailId = @TtFoodDetailId)
-    BEGIN
-        RAISERROR('ttFoodDetailId không tồn tại.', 16, 1);
-        RETURN;
-    END
 
     DECLARE @MenuItemId CHAR(7);
     EXEC sp_GenerateId
@@ -768,11 +752,10 @@ BEGIN
 
     INSERT INTO MenuItem(
         menuItemId, menuItemName, unitPrice, imageUrl, size, specialInfo, [description], [type],
-        ttDrinkDetailId, ttFoodDetailId, createdAt, updatedAt
+        createdAt, updatedAt
     )
     VALUES (
         @MenuItemId, @MenuItemName, @UnitPrice, @ImageUrl, @Size, @SpecialInfo, @Description, @Type,
-        @TtDrinkDetailId, @TtFoodDetailId,
         GETDATE(), GETDATE()
     );
 END;

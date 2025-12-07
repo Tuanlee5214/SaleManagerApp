@@ -75,6 +75,7 @@
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Helpers\ToastService.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Services\MenuPageService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\DBConnectionService.cs" />
     <Compile Include="Services\UserService.cs" />
