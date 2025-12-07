@@ -12,7 +12,7 @@ CREATE TABLE [User]
 	phone char(25) not null,
 	email varchar(30) not null,
 	groupId char(7) not null,
-    employeeId char(7),
+  employeeId char(7),
 	createdAt datetime default getdate(),
 	updatedAt datetime
 )
@@ -72,7 +72,7 @@ CREATE TABLE TotalDrinkDetail
 	quantity int, 
 	[month] int not null,
 	[year] int not null, 
-    menuItemId char(7) not null,
+  menuItemId char(7) not null,
 	[percentage] float,
 	createdAt datetime default getdate(),
 	updatedAt datetime
@@ -84,7 +84,7 @@ CREATE TABLE TotalFoodDetail
 	quantity int, 
 	[month] int not null, 
 	[year] int not null,
-    menuItemId char(7) not null,
+  menuItemId char(7) not null,
 	[percentage] float,
 	createdAt datetime default getdate(),
 	updatedAt datetime
@@ -184,7 +184,7 @@ CREATE TABLE MenuItem
 	size varchar(7),
 	specialInfo nvarchar(75),
 	[description] nvarchar(15) not null,
-    [type] nvarchar(30) not null,
+  [type] nvarchar(30) not null,
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
@@ -731,7 +731,6 @@ CREATE PROCEDURE sp_InsertMenuItem
 AS
 BEGIN
     SET NOCOUNT ON;
-
     DECLARE @MenuItemId CHAR(7);
     EXEC sp_GenerateId
         @prefix    = 'MI',
@@ -912,7 +911,6 @@ BEGIN
 END;    
 GO
 
-
 --Thêm nhà cung cấp vào hệ thống(đã thêm)
 CREATE PROCEDURE sp_InsertSupplier
     @SupplierName NVARCHAR(30),
@@ -1064,7 +1062,6 @@ CREATE PROCEDURE sp_InsertImportOrderDetail
 AS
 BEGIN
     SET NOCOUNT ON; 
-
     BEGIN TRY
         BEGIN TRAN;
 
@@ -1112,8 +1109,6 @@ BEGIN
     END CATCH
 END;
 GO
-
-
 
 --TẠO ĐƠN HÀNG TRƯỚC TIÊN (đã thêm)
 CREATE PROCEDURE sp_InsertOrder
@@ -1302,3 +1297,4 @@ BEGIN
     END CATCH;
 END;
 GO
+
