@@ -1,23 +1,21 @@
-﻿CREATE DATABASE SaleManagement2025
+﻿CREATE DATABASE SaleManagement20251_12
 
-USE SaleManagement2025
+USE SaleManagement20251_12
 
 CREATE TABLE [User]
 (
 	userId char(7) primary key,
-	fullName nvarchar(30) not nu	ll,
+	fullName nvarchar(30) null,
 	userName varchar(20) not null unique,
 	hashedPassword varchar(100) not null,
 	avatarUrl varchar(100),
-	avatarId varchar(25),
 	phone char(25) not null,
 	email varchar(30) not null,
-	groupId char(7),
+	groupId char(7) not null,
+  employeeId char(7),
 	createdAt datetime default getdate(),
-	updateAt datetime
+	updatedAt datetime
 )
-
-EXEC sp_RENAME '[User].updateAt', 'updatedAt', 'COLUMN';
 
 
 CREATE TABLE [Group]
@@ -74,6 +72,7 @@ CREATE TABLE TotalDrinkDetail
 	quantity int, 
 	[month] int not null,
 	[year] int not null, 
+  menuItemId char(7) not null,
 	[percentage] float,
 	createdAt datetime default getdate(),
 	updatedAt datetime
@@ -85,6 +84,7 @@ CREATE TABLE TotalFoodDetail
 	quantity int, 
 	[month] int not null, 
 	[year] int not null,
+  menuItemId char(7) not null,
 	[percentage] float,
 	createdAt datetime default getdate(),
 	updatedAt datetime
@@ -131,7 +131,7 @@ CREATE TABLE [Order]
 	serveStatus nvarchar(25) not null,
 	customerId char(7) not null,
 	employeeId char(7) not null,
-	tableId char(7) not null,
+	tableId char(7),
 	deliveryLocation nvarchar(40),
 	createdAt datetime default getdate(), 
 	updatedAt datetime
@@ -184,8 +184,7 @@ CREATE TABLE MenuItem
 	size varchar(7),
 	specialInfo nvarchar(75),
 	[description] nvarchar(15) not null,
-	ttDrinkDetailId char(7),
-	ttFoodDetailId char(7),
+  [type] nvarchar(30) not null,
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
@@ -203,8 +202,8 @@ CREATE TABLE MenuItemDetail
 CREATE TABLE Employee
 (
 	employeeId char(7) primary key,
-	userId char(7) not null,
 	fullName nvarchar(30) not null,
+    dateOfBirth date not null,
 	position varchar(20) not null,
 	createdAt datetime default getdate(), 
 	updatedAt datetime
@@ -243,7 +242,7 @@ CREATE TABLE Customer
 	fullName nvarchar(30) not null,
 	phone varchar(25) not null unique,
 	email varchar(30) not null unique,
-	[location] nvarchar(100),
+	[address] nvarchar(100),
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
@@ -254,6 +253,7 @@ CREATE TABLE Invoice
 	orderId char(7) not null, 
 	paymentMethod nvarchar(20) not null,
 	totalAmount money not null,
+    invoiceStatus nvarchar(30) not null,
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
@@ -297,6 +297,7 @@ CREATE TABLE ImportOrder
   importDate datetime not null,
   employeeId char(7) not null,
   totalAmount money not null,
+  supplierId char(7) not null,
   createdAt datetime default getdate(),
   updatedAt datetime
 )
@@ -382,6 +383,7 @@ ALTER TABLE PayRoll ADD CHECK(totalSalary >= 0)
 ALTER TABLE PayRoll ADD CHECK([status] IN ('Đã trả lương', 'Chưa trả lương'))
 ALTER TABLE Invoice ADD CHECK(paymentMethod IN ('Chuyển khoản', 'Tiền mặt'))
 ALTER TABLE Invoice ADD CHECK(totalAmount >= 0)
+ALTER TABLE Invoice ADD CHECK(invoiceStatus IN('Đã thanh toán', 'Chưa thanh toán', 'Đã hủy'))
 ALTER TABLE Ingredient ADD CHECK(quantity >= 0)
 ALTER TABLE Ingredient ADD CHECK(minQuantity >= 0)
 ALTER TABLE IngredientSupplier ADD CHECK(unitPrice > 0)
@@ -395,6 +397,12 @@ ALTER TABLE Feedback ADD CHECK(rating between 1 and 5)
 ALTER TABLE [User]
 ADD CONSTRAINT FK_User_Group
 FOREIGN KEY (groupId) REFERENCES [Group](groupId);
+
+-- User -> Employee
+ALTER TABLE [User]
+ADD CONSTRAINT FK_Employee_User
+FOREIGN KEY (employeeId) REFERENCES Employee(employeeId)
+
 
 -- Permission → Method
 ALTER TABLE Permission
@@ -456,15 +464,15 @@ ALTER TABLE MenuDetail
 ADD CONSTRAINT FK_MenuDetail_MenuItem
 FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 
--- MenuItem → TotalDrinkDetail
-ALTER TABLE MenuItem
-ADD CONSTRAINT FK_MenuItem_TotalDrinkDetail
-FOREIGN KEY (ttDrinkDetailId) REFERENCES TotalDrinkDetail(ttDrinkDetailId);
+-- TotalDrinkDetail → MenuItem
+ALTER TABLE TotalDrinkDetail
+ADD CONSTRAINT FK_TotalDrinkDetail_MenuItem
+FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 
--- MenuItem → TotalFoodDetail
-ALTER TABLE MenuItem
-ADD CONSTRAINT FK_MenuItem_TotalFoodDetail
-FOREIGN KEY (ttFoodDetailId) REFERENCES TotalFoodDetail(ttFoodDetailId);
+-- TotalFoodDetail → MenuItem
+ALTER TABLE TotalFoodDetail
+ADD CONSTRAINT FK_TotalFoodDetail_MenuItem
+FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 
 -- MenuItemDetail → MenuItem
 ALTER TABLE MenuItemDetail
@@ -475,11 +483,6 @@ FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 ALTER TABLE MenuItemDetail
 ADD CONSTRAINT FK_MenuItemDetail_Ingredient
 FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
-
--- Employee → User
-ALTER TABLE Employee
-ADD CONSTRAINT FK_Employee_User
-FOREIGN KEY (userId) REFERENCES [User](userId);
 
 -- Attendance → Employee
 ALTER TABLE Attendance
@@ -527,10 +530,6 @@ ALTER TABLE ImportOrderDetail
 ADD CONSTRAINT FK_ImportOrderDetail_Ingredient
 FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
 
-
-ALTER TABLE ImportOrderDetail
-DROP CONSTRAINT FK_ImportOrderDetail_Supplier
-
 -- ExportOrder → Employee
 ALTER TABLE ExportOrder
 ADD CONSTRAINT FK_ExportOrder_Employee
@@ -559,37 +558,47 @@ FOREIGN KEY (orderId) REFERENCES [Order](orderId);
 ALTER DATABASE SaleManagement2025 SET AUTO_CLOSE OFF;
 ALTER DATABASE SaleManagement2025 SET AUTO_SHRINK OFF;
 
+--Tiến hành chạy lại database và tạo mới tất cả nhé
+--Thêm thông tin admin
+INSERT INTO [Group]
+VALUES ('GR00001', 'Admin', getdate(), getdate())
 
-INSERT INTO [User]
+INSERT INTO [User] (userId, fullName, userName, hashedPassword, avatarUrl, phone, email, employeeId,
+groupId, createdAt, updatedAt)
 VALUES
 (
  'AD00001',
  N'Hoàng Tiến Đạt',
  'admin1',
- '240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9',
- null,
+ 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=',
  null,
  '0789221342',
  'TienDatFoundIn@gmail.com',
  null,
+ 'GR00001',
  getdate(),
  getdate()
 );
 
-UPDATE [User]
-SET hashedPassword = 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk='
-WHERE userId = 'AD00001'
 
-ALTER TABLE ImportOrder
-ADD supplierId char(7)
+--UPDATE [User]
+--SET hashedPassword = 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk='
+--WHERE userId = 'AD00001'
 
---Generate Id automatically
+
+
+--TẠM THỜI ĐỂ ĐÂY NHƯNG MÀ GROUPID TRONG ĐÂY KO NÊN NULL PHẢI LUÔN NOT NULL, VÌ CHƯA CÓ DỮ
+-- LIỆU NÊN ĐỂ TẠM, NHƯNG MÀ VẪN CẦN PHẢI KIỂM TRA TRONG PROCEDURE TRƯỚC KHI INSERT LÀ NÓ KO ĐƯỢC 
+--PHÉP NULL NHÉ.
+
+
+--GENERATE ID AUTOMATICALLY
 CREATE PROCEDURE sp_GenerateId
     @prefix     CHAR(2),        -- 2 ký tự đầu ID
     @tableName  SYSNAME,        -- tên bảng cần tạo ID
     @idColumn   SYSNAME,        -- tên cột ID trong bảng
     @idLength   INT,            -- tổng chiều dài ID (7)
-    @newId      VARCHAR(20) OUTPUT
+    @newId      CHAR(7) OUTPUT
 AS
 BEGIN
     DECLARE @sql NVARCHAR(MAX);
@@ -622,65 +631,7 @@ END;
 GO
 
 
-ALTER TABLE Employee 
-DROP CONSTRAINT FK_Employee_User
-
-
-ALTER TABLE Employee
-DROP COLUMN userId
-
-ALTER TABLE [User]
-ADD employeeId char(7)
-
-ALTER TABLE [User]
-ADD CONSTRAINT FK_Employee_User
-FOREIGN KEY (employeeId) REFERENCES Employee(employeeId)
-
-GO
-
---Thêm nhân viên vào db (chạy rồi)
-CREATE PROCEDURE sp_InsertEmployee
-    @FullName   NVARCHAR(30),
-    @Position   VARCHAR(20),
-	@DateOfBirth DATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    DECLARE @EmpId CHAR(7);
-
-    -- Tạo ID cho Employee
-    EXEC sp_GenerateId 
-        @prefix    = 'EM',        
-        @tableName = 'Employee', 
-        @idColumn  = 'employeeId',
-        @idLength  = 7,
-        @newId     = @EmpId OUTPUT;
-
-    INSERT INTO Employee(
-        employeeId, fullName,dateOfBirth, position, createdAt, updatedAt
-    )
-    VALUES(
-        @EmpId, @FullName, @DateOfBirth, @Position, GETDATE(), GETDATE()
-    );
-END;
-GO
-
-ALTER TABLE [User]
-ALTER COLUMN fullName nvarchar(30) null
-
-ALTER TABLE Employee
-ADD dateOfBirth date
-
-ALTER TABLE [User]
-DROP COLUMN avatarId
-
-ALTER TABLE [User]
-ALTER COLUMN groupId char(7) not null 
---TẠM THỜI ĐỂ ĐÂY NHƯNG MÀ GROUPID TRONG ĐÂY KO NÊN NULL PHẢI LUÔN NOT NULL, VÌ CHƯA CÓ DỮ
--- LIỆU NÊN ĐỂ TẠM, NHƯNG MÀ VẪN CẦN PHẢI KIỂM TRA TRONG PROCEDURE TRƯỚC KHI INSERT LÀ NÓ KO ĐƯỢC 
---PHÉP NULL NHÉ.
-
+--PROCEDURE INSERT DATA
 --Thêm user vào trong db(đã chạy)
 CREATE PROCEDURE sp_InsertUser
     @UserName       varchar(20),
@@ -717,7 +668,7 @@ BEGIN
         -- Generate ID
         EXEC sp_GenerateId 
             @prefix    = 'US',
-            @tableName = '[User]',
+            @tableName = 'User',
             @idColumn  = 'userId',
             @idLength  = 7,
             @newId     = @UserID OUTPUT;
@@ -741,6 +692,34 @@ BEGIN
 END;
 GO
 
+--Thêm nhân viên vào db (chạy rồi)
+CREATE PROCEDURE sp_InsertEmployee
+    @FullName   NVARCHAR(30),
+    @Position   VARCHAR(20),
+	@DateOfBirth DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @EmpId CHAR(7);
+
+    -- Tạo ID cho Employee
+    EXEC sp_GenerateId 
+        @prefix    = 'EM',        
+        @tableName = 'Employee', 
+        @idColumn  = 'employeeId',
+        @idLength  = 7,
+        @newId     = @EmpId OUTPUT;
+
+    INSERT INTO Employee(
+        employeeId, fullName,dateOfBirth, position, createdAt, updatedAt
+    )
+    VALUES(
+        @EmpId, @FullName, @DateOfBirth, @Position, GETDATE(), GETDATE()
+    );
+END;
+GO
+
 --Thêm MenuItem vào hệ thống (đã chạy)
 CREATE PROCEDURE sp_InsertMenuItem
     @MenuItemName      NVARCHAR(30),
@@ -748,27 +727,10 @@ CREATE PROCEDURE sp_InsertMenuItem
     @ImageUrl          VARCHAR(100),
     @Size              VARCHAR(7),
     @SpecialInfo       NVARCHAR(75),
-    @Description       NVARCHAR(15),
-    @TtDrinkDetailId   CHAR(7),
-    @TtFoodDetailId    CHAR(7)
+    @Type              NVARCHAR(30)
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    -- Kiểm tra khóa ngoại TotalDrinkDetail
-    IF NOT EXISTS (SELECT 1 FROM TotalDrinkDetail WHERE ttDrinkDetailId = @TtDrinkDetailId)
-    BEGIN
-        RAISERROR('ttDrinkDetailId không tồn tại.', 16, 1);
-        RETURN;
-    END
-
-    -- Kiểm tra khóa ngoại TotalFoodDetail
-    IF NOT EXISTS (SELECT 1 FROM TotalFoodDetail WHERE ttFoodDetailId = @TtFoodDetailId)
-    BEGIN
-        RAISERROR('ttFoodDetailId không tồn tại.', 16, 1);
-        RETURN;
-    END
-
     DECLARE @MenuItemId CHAR(7);
     EXEC sp_GenerateId
         @prefix    = 'MI',
@@ -777,13 +739,22 @@ BEGIN
         @idLength  = 7,
         @newId     = @MenuItemId OUTPUT;
 
+    DECLARE @Description NVARCHAR(15)
+    IF(@Type <> 'Nước uống')
+        BEGIN
+           SET @Description = 'Đồ ăn'
+        END
+    ELSE 
+        BEGIN
+           SET @Description = 'Nước uống'
+        END
+
     INSERT INTO MenuItem(
-        menuItemId, menuItemName, unitPrice, imageUrl, size, specialInfo, [description],
-        ttDrinkDetailId, ttFoodDetailId, createdAt, updatedAt
+        menuItemId, menuItemName, unitPrice, imageUrl, size, specialInfo, [description], [type],
+        createdAt, updatedAt
     )
     VALUES (
-        @MenuItemId, @MenuItemName, @UnitPrice, @ImageUrl, @Size, @SpecialInfo, @Description,
-        @TtDrinkDetailId, @TtFoodDetailId,
+        @MenuItemId, @MenuItemName, @UnitPrice, @ImageUrl, @Size, @SpecialInfo, @Description, @Type,
         GETDATE(), GETDATE()
     );
 END;
@@ -869,7 +840,7 @@ BEGIN
         @idLength  = 7,
         @newId     = @CustomerId OUTPUT;
 
-	INSERT INTO Customer(customerId, fullName, phone, email, [location], createdAt, updatedAt)
+	INSERT INTO Customer(customerId, fullName, phone, email, [address], createdAt, updatedAt)
 	VALUES (@CustomerId, @FullName, @Phone, @Email, @Location, getdate(), getdate());
 END;
 GO
@@ -939,10 +910,6 @@ BEGIN
     END CATCH
 END;    
 GO
-
-
-ALTER TABLE [Order]
-ALTER COLUMN tableId char(7) null
 
 --Thêm nhà cung cấp vào hệ thống(đã thêm)
 CREATE PROCEDURE sp_InsertSupplier
@@ -1094,8 +1061,7 @@ CREATE PROCEDURE sp_InsertImportOrderDetail
     @UnitPrice     MONEY
 AS
 BEGIN
-    SET NOCOUNT ON;
-
+    SET NOCOUNT ON; 
     BEGIN TRY
         BEGIN TRAN;
 
@@ -1143,3 +1109,192 @@ BEGIN
     END CATCH
 END;
 GO
+
+--TẠO ĐƠN HÀNG TRƯỚC TIÊN (đã thêm)
+CREATE PROCEDURE sp_InsertOrder
+    @OrderStatus NVARCHAR(25),
+    @ServeStatus nvarchar(25),
+    @CustomerId char(7),
+    @TableId char(7),
+    @DeliveryLocation nvarchar(40),
+    @EmployeeId char(7)
+AS
+BEGIN
+    SET NOCOUNT ON
+    --Ktra khách hàng
+    IF NOT EXISTS(SELECT 1 FROM Customer WHERE customerId = @CustomerId)
+    BEGIN
+        RAISERROR('Khách hàng không tồn tại', 16, 1)
+        RETURN
+    END
+    
+    --Ktra nhân viên
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN 
+        RAISERROR('Nhân viên không tồn tại',16, 1)
+        RETURN
+    END
+
+    DECLARE @OrderId char(7)
+    EXEC sp_GenerateId
+        @prefix = 'OR',
+        @tableName = 'Order',
+        @idColumn = 'orderId',
+        @idLength = 7,
+        @newId = @OrderId OUTPUT
+
+    INSERT INTO [Order](orderId, orderStatus, serveStatus, customerId, tableId, deliveryLocation, 
+        employeeId, createdAt, updatedAt)
+    VALUES (@OrderId, @OrderStatus, @ServeStatus, @CustomerId, @TableId, @DeliveryLocation,
+        @EmployeeId, getdate(), getdate())
+END
+GO
+
+--THÊM MÓN VÀO HÓA ĐƠN (đã thêm)
+CREATE PROCEDURE sp_InsertMenuItemIntoOrderDetail
+    @OrderId char(7),
+    @MenuItemId char(7),
+    @Quantity int,
+    @CurrentPrice money
+AS 
+BEGIN
+    SET NOCOUNT ON
+    --Ktra orderId
+    IF NOT EXISTS(SELECT 1 FROM [Order] WHERE orderId = @OrderId)
+    BEGIN
+     RAISERROR ('Đơn hàng không tồn tại', 16, 1)
+     RETURN
+    END
+
+    --Ktra menuItemId
+    IF NOT EXISTS(SELECT 1 FROM MenuItem WHERE menuItemId = @MenuItemId)
+    BEGIN 
+        RAISERROR ('Món ăn không tồn tại', 16, 1)
+        RETURN
+    END
+
+    INSERT INTO OrderDetail(orderId, menuItemId, quantity, currentPrice, createdAt, updatedAt)
+    VALUES (@OrderId, @MenuItemId, @Quantity, @CurrentPrice, getdate(), getdate())
+END
+GO
+
+--THÊM HÓA ĐƠN VÀO HỆ THỐNG (đã thêm)
+CREATE PROCEDURE sp_InsertInvoice
+    @OrderId char(7),
+    @InvoiceStatus nvarchar(30),
+    @PayMentMethod nvarchar(20)
+AS
+BEGIN
+    SET NOCOUNT ON
+    --Ktra orderId
+    IF NOT EXISTS (SELECT 1 FROM [Order] WHERE orderId = @OrderId)
+    BEGIN 
+        RAISERROR('Đơn hàng không tồn tại', 16, 1)
+        RETURN
+    END
+    
+    --Set invoiceId
+    DECLARE @InvoiceId char(7)
+    EXEC sp_GenerateId
+        @prefix = 'IV',
+        @tableName = 'Invoice',
+        @idColumn = 'invoiceId',
+        @idLength = 7,
+        @newId = @InvoiceId OUTPUT
+    
+    --set totalAmount
+    DECLARE @TotalAmount money
+    SELECT @TotalAmount = ISNULL(SUM(quantity * currentPrice), 0)
+    FROM OrderDetail
+    WHERE orderId = @OrderId
+
+    INSERT INTO Invoice(invoiceId, orderId, invoiceStatus, paymentMethod, totalAmount, createdAt, updatedAt)
+    VALUES(@InvoiceId, @OrderId, @InvoiceStatus, @PayMentMethod, @TotalAmount, getdate(), getdate())
+END
+GO
+
+-- THÊM ĐƠN XUẤT
+CREATE PROCEDURE sp_ExportOrder
+    @EmployeeId char(7),
+    @ExportDate datetime
+AS
+BEGIN 
+    SET NOCOUNT ON;
+
+    -- Kiểm tra employeeId
+    IF NOT EXISTS(SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        RAISERROR(N'Không tồn tại nhân viên', 16, 1);
+        RETURN;
+    END;
+
+    DECLARE @ExportOrderId char(7);
+
+    EXEC sp_GenerateId
+        @prefix = 'EX',
+        @tableName = 'ExportOrder',
+        @idColumn = 'exportOrderId',
+        @idLength = 7,
+        @newId = @ExportOrderId OUTPUT;
+
+    INSERT INTO ExportOrder(employeeId, exportOrderId, exportDate, createdAt, updatedAt)
+    VALUES (@EmployeeId, @ExportOrderId, @ExportDate, GETDATE(), GETDATE());
+
+    SELECT @ExportOrderId AS ExportOrderId;
+END;
+GO
+
+
+-- THÊM CHI TIẾT ĐƠN XUẤT
+CREATE PROCEDURE sp_ExportOrderDetail
+    @ExportOrderId char(7),
+    @Quantity int,
+    @Note nvarchar(50),
+    @IngredientId char(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        -- Kiểm tra ExportOrder
+        IF NOT EXISTS (SELECT 1 FROM ExportOrder WHERE exportOrderId = @ExportOrderId)
+        BEGIN
+            RAISERROR(N'Đơn xuất hàng không tồn tại', 16, 1);
+            RETURN;
+        END;
+
+        -- Kiểm tra Ingredient
+        IF NOT EXISTS (SELECT 1 FROM Ingredient WHERE ingredientId = @IngredientId)
+        BEGIN
+            RAISERROR(N'Nguyên liệu không tồn tại', 16, 1);
+            RETURN;
+        END;
+
+        -- Kiểm tra đủ hàng
+        IF (SELECT quantity FROM Ingredient WHERE ingredientId = @IngredientId) < @Quantity
+        BEGIN
+            RAISERROR(N'Số lượng trong kho không đủ để xuất', 16, 1);
+            RETURN;
+        END;
+
+        -- Insert chi tiết xuất hàng
+        INSERT INTO ExportOrderDetail(exportOrderId, quantity, note, createdAt, updatedAt, ingredientId)
+        VALUES (@ExportOrderId, @Quantity, @Note, GETDATE(), GETDATE(), @IngredientId);
+
+        -- Trừ kho
+        UPDATE Ingredient
+        SET quantity = quantity - @Quantity,
+            updatedAt = GETDATE()
+        WHERE ingredientId = @IngredientId;
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH;
+END;
+GO
+

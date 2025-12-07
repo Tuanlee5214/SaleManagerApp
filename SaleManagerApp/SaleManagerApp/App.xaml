@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:SaleManagerApp"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        
         <DataTemplate DataType="{x:Type vm:LoginViewModel}">
             <v:LoginScreen />
         </DataTemplate>
@@ -33,6 +34,5 @@
         <DataTemplate DataType="{x:Type vm:SideBarViewModel}">
             <v:SideBar />
         </DataTemplate>
-
     </Application.Resources>
 </Application>
