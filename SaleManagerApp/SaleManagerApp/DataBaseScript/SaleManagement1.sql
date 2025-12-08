@@ -184,7 +184,7 @@ CREATE TABLE MenuItem
 	size varchar(7),
 	specialInfo nvarchar(75),
 	[description] nvarchar(15) not null,
-  [type] nvarchar(30) not null,
+    [type] nvarchar(30) not null,
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
@@ -359,17 +359,17 @@ ALTER TABLE TotalFoodDetail ADD CHECK([year] > 0)
 ALTER TABLE TotalFoodDetail ADD CHECK(quantity >= 0)
 ALTER TABLE TotalFoodDetail ADD CHECK([percentage] between 0 and 100)
 ALTER TABLE [Table] ADD CHECK(seatCount > 0)
-ALTER TABLE [Table] ADD CHECK(tableStatus IN ('Đã có khách', 'Còn trống', 'Đang chọn'))
+ALTER TABLE [Table] ADD CHECK(tableStatus IN (N'Đã có khách', N'Còn trống', N'Đang chọn'))
 ALTER TABLE TableReservation ADD CHECK(guestCount >= 0)
-ALTER TABLE [Order] ADD CHECK(serveStatus IN ('Chờ đặt bàn', 'Đang chế biến', 'Sẵn sàng', 'Đã phục vụ'))
-ALTER TABLE [Order] ADD CHECK(orderStatus IN ('Ăn tại bàn', 'Mang đi', 'Đã hủy'))
+ALTER TABLE [Order] ADD CHECK(serveStatus IN (N'Chờ đặt bàn', N'Đang chế biến', N'Sẵn sàng', N'Đã phục vụ'))
+ALTER TABLE [Order] ADD CHECK(orderStatus IN (N'Ăn tại bàn', N'Mang đi', N'Đã hủy'))
 ALTER TABLE OrderDetail ADD CHECK(quantity >= 0)
 ALTER TABLE OrderDetail ADD CHECK(currentPrice > 0)
 ALTER TABLE Revenue ADD CHECK([month] between 1 and 12)
 ALTER TABLE Revenue ADD CHECK([year] > 0)
 ALTER TABLE Revenue ADD CHECK(totalAmount >= 0)
 ALTER TABLE MenuItem ADD CHECK(unitPrice >= 0)
-ALTER TABLE MenuItem ADD CHECK([description] IN ('Đồ ăn', 'Nước uống'))
+ALTER TABLE MenuItem ADD CHECK([description] IN (N'Đồ ăn', N'Nước uống'))
 ALTER TABLE ImportMoneyPerMonth ADD CHECK(totalAmount >= 0)
 ALTER TABLE ImportMoneyPerMonth ADD CHECK([month] between 1 and 12)
 ALTER TABLE ImportMoneyPerMonth ADD CHECK([year] > 0)
@@ -380,10 +380,10 @@ ALTER TABLE PayRoll ADD CHECK([year] > 0)
 ALTER TABLE PayRoll ADD CHECK(totalHoursInMonth >= 0)
 ALTER TABLE PayRoll ADD CHECK(salaryPerHour > 0)
 ALTER TABLE PayRoll ADD CHECK(totalSalary >= 0)
-ALTER TABLE PayRoll ADD CHECK([status] IN ('Đã trả lương', 'Chưa trả lương'))
-ALTER TABLE Invoice ADD CHECK(paymentMethod IN ('Chuyển khoản', 'Tiền mặt'))
+ALTER TABLE PayRoll ADD CHECK([status] IN (N'Đã trả lương', N'Chưa trả lương'))
+ALTER TABLE Invoice ADD CHECK(paymentMethod IN (N'Chuyển khoản', N'Tiền mặt'))
 ALTER TABLE Invoice ADD CHECK(totalAmount >= 0)
-ALTER TABLE Invoice ADD CHECK(invoiceStatus IN('Đã thanh toán', 'Chưa thanh toán', 'Đã hủy'))
+ALTER TABLE Invoice ADD CHECK(invoiceStatus IN(N'Đã thanh toán', N'Chưa thanh toán',N'Đã hủy'))
 ALTER TABLE Ingredient ADD CHECK(quantity >= 0)
 ALTER TABLE Ingredient ADD CHECK(minQuantity >= 0)
 ALTER TABLE IngredientSupplier ADD CHECK(unitPrice > 0)
@@ -392,7 +392,6 @@ ALTER TABLE ImportOrderDetail ADD CHECK(unitPrice >= 0)
 ALTER TABLE ImportOrderDetail ADD CHECK(quantity >= 0)
 ALTER TABLE ExportOrderDetail ADD CHECK(quantity >= 0)
 ALTER TABLE Feedback ADD CHECK(rating between 1 and 5)
-
 -- Users → Group
 ALTER TABLE [User]
 ADD CONSTRAINT FK_User_Group
@@ -652,7 +651,7 @@ BEGIN
         -- Kiểm tra username trùng
         IF EXISTS (SELECT 1 FROM [User] WHERE userName = @UserName)
         BEGIN
-            RAISERROR('Username already exists.', 16, 1);
+            RAISERROR(N'Username đã tồn tại', 16, 1);
             ROLLBACK TRAN;
             RETURN;
         END
@@ -660,7 +659,7 @@ BEGIN
         -- Kiểm tra GroupId
         IF NOT EXISTS (SELECT 1 FROM [Group] WHERE groupId = @GroupId)
         BEGIN
-            RAISERROR('GroupId does not exist.', 16, 1);
+            RAISERROR(N'Nhóm người dùng không tồn tại', 16, 1);
             ROLLBACK TRAN;
             RETURN;
         END
@@ -740,13 +739,13 @@ BEGIN
         @newId     = @MenuItemId OUTPUT;
 
     DECLARE @Description NVARCHAR(15)
-    IF(@Type <> 'Nước uống')
+    IF(@Type <> N'Nước uống')
         BEGIN
-           SET @Description = 'Đồ ăn'
+           SET @Description = N'Đồ ăn'
         END
     ELSE 
         BEGIN
-           SET @Description = 'Nước uống'
+           SET @Description = N'Nước uống'
         END
 
     INSERT INTO MenuItem(
@@ -796,21 +795,21 @@ BEGIN
     -- Kiểm tra menu có tồn tại
     IF NOT EXISTS (SELECT 1 FROM Menu WHERE menuId = @MenuId)
     BEGIN
-        RAISERROR('MenuId không tồn tại.', 16, 1);
+        RAISERROR(N'MenuId không tồn tại.', 16, 1);
         RETURN;
     END
 
     -- Kiểm tra menuItem có tồn tại
     IF NOT EXISTS (SELECT 1 FROM MenuItem WHERE menuItemId = @MenuItemId)
     BEGIN
-        RAISERROR('MenuItemId không tồn tại.', 16, 1);
+        RAISERROR(N'MenuItemId không tồn tại.', 16, 1);
         RETURN;
     END
 
     -- Kiểm tra trùng khóa chính (MenuId + MenuItemId)
     IF EXISTS (SELECT 1 FROM MenuDetail WHERE menuId = @MenuId AND menuItemId = @MenuItemId)
     BEGIN
-        RAISERROR('Món này đã tồn tại trong Menu.', 16, 1);
+        RAISERROR(N'Món này đã tồn tại trong Menu.', 16, 1);
         RETURN;
     END
 
@@ -864,7 +863,7 @@ BEGIN
         -- Kiểm tra Customer
         IF NOT EXISTS (SELECT 1 FROM Customer WHERE customerId = @CustomerId)
         BEGIN
-            RAISERROR('Khách hàng không tồn tại trong hệ thống', 16, 1);
+            RAISERROR(N'Khách hàng không tồn tại trong hệ thống', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -872,7 +871,7 @@ BEGIN
         -- Kiểm tra Employee
         IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
         BEGIN
-            RAISERROR('Nhân viên không tồn tại trong hệ thống', 16, 1);
+            RAISERROR(N'Nhân viên không tồn tại trong hệ thống', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -880,7 +879,7 @@ BEGIN
         -- Kiểm tra table
         IF NOT EXISTS (SELECT 1 FROM [Table] WHERE tableId = @TableId)
         BEGIN
-            RAISERROR('Bàn không tồn tại trong hệ thống', 16, 1);
+            RAISERROR(N'Bàn không tồn tại trong hệ thống', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -994,13 +993,13 @@ BEGIN
 
         IF NOT EXISTS (SELECT 1 FROM Ingredient WHERE ingredientId=@IngredientId)
         BEGIN
-            RAISERROR('Nguyên liệu không tồn tại', 16, 1);
+            RAISERROR(N'Nguyên liệu không tồn tại', 16, 1);
             ROLLBACK; RETURN;
         END
 
         IF NOT EXISTS (SELECT 1 FROM Supplier WHERE supplierId=@SupplierId)
         BEGIN
-            RAISERROR('Nhà cung cấp không tồn tại', 16, 1);
+            RAISERROR(N'Nhà cung cấp không tồn tại', 16, 1);
             ROLLBACK; RETURN;
         END
 
@@ -1028,13 +1027,13 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
     BEGIN
-        RAISERROR('Nhân viên không tồn tại.', 16, 1);
+        RAISERROR(N'Nhân viên không tồn tại.', 16, 1);
         RETURN;
     END
 
     IF NOT EXISTS (SELECT 1 FROM Supplier WHERE supplierId = @SupplierId)
     BEGIN
-        RAISERROR('Nhà cung cấp không tồn tại.', 16, 1);
+        RAISERROR(N'Nhà cung cấp không tồn tại.', 16, 1);
         RETURN;
     END
 
@@ -1068,7 +1067,7 @@ BEGIN
         -- Kiểm tra đơn nhập
         IF NOT EXISTS (SELECT 1 FROM ImportOrder WHERE importOrderId = @ImportOrderId)
         BEGIN
-            RAISERROR('Đơn nhập không tồn tại.', 16, 1);
+            RAISERROR(N'Đơn nhập không tồn tại.', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -1076,7 +1075,7 @@ BEGIN
         -- Kiểm tra nguyên liệu
         IF NOT EXISTS (SELECT 1 FROM Ingredient WHERE ingredientId = @IngredientId)
         BEGIN
-            RAISERROR('Nguyên liệu không tồn tại.', 16, 1);
+            RAISERROR(N'Nguyên liệu không tồn tại.', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -1124,14 +1123,14 @@ BEGIN
     --Ktra khách hàng
     IF NOT EXISTS(SELECT 1 FROM Customer WHERE customerId = @CustomerId)
     BEGIN
-        RAISERROR('Khách hàng không tồn tại', 16, 1)
+        RAISERROR(N'Khách hàng không tồn tại', 16, 1)
         RETURN
     END
     
     --Ktra nhân viên
     IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
     BEGIN 
-        RAISERROR('Nhân viên không tồn tại',16, 1)
+        RAISERROR(N'Nhân viên không tồn tại',16, 1)
         RETURN
     END
 
@@ -1162,14 +1161,14 @@ BEGIN
     --Ktra orderId
     IF NOT EXISTS(SELECT 1 FROM [Order] WHERE orderId = @OrderId)
     BEGIN
-     RAISERROR ('Đơn hàng không tồn tại', 16, 1)
+     RAISERROR (N'Đơn hàng không tồn tại', 16, 1)
      RETURN
     END
 
     --Ktra menuItemId
     IF NOT EXISTS(SELECT 1 FROM MenuItem WHERE menuItemId = @MenuItemId)
     BEGIN 
-        RAISERROR ('Món ăn không tồn tại', 16, 1)
+        RAISERROR (N'Món ăn không tồn tại', 16, 1)
         RETURN
     END
 
@@ -1189,7 +1188,7 @@ BEGIN
     --Ktra orderId
     IF NOT EXISTS (SELECT 1 FROM [Order] WHERE orderId = @OrderId)
     BEGIN 
-        RAISERROR('Đơn hàng không tồn tại', 16, 1)
+        RAISERROR(N'Đơn hàng không tồn tại', 16, 1)
         RETURN
     END
     

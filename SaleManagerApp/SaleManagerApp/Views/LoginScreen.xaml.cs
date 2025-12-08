@@ -1,4 +1,5 @@
-﻿using SaleManagerApp.ViewModels;
+﻿using SaleManagerApp.Helpers;
+using SaleManagerApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace SaleManagerApp.Views
         public LoginScreen()
         {
             InitializeComponent();
+            ToastService.Initialize(this.RootGrid);
             //this.DataContext = new LoginViewModel();
         }
 
