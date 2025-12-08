@@ -1,17 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SaleManagerApp.Views
 {
@@ -25,8 +14,26 @@ namespace SaleManagerApp.Views
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void BtnSaveOrder_Click(object sender, RoutedEventArgs e)
         {
+            // Tính tổng giá trị đơn hàng
+            decimal totalPrice = 477000;
+
+            // Mở cửa sổ OrderSavingConfirm (đã sửa namespace)
+            SaleManagerApp.OrderSavingConfirm confirmWindow = new SaleManagerApp.OrderSavingConfirm(totalPrice);
+
+            if (confirmWindow.ShowDialog() == true)
+            {
+                string selectedTable = confirmWindow.SelectedTable;
+                string orderType = confirmWindow.SelectedOrderType;
+
+                MessageBox.Show($"Đã lưu đơn hàng!\nBàn: {selectedTable}\nLoại: {orderType}\nTổng: {totalPrice:N0}VND",
+                              "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Đã hủy lưu đơn hàng", "Thông báo");
+            }
 
         }
     }
