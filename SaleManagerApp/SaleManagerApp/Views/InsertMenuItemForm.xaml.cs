@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SaleManagerApp.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,16 +17,31 @@ using System.Windows.Shapes;
 namespace SaleManagerApp.Views
 {
     /// <summary>
-    /// Interaction logic for MenuPage.xaml
+    /// Interaction logic for InsertMenuItemForm.xaml
     /// </summary>
-    public partial class MenuPage : UserControl
+    public partial class InsertMenuItemForm : Window
     {
-        public MenuPage()
+        public InsertMenuItemForm()
         {
             InitializeComponent();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
         {
 
         }

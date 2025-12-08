@@ -1,0 +1,111 @@
+﻿<Window x:Class="SaleManagerApp.Views.InsertMenuItemForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:SaleManagerApp.Views" 
+        xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:InsertMenuItemViewModel}"
+        mc:Ignorable="d"
+        Title="Thêm Món"
+        Width="400" Height="700"
+        MinWidth="400" MinHeight="700"
+        MaxWidth="400" MaxHeight="700"
+        ResizeMode="NoResize">
+
+    <Border Background="White" CornerRadius="15" Padding="20" Margin="20">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="THÊM MÓN" FontSize="18" FontWeight="Bold"
+                       HorizontalAlignment="Center" Margin="0 0 0 10"/>
+
+            <StackPanel Grid.Row="2" Orientation="Vertical">
+                <TextBlock Text="Loại món:" FontWeight="SemiBold" Margin="0 0 0 5"/>
+                <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
+                    <TextBox Text="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
+                             Height="30" BorderThickness="0" Background="Transparent" Padding="5 0" VerticalContentAlignment="Center" TextChanged="TextBox_TextChanged_1"/>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Row="4" Orientation="Vertical">
+                <TextBlock Text="Tên món:" FontWeight="SemiBold" Margin="0 0 0 5"/>
+                <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
+                    <TextBox Text="{Binding MenuItemName, UpdateSourceTrigger=PropertyChanged}"
+                             Height="30" BorderThickness="0" Background="Transparent" Padding="5 0" VerticalContentAlignment="Center"/>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Row="6" Orientation="Vertical">
+                <TextBlock Text="Giá tiền:" FontWeight="SemiBold" Margin="0 0 0 5"/>
+                <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
+                    <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged}"
+                             Height="30" BorderThickness="0" Background="Transparent" Padding="5 0" VerticalContentAlignment="Center"/>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Row="8" Orientation="Vertical">
+                <TextBlock Text="Kích cỡ:" FontWeight="SemiBold" Margin="0 0 0 5"/>
+                <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
+                    <TextBox Text="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
+                             Height="30" BorderThickness="0" Background="Transparent" Padding="5 0" VerticalContentAlignment="Center"/>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Row="10" Orientation="Vertical">
+                <TextBlock Text="Mô tả:" FontWeight="SemiBold" Margin="0 0 0 5"/>
+                <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
+                    <TextBox Text="{Binding SpecialInfo, UpdateSourceTrigger=PropertyChanged}"
+                             MinHeight="30" AcceptsReturn="True" TextWrapping="Wrap" BorderThickness="0" Background="Transparent" 
+                             TextChanged="TextBox_TextChanged" Padding="5" VerticalContentAlignment="Center"/>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Grid.Row="12" Orientation="Vertical">
+                <TextBlock Text="Ảnh minh họa:" FontWeight="SemiBold" Margin="0 0 0 5"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
+                        <Button Width="50" Height="50" Content="⭱" Command="{Binding PickImageCommand}"
+                                Background="Transparent" BorderThickness="0" FontSize="20"/>
+                    </Border>
+                    <Border Width="80" Height="80" BorderBrush="#DDD" BorderThickness="1" Margin="10 0" CornerRadius="5">
+                        <Image Source="{Binding PreviewPath}" Stretch="UniformToFill"/>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Row="14" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 20 0 0" >
+
+                <Button Content="Hủy" Width="120" Height="30" 
+                        Background="#000" Foreground="White"
+                        Command="{Binding CloseActionCommand}" 
+                        BorderThickness="0"
+                       
+                        Margin="0 0 30 0"/>
+
+                <Button Content="Xác nhận" Width="120" Height="30" 
+                        Background="#3B5AFE" Foreground="White"
+                        Command="{Binding InsertMenuItemCommand}" 
+                        BorderThickness="0"
+                        />
+
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

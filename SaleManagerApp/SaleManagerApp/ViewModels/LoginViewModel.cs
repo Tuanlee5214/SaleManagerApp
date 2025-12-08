@@ -72,7 +72,5 @@ namespace SaleManagerApp.ViewModels
 
             NavigationService.Navigate(new MainLayoutViewModel());
         }
-
-
     }
 }

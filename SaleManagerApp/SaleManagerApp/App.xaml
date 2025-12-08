@@ -34,5 +34,6 @@
         <DataTemplate DataType="{x:Type vm:SideBarViewModel}">
             <v:SideBar />
         </DataTemplate>
+
     </Application.Resources>
 </Application>
