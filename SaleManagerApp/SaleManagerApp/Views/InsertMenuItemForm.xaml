@@ -39,7 +39,7 @@
             <StackPanel Grid.Row="2" Orientation="Vertical">
                 <TextBlock Text="Loại món:" FontWeight="SemiBold" Margin="0 0 0 5"/>
                 <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
-                    <TextBox Text="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox Text="{Binding Type, UpdateSourceTrigger=PropertyChanged}"
                              Height="30" BorderThickness="0" Background="Transparent" Padding="5 0" VerticalContentAlignment="Center" TextChanged="TextBox_TextChanged_1"/>
                 </Border>
             </StackPanel>
@@ -85,7 +85,7 @@
                                 Background="Transparent" BorderThickness="0" FontSize="20"/>
                     </Border>
                     <Border Width="80" Height="80" BorderBrush="#DDD" BorderThickness="1" Margin="10 0" CornerRadius="5">
-                        <Image Source="{Binding PreviewPath}" Stretch="UniformToFill"/>
+                        <Image Source="{Binding PreviewPath, TargetNullValue={x:Null}}"/>
                     </Border>
                 </StackPanel>
             </StackPanel>
@@ -94,7 +94,6 @@
 
                 <Button Content="Hủy" Width="120" Height="30" 
                         Background="#000" Foreground="White"
-                        Command="{Binding CloseActionCommand}" 
                         BorderThickness="0"
                        
                         Margin="0 0 30 0"/>

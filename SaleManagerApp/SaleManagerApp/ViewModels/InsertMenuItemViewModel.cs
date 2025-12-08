@@ -149,6 +149,7 @@ namespace SaleManagerApp.ViewModels
                 Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     ToastService.Show(result.ErrorMessage);
+                    Console.WriteLine(result.ErrorMessage);
                     CloseAction?.Invoke();
                 }, System.Windows.Threading.DispatcherPriority.Loaded);
             }

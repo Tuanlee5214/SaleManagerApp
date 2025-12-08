@@ -51,7 +51,7 @@ namespace SaleManagerApp.Services
                 return new InsertItemResult
                 {
                     Success = false,
-                    ErrorMessage = "Lỗi kết nối tới máy chủ"
+                    ErrorMessage = "Lỗi kết nối tới server"
                 };
             }
         }
