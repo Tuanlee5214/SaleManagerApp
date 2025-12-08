@@ -8,6 +8,8 @@ using System.Windows.Input;
 using SaleManagerApp.Navigation;
 using System.Reflection;
 using System.Windows.Controls;
+using SaleManagerApp.Helpers;
+using System.Windows;
 
 namespace SaleManagerApp.ViewModels
 {
@@ -63,7 +65,11 @@ namespace SaleManagerApp.ViewModels
 
             if (!result.Success)
             {
-                ErrorMessage = result.ErrorMessage;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    ToastService.ShowErrorLogin(result.ErrorMessage);
+                });
+
                 return;
             }
 

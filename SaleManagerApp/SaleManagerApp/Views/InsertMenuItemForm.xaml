@@ -8,12 +8,12 @@
         d:DataContext="{d:DesignInstance Type=viewmodels:InsertMenuItemViewModel}"
         mc:Ignorable="d"
         Title="Thêm Món"
-        Width="400" Height="700"
-        MinWidth="400" MinHeight="700"
-        MaxWidth="400" MaxHeight="700"
+        Width="400" Height="650"
+        MinWidth="400" MinHeight="650"
+        MaxWidth="400" MaxHeight="650"
         ResizeMode="NoResize">
-
-    <Border Background="White" CornerRadius="15" Padding="20" Margin="20">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Background="White" CornerRadius="15" Padding="20" Margin="20">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -38,9 +38,20 @@
 
             <StackPanel Grid.Row="2" Orientation="Vertical">
                 <TextBlock Text="Loại món:" FontWeight="SemiBold" Margin="0 0 0 5"/>
-                <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
-                    <TextBox Text="{Binding Type, UpdateSourceTrigger=PropertyChanged}"
-                             Height="30" BorderThickness="0" Background="Transparent" Padding="5 0" VerticalContentAlignment="Center" TextChanged="TextBox_TextChanged_1"/>
+
+                <Border CornerRadius="10"
+            Background="#EEE"
+            BorderBrush="#DDD"
+            BorderThickness="1"
+            Padding="2">
+                    <!-- Quan trọng để tạo khoảng trống đẹp -->
+
+                    <ComboBox ItemsSource="{Binding Catagories}"
+                  SelectedItem="{Binding Type, Mode=TwoWay}"
+                  Height="30"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  VerticalContentAlignment="Center"/>
                 </Border>
             </StackPanel>
 
@@ -95,16 +106,85 @@
                 <Button Content="Hủy" Width="120" Height="30" 
                         Background="#000" Foreground="White"
                         BorderThickness="0"
-                       
-                        Margin="0 0 30 0"/>
+                        Command="{Binding CancelFormCommand}"
+                        Margin="0 0 30 0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                CornerRadius="12">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <!-- Hiệu ứng hover -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#2563EB"/>
+                                            </Trigger>
+
+                                            <!-- Hiệu ứng nhấn -->
+                                            <EventTrigger RoutedEvent="PreviewMouseLeftButtonDown">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                         From="1" To="0.6"
+                                         Duration="0:0:0.1"
+                                         AutoReverse="True"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
                 <Button Content="Xác nhận" Width="120" Height="30" 
                         Background="#3B5AFE" Foreground="White"
                         Command="{Binding InsertMenuItemCommand}" 
-                        BorderThickness="0"
-                        />
+                        BorderThickness="0" Click="Button_Click_2">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                CornerRadius="12">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <!-- Hiệu ứng hover -->
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#2563EB"/>
+                                        </Trigger>
+
+                                        <!-- Hiệu ứng nhấn -->
+                                        <EventTrigger RoutedEvent="PreviewMouseLeftButtonDown">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                         From="1" To="0.6"
+                                         Duration="0:0:0.1"
+                                         AutoReverse="True"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+                </Button>
 
             </StackPanel>
         </Grid>
     </Border>
+    </ScrollViewer>
+
 </Window>

@@ -15,7 +15,7 @@
 
 
 
-    <Grid>
+    <Grid x:Name="RootGrid">
 
         <Grid.Background>
             <SolidColorBrush Color="AliceBlue"/>

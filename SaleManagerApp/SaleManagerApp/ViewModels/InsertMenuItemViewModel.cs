@@ -18,6 +18,7 @@ namespace SaleManagerApp.ViewModels
     {
 
         private readonly MenuPageService _service = new MenuPageService();
+        public List<string> Catagories { get; set; }
         //Tham chiếu tới ô trong form nhập là các property này
         private string _menuItemName;
         public string MenuItemName
@@ -88,14 +89,28 @@ namespace SaleManagerApp.ViewModels
         public ICommand InsertMenuItemCommand { get; }
         public ICommand PickImageCommand { get; }
 
+        public ICommand CancelFormCommand { get; }
+
         public InsertMenuItemViewModel()
         {
             InsertMenuItemCommand = new RelayCommand(InsertMenuItem);
             PickImageCommand = new RelayCommand(PickImage);
+            CancelFormCommand = new RelayCommand(CancelForm);
+            Catagories = new List<string>
+            {
+                "Nước uống",
+                "Thịt heo",
+                "Thịt bò",
+                "Thịt gà"
+            };
         }
 
         public Action CloseAction { get; set; }
 
+        public void CancelForm(object obj)
+        {
+            CloseAction?.Invoke();
+        }
         public void PickImage(object obj)
         {
             var dialog = new OpenFileDialog();
@@ -148,7 +163,7 @@ namespace SaleManagerApp.ViewModels
             {
                 Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    ToastService.Show(result.ErrorMessage);
+                    ToastService.ShowError(result.ErrorMessage);
                     Console.WriteLine(result.ErrorMessage);
                     CloseAction?.Invoke();
                 }, System.Windows.Threading.DispatcherPriority.Loaded);
