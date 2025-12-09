@@ -1,6 +1,6 @@
-﻿CREATE DATABASE SaleManagement2025_12
+﻿CREATE DATABASE SaleManagement20251_12
 
-USE SaleManagement2025_12
+USE SaleManagement20251_12
 
 CREATE TABLE [User]
 (
@@ -12,7 +12,7 @@ CREATE TABLE [User]
 	phone char(25) not null,
 	email varchar(30) not null,
 	groupId char(7) not null,
-    employeeId char(7),
+  employeeId char(7),
 	createdAt datetime default getdate(),
 	updatedAt datetime
 )
@@ -72,6 +72,7 @@ CREATE TABLE TotalDrinkDetail
 	quantity int, 
 	[month] int not null,
 	[year] int not null, 
+  menuItemId char(7) not null,
 	[percentage] float,
 	createdAt datetime default getdate(),
 	updatedAt datetime
@@ -83,6 +84,7 @@ CREATE TABLE TotalFoodDetail
 	quantity int, 
 	[month] int not null, 
 	[year] int not null,
+  menuItemId char(7) not null,
 	[percentage] float,
 	createdAt datetime default getdate(),
 	updatedAt datetime
@@ -183,8 +185,6 @@ CREATE TABLE MenuItem
 	specialInfo nvarchar(75),
 	[description] nvarchar(15) not null,
     [type] nvarchar(30) not null,
-	ttDrinkDetailId char(7),
-	ttFoodDetailId char(7),
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
@@ -359,17 +359,17 @@ ALTER TABLE TotalFoodDetail ADD CHECK([year] > 0)
 ALTER TABLE TotalFoodDetail ADD CHECK(quantity >= 0)
 ALTER TABLE TotalFoodDetail ADD CHECK([percentage] between 0 and 100)
 ALTER TABLE [Table] ADD CHECK(seatCount > 0)
-ALTER TABLE [Table] ADD CHECK(tableStatus IN ('Đã có khách', 'Còn trống', 'Đang chọn'))
+ALTER TABLE [Table] ADD CHECK(tableStatus IN (N'Đã có khách', N'Còn trống', N'Đang chọn'))
 ALTER TABLE TableReservation ADD CHECK(guestCount >= 0)
-ALTER TABLE [Order] ADD CHECK(serveStatus IN ('Chờ đặt bàn', 'Đang chế biến', 'Sẵn sàng', 'Đã phục vụ'))
-ALTER TABLE [Order] ADD CHECK(orderStatus IN ('Ăn tại bàn', 'Mang đi', 'Đã hủy'))
+ALTER TABLE [Order] ADD CHECK(serveStatus IN (N'Chờ đặt bàn', N'Đang chế biến', N'Sẵn sàng', N'Đã phục vụ'))
+ALTER TABLE [Order] ADD CHECK(orderStatus IN (N'Ăn tại bàn', N'Mang đi', N'Đã hủy'))
 ALTER TABLE OrderDetail ADD CHECK(quantity >= 0)
 ALTER TABLE OrderDetail ADD CHECK(currentPrice > 0)
 ALTER TABLE Revenue ADD CHECK([month] between 1 and 12)
 ALTER TABLE Revenue ADD CHECK([year] > 0)
 ALTER TABLE Revenue ADD CHECK(totalAmount >= 0)
 ALTER TABLE MenuItem ADD CHECK(unitPrice >= 0)
-ALTER TABLE MenuItem ADD CHECK([description] IN ('Đồ ăn', 'Nước uống'))
+ALTER TABLE MenuItem ADD CHECK([description] IN (N'Đồ ăn', N'Nước uống'))
 ALTER TABLE ImportMoneyPerMonth ADD CHECK(totalAmount >= 0)
 ALTER TABLE ImportMoneyPerMonth ADD CHECK([month] between 1 and 12)
 ALTER TABLE ImportMoneyPerMonth ADD CHECK([year] > 0)
@@ -380,10 +380,10 @@ ALTER TABLE PayRoll ADD CHECK([year] > 0)
 ALTER TABLE PayRoll ADD CHECK(totalHoursInMonth >= 0)
 ALTER TABLE PayRoll ADD CHECK(salaryPerHour > 0)
 ALTER TABLE PayRoll ADD CHECK(totalSalary >= 0)
-ALTER TABLE PayRoll ADD CHECK([status] IN ('Đã trả lương', 'Chưa trả lương'))
-ALTER TABLE Invoice ADD CHECK(paymentMethod IN ('Chuyển khoản', 'Tiền mặt'))
+ALTER TABLE PayRoll ADD CHECK([status] IN (N'Đã trả lương', N'Chưa trả lương'))
+ALTER TABLE Invoice ADD CHECK(paymentMethod IN (N'Chuyển khoản', N'Tiền mặt'))
 ALTER TABLE Invoice ADD CHECK(totalAmount >= 0)
-ALTER TABLE Invoice ADD CHECK(invoiceStatus IN('Đã thanh toán', 'Chưa thanh toán', 'Đã hủy'))
+ALTER TABLE Invoice ADD CHECK(invoiceStatus IN(N'Đã thanh toán', N'Chưa thanh toán',N'Đã hủy'))
 ALTER TABLE Ingredient ADD CHECK(quantity >= 0)
 ALTER TABLE Ingredient ADD CHECK(minQuantity >= 0)
 ALTER TABLE IngredientSupplier ADD CHECK(unitPrice > 0)
@@ -392,7 +392,6 @@ ALTER TABLE ImportOrderDetail ADD CHECK(unitPrice >= 0)
 ALTER TABLE ImportOrderDetail ADD CHECK(quantity >= 0)
 ALTER TABLE ExportOrderDetail ADD CHECK(quantity >= 0)
 ALTER TABLE Feedback ADD CHECK(rating between 1 and 5)
-
 -- Users → Group
 ALTER TABLE [User]
 ADD CONSTRAINT FK_User_Group
@@ -464,15 +463,15 @@ ALTER TABLE MenuDetail
 ADD CONSTRAINT FK_MenuDetail_MenuItem
 FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 
--- MenuItem → TotalDrinkDetail
-ALTER TABLE MenuItem
-ADD CONSTRAINT FK_MenuItem_TotalDrinkDetail
-FOREIGN KEY (ttDrinkDetailId) REFERENCES TotalDrinkDetail(ttDrinkDetailId);
+-- TotalDrinkDetail → MenuItem
+ALTER TABLE TotalDrinkDetail
+ADD CONSTRAINT FK_TotalDrinkDetail_MenuItem
+FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 
--- MenuItem → TotalFoodDetail
-ALTER TABLE MenuItem
-ADD CONSTRAINT FK_MenuItem_TotalFoodDetail
-FOREIGN KEY (ttFoodDetailId) REFERENCES TotalFoodDetail(ttFoodDetailId);
+-- TotalFoodDetail → MenuItem
+ALTER TABLE TotalFoodDetail
+ADD CONSTRAINT FK_TotalFoodDetail_MenuItem
+FOREIGN KEY (menuItemId) REFERENCES MenuItem(menuItemId);
 
 -- MenuItemDetail → MenuItem
 ALTER TABLE MenuItemDetail
@@ -652,7 +651,7 @@ BEGIN
         -- Kiểm tra username trùng
         IF EXISTS (SELECT 1 FROM [User] WHERE userName = @UserName)
         BEGIN
-            RAISERROR('Username already exists.', 16, 1);
+            RAISERROR(N'Username đã tồn tại', 16, 1);
             ROLLBACK TRAN;
             RETURN;
         END
@@ -660,7 +659,7 @@ BEGIN
         -- Kiểm tra GroupId
         IF NOT EXISTS (SELECT 1 FROM [Group] WHERE groupId = @GroupId)
         BEGIN
-            RAISERROR('GroupId does not exist.', 16, 1);
+            RAISERROR(N'Nhóm người dùng không tồn tại', 16, 1);
             ROLLBACK TRAN;
             RETURN;
         END
@@ -727,27 +726,10 @@ CREATE PROCEDURE sp_InsertMenuItem
     @ImageUrl          VARCHAR(100),
     @Size              VARCHAR(7),
     @SpecialInfo       NVARCHAR(75),
-    @Type              NVARCHAR(30),
-    @TtDrinkDetailId   CHAR(7),
-    @TtFoodDetailId    CHAR(7)
+    @Type              NVARCHAR(30)
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    -- Kiểm tra khóa ngoại TotalDrinkDetail
-    IF NOT EXISTS (SELECT 1 FROM TotalDrinkDetail WHERE ttDrinkDetailId = @TtDrinkDetailId)
-    BEGIN
-        RAISERROR('ttDrinkDetailId không tồn tại.', 16, 1);
-        RETURN;
-    END
-
-    -- Kiểm tra khóa ngoại TotalFoodDetail
-    IF NOT EXISTS (SELECT 1 FROM TotalFoodDetail WHERE ttFoodDetailId = @TtFoodDetailId)
-    BEGIN
-        RAISERROR('ttFoodDetailId không tồn tại.', 16, 1);
-        RETURN;
-    END
-
     DECLARE @MenuItemId CHAR(7);
     EXEC sp_GenerateId
         @prefix    = 'MI',
@@ -757,22 +739,21 @@ BEGIN
         @newId     = @MenuItemId OUTPUT;
 
     DECLARE @Description NVARCHAR(15)
-    IF(@Type <> 'Nước uống')
+    IF(@Type <> N'Nước uống')
         BEGIN
-           SET @Description = 'Đồ ăn'
+           SET @Description = N'Đồ ăn'
         END
     ELSE 
         BEGIN
-           SET @Description = 'Nước uống'
+           SET @Description = N'Nước uống'
         END
 
     INSERT INTO MenuItem(
         menuItemId, menuItemName, unitPrice, imageUrl, size, specialInfo, [description], [type],
-        ttDrinkDetailId, ttFoodDetailId, createdAt, updatedAt
+        createdAt, updatedAt
     )
     VALUES (
         @MenuItemId, @MenuItemName, @UnitPrice, @ImageUrl, @Size, @SpecialInfo, @Description, @Type,
-        @TtDrinkDetailId, @TtFoodDetailId,
         GETDATE(), GETDATE()
     );
 END;
@@ -814,21 +795,21 @@ BEGIN
     -- Kiểm tra menu có tồn tại
     IF NOT EXISTS (SELECT 1 FROM Menu WHERE menuId = @MenuId)
     BEGIN
-        RAISERROR('MenuId không tồn tại.', 16, 1);
+        RAISERROR(N'MenuId không tồn tại.', 16, 1);
         RETURN;
     END
 
     -- Kiểm tra menuItem có tồn tại
     IF NOT EXISTS (SELECT 1 FROM MenuItem WHERE menuItemId = @MenuItemId)
     BEGIN
-        RAISERROR('MenuItemId không tồn tại.', 16, 1);
+        RAISERROR(N'MenuItemId không tồn tại.', 16, 1);
         RETURN;
     END
 
     -- Kiểm tra trùng khóa chính (MenuId + MenuItemId)
     IF EXISTS (SELECT 1 FROM MenuDetail WHERE menuId = @MenuId AND menuItemId = @MenuItemId)
     BEGIN
-        RAISERROR('Món này đã tồn tại trong Menu.', 16, 1);
+        RAISERROR(N'Món này đã tồn tại trong Menu.', 16, 1);
         RETURN;
     END
 
@@ -882,7 +863,7 @@ BEGIN
         -- Kiểm tra Customer
         IF NOT EXISTS (SELECT 1 FROM Customer WHERE customerId = @CustomerId)
         BEGIN
-            RAISERROR('Khách hàng không tồn tại trong hệ thống', 16, 1);
+            RAISERROR(N'Khách hàng không tồn tại trong hệ thống', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -890,7 +871,7 @@ BEGIN
         -- Kiểm tra Employee
         IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
         BEGIN
-            RAISERROR('Nhân viên không tồn tại trong hệ thống', 16, 1);
+            RAISERROR(N'Nhân viên không tồn tại trong hệ thống', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -898,7 +879,7 @@ BEGIN
         -- Kiểm tra table
         IF NOT EXISTS (SELECT 1 FROM [Table] WHERE tableId = @TableId)
         BEGIN
-            RAISERROR('Bàn không tồn tại trong hệ thống', 16, 1);
+            RAISERROR(N'Bàn không tồn tại trong hệ thống', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -928,7 +909,6 @@ BEGIN
     END CATCH
 END;    
 GO
-
 
 --Thêm nhà cung cấp vào hệ thống(đã thêm)
 CREATE PROCEDURE sp_InsertSupplier
@@ -1013,13 +993,13 @@ BEGIN
 
         IF NOT EXISTS (SELECT 1 FROM Ingredient WHERE ingredientId=@IngredientId)
         BEGIN
-            RAISERROR('Nguyên liệu không tồn tại', 16, 1);
+            RAISERROR(N'Nguyên liệu không tồn tại', 16, 1);
             ROLLBACK; RETURN;
         END
 
         IF NOT EXISTS (SELECT 1 FROM Supplier WHERE supplierId=@SupplierId)
         BEGIN
-            RAISERROR('Nhà cung cấp không tồn tại', 16, 1);
+            RAISERROR(N'Nhà cung cấp không tồn tại', 16, 1);
             ROLLBACK; RETURN;
         END
 
@@ -1047,13 +1027,13 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
     BEGIN
-        RAISERROR('Nhân viên không tồn tại.', 16, 1);
+        RAISERROR(N'Nhân viên không tồn tại.', 16, 1);
         RETURN;
     END
 
     IF NOT EXISTS (SELECT 1 FROM Supplier WHERE supplierId = @SupplierId)
     BEGIN
-        RAISERROR('Nhà cung cấp không tồn tại.', 16, 1);
+        RAISERROR(N'Nhà cung cấp không tồn tại.', 16, 1);
         RETURN;
     END
 
@@ -1081,14 +1061,13 @@ CREATE PROCEDURE sp_InsertImportOrderDetail
 AS
 BEGIN
     SET NOCOUNT ON; 
-
     BEGIN TRY
         BEGIN TRAN;
 
         -- Kiểm tra đơn nhập
         IF NOT EXISTS (SELECT 1 FROM ImportOrder WHERE importOrderId = @ImportOrderId)
         BEGIN
-            RAISERROR('Đơn nhập không tồn tại.', 16, 1);
+            RAISERROR(N'Đơn nhập không tồn tại.', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -1096,7 +1075,7 @@ BEGIN
         -- Kiểm tra nguyên liệu
         IF NOT EXISTS (SELECT 1 FROM Ingredient WHERE ingredientId = @IngredientId)
         BEGIN
-            RAISERROR('Nguyên liệu không tồn tại.', 16, 1);
+            RAISERROR(N'Nguyên liệu không tồn tại.', 16, 1);
             ROLLBACK;
             RETURN;
         END
@@ -1130,8 +1109,6 @@ BEGIN
 END;
 GO
 
-
-
 --TẠO ĐƠN HÀNG TRƯỚC TIÊN (đã thêm)
 CREATE PROCEDURE sp_InsertOrder
     @OrderStatus NVARCHAR(25),
@@ -1146,14 +1123,14 @@ BEGIN
     --Ktra khách hàng
     IF NOT EXISTS(SELECT 1 FROM Customer WHERE customerId = @CustomerId)
     BEGIN
-        RAISERROR('Khách hàng không tồn tại', 16, 1)
+        RAISERROR(N'Khách hàng không tồn tại', 16, 1)
         RETURN
     END
     
     --Ktra nhân viên
     IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
     BEGIN 
-        RAISERROR('Nhân viên không tồn tại',16, 1)
+        RAISERROR(N'Nhân viên không tồn tại',16, 1)
         RETURN
     END
 
@@ -1184,14 +1161,14 @@ BEGIN
     --Ktra orderId
     IF NOT EXISTS(SELECT 1 FROM [Order] WHERE orderId = @OrderId)
     BEGIN
-     RAISERROR ('Đơn hàng không tồn tại', 16, 1)
+     RAISERROR (N'Đơn hàng không tồn tại', 16, 1)
      RETURN
     END
 
     --Ktra menuItemId
     IF NOT EXISTS(SELECT 1 FROM MenuItem WHERE menuItemId = @MenuItemId)
     BEGIN 
-        RAISERROR ('Món ăn không tồn tại', 16, 1)
+        RAISERROR (N'Món ăn không tồn tại', 16, 1)
         RETURN
     END
 
@@ -1211,7 +1188,7 @@ BEGIN
     --Ktra orderId
     IF NOT EXISTS (SELECT 1 FROM [Order] WHERE orderId = @OrderId)
     BEGIN 
-        RAISERROR('Đơn hàng không tồn tại', 16, 1)
+        RAISERROR(N'Đơn hàng không tồn tại', 16, 1)
         RETURN
     END
     
@@ -1319,3 +1296,4 @@ BEGIN
     END CATCH;
 END;
 GO
+

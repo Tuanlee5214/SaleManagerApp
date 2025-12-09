@@ -35,6 +35,5 @@
             <v:SideBar />
         </DataTemplate>
 
-
     </Application.Resources>
 </Application>
