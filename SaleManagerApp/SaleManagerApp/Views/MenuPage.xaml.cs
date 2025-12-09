@@ -36,5 +36,6 @@ namespace SaleManagerApp.Views
             }
 
         }
+
     }
 }

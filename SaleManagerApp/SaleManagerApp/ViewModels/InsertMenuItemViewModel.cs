@@ -62,6 +62,32 @@ namespace SaleManagerApp.ViewModels
             set{_type = value;OnPropertyChanged();}
         }
 
+        private string _unitPriceRaw;
+public string UnitPriceRaw
+{
+    get => _unitPriceRaw;
+    set
+    {
+        _unitPriceRaw = value;
+        OnPropertyChanged();
+
+        // Parse "12.345" → 12345
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            string digits = new string(value.Where(char.IsDigit).ToArray());
+            if (decimal.TryParse(digits, out var v))
+                UnitPrice = v;
+            else
+                UnitPrice = 0;
+        }
+        else
+        {
+            UnitPrice = 0;
+        }
+    }
+}
+
+
         //Biến thông báo lỗi
         private string _errorMessage;
         private string _successMessage;
@@ -106,6 +132,7 @@ namespace SaleManagerApp.ViewModels
         }
 
         public Action CloseAction { get; set; }
+        public Action ReloadMenuItem { get; set; }
 
         public void CancelForm(object obj)
         {
@@ -155,6 +182,7 @@ namespace SaleManagerApp.ViewModels
             {
                 Application.Current.Dispatcher.InvokeAsync(() =>
                 {
+                    ReloadMenuItem?.Invoke();
                     ToastService.Show(result.SuccessMessage);
                     CloseAction?.Invoke();
                 }, System.Windows.Threading.DispatcherPriority.Loaded);

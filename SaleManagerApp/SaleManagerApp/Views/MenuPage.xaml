@@ -177,7 +177,7 @@
          BorderThickness="1"
          Padding="15,10"
          FontSize="14"
-         Text="Search menu">
+         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
                             <TextBox.Template>
                                 <ControlTemplate TargetType="TextBox">
                                     <Border Background="{TemplateBinding Background}"
@@ -261,41 +261,300 @@
                             </Setter>
                         </Style>
                     </StackPanel.Resources>
-                    <Button Background="#4A7BF7" BorderThickness="0" Padding="0,10" Margin="0,0,10,0" Width="100">
-                        <StackPanel Orientation="Horizontal" Width="78">
-                            <TextBlock Text="📦" FontSize="16" Width="24" Margin ="4,0,0,0"/>
-                            <TextBlock Text="Tất cả" FontSize="14" Foreground="White" FontWeight="SemiBold" Width="45" Margin ="0,0,18,0"/>
-                        </StackPanel>
+        <!--Button All-->
+                    <Button Width="100"
+                Padding="0,10"
+                BorderThickness="0"
+                Margin="0,0,20,0"
+                Command="{Binding SelectAllCommand}">
+
+                        <Button.Style>
+                            <Style TargetType="Button">
+
+                                <!-- Trạng thái mặc định -->
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Black"/>
+
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="20"
+                                Padding="{TemplateBinding Padding}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock x:Name="Icon"
+                                           Text="📦"
+                                           FontSize="16"
+                                           Margin="10,0,0,0"
+                                           Foreground="{TemplateBinding Foreground}"/>
+                                                    <TextBlock x:Name="Label"
+                                           Text="Tất cả"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           Margin="6,0,0,0"
+                                           Foreground="{TemplateBinding Foreground}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                
+                                <!-- Khi được chọn -->
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedType}" Value="Tất cả">
+                                        <Setter Property="Background" Value="#4A7BF7"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+
+                            </Style>
+                        </Button.Style>
                     </Button>
-                    <Button Background="White" BorderThickness="1" BorderBrush="#DDD" Padding="0,10" Margin="0,0,10,0" Width="100">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🥩" FontSize="16" Width="21" Margin="0,0,0,0"/>
-                            <TextBlock Text="Thịt bò" FontSize="14" Foreground="#666" Width="46"/>
-                        </StackPanel>
+
+                    <!--Button Thịt bò--> 
+                    <Button Width="100"
+                            Padding="0,10"
+                            BorderThickness="0"
+                            Margin="0,0,20,0"
+                            Command="{Binding SelectBeefCommand}">
+                        
+                        <Button.Style>
+                            <Style TargetType="Button">
+
+                                <!-- Trạng thái mặc định -->
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Black"/>
+
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="ButtonBorder"
+                                                      Background="{TemplateBinding Background}"
+                                                      CornerRadius="20"
+                                                      Padding="{TemplateBinding Padding}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock x:Name="Icon"
+                                                                Text="🥩"
+                                                                FontSize="16"
+                                                                Margin="10,0,0,0"
+                                                                Foreground="{TemplateBinding Foreground}"/>
+                                                    <TextBlock x:Name="Label"
+                                                                 Text="Thịt bò"
+                                                                 FontSize="14"
+                                                                 FontWeight="SemiBold"
+                                                                 Margin="6,0,0,0"
+                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <!-- Khi được chọn -->
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedType}" Value="Thịt bò">
+                                        <Setter Property="Background" Value="#4A7BF7"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                     </Button>
-                    <Button Background="White" BorderThickness="1" BorderBrush="#DDD" Padding="0,10" Margin="0,0,10,0" Width="100">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🍖" FontSize="16" Width="21" Margin="0,0,0,0"/>
-                            <TextBlock Text="Thịt heo" FontSize="14" Foreground="#666" Width="51"/>
-                        </StackPanel>
+
+                    <!--Thịt heo-->
+                    <Button Width="100"
+                            Padding="0,10"
+                            BorderThickness="0"
+                            Margin="0,0,20,0"
+                            Command="{Binding SelectPorkCommand}">
+
+                        <Button.Style>
+                            <Style TargetType="Button">
+
+                                <!-- Trạng thái mặc định -->
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Black"/>
+
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="ButtonBorder"
+                                  Background="{TemplateBinding Background}"
+                                  CornerRadius="20"
+                                  Padding="{TemplateBinding Padding}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock x:Name="Icon"
+                                            Text="🍖"
+                                            FontSize="16"
+                                            Margin="10,0,-2,0"
+                                            Foreground="{TemplateBinding Foreground}"/>
+                                                    <TextBlock x:Name="Label"
+                                             Text="Thịt heo"
+                                             FontSize="14"
+                                             FontWeight="SemiBold"
+                                             Margin="6,0,0,0"
+                                             Foreground="{TemplateBinding Foreground}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <!-- Khi được chọn -->
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedType}" Value="Thịt heo">
+                                        <Setter Property="Background" Value="#4A7BF7"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                     </Button>
-                    <Button Background="White" BorderThickness="1" BorderBrush="#DDD" Padding="0,10" Margin="0,0,10,0" Width="100">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🍱" FontSize="16" Width="21" Margin="0,-2,0,0"/>
-                            <TextBlock Text="Combo" FontSize="14" Foreground="#666" Width="47" Margin="3,0,0,0"/>
-                        </StackPanel>
+
+                    <!--Thịt gà-->
+                    <Button Width="100"
+                            Padding="0,10"
+                            BorderThickness="0"
+                            Margin="0,0,20,0"
+                            Command="{Binding SelectChickenCommand}">
+
+                        <Button.Style>
+                            <Style TargetType="Button">
+
+                                <!-- Trạng thái mặc định -->
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Black"/>
+
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="ButtonBorder"
+                                                      Background="{TemplateBinding Background}"
+                                                      CornerRadius="20"
+                                                      Padding="{TemplateBinding Padding}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock x:Name="Icon"
+                                                                 Text="🍱"
+                                                                 FontSize="16"
+                                                                 Margin="10,-3,-2,0"
+                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                    <TextBlock x:Name="Label"
+                                                                 Text="Thịt gà"
+                                                                 FontSize="14"
+                                                                 FontWeight="SemiBold"
+                                                                 Margin="6,0,0,0"
+                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <!-- Khi được chọn -->
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedType}" Value="Thịt gà">
+                                        <Setter Property="Background" Value="#4A7BF7"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                     </Button>
-                    <Button Background="White" BorderThickness="1" BorderBrush="#DDD" Padding="0,10" Margin="0,0,10,0" Width="100">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🍽️" FontSize="16" Width="21" Margin="4,-1,9,0"/>
-                            <TextBlock Text="Món khác" FontSize="14" Foreground="#666" Width="60" Margin="-7,0,8,0"/>
-                        </StackPanel>
+
+                    <!--Button món khác -->
+                    <Button Width="100"
+                            Padding="0,10"
+                            BorderThickness="0"
+                            Margin="0,0,20,0"
+                            Command="{Binding SelectAnotherCommand}">
+
+                        <Button.Style>
+                            <Style TargetType="Button">
+
+                                <!-- Trạng thái mặc định -->
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Black"/>
+
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="ButtonBorder"
+                                  Background="{TemplateBinding Background}"
+                                  CornerRadius="20"
+                                  Padding="{TemplateBinding Padding}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock x:Name="Icon"
+                                             Text="🍽️"
+                                             FontSize="16"
+                                             Margin="8,-1,-5,0"
+                                             Foreground="{TemplateBinding Foreground}"/>
+                                                    <TextBlock x:Name="Label"
+                                             Text="Món khác"
+                                             FontSize="14"
+                                             FontWeight="SemiBold"
+                                             Margin="6,0,0,0"
+                                             Foreground="{TemplateBinding Foreground}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <!-- Khi được chọn -->
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedType}" Value="Món khác">
+                                        <Setter Property="Background" Value="#4A7BF7"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                     </Button>
-                    <Button Background="White" BorderThickness="1" BorderBrush="#DDD" Padding="0,10" Margin="0,0,10,0" Width="100">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🥤" FontSize="16" Width="21" Margin="1,-1,9,0"/>
-                            <TextBlock Text="Nước uống" FontSize="14" Foreground="#666" Width="70" Margin="-7,0,8,0"/>
-                        </StackPanel>
+
+                    <!--Nước uống-->
+                    <Button Width="100"
+                            Padding="0,10"
+                            BorderThickness="0"
+                            Margin="0,0,10,0"
+                            Command="{Binding SelectDrinkCommand}">
+
+                        <Button.Style>
+                            <Style TargetType="Button">
+
+                                <!-- Trạng thái mặc định -->
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Black"/>
+
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="ButtonBorder"
+                                                            Background="{TemplateBinding Background}"
+                                                            CornerRadius="20"
+                                                            Padding="{TemplateBinding Padding}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock x:Name="Icon"
+                                                                 Text="🥤"
+                                                                 FontSize="16"
+                                                                 Margin="1,-1,-8,0"
+                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                    <TextBlock x:Name="Label"
+                                                                 Text="Nước uống"
+                                                                 FontSize="14"
+                                                                 FontWeight="SemiBold"
+                                                                 Margin="8,0,0,0"
+                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <!-- Khi được chọn -->
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedType}" Value="Nước uống">
+                                        <Setter Property="Background" Value="#4A7BF7"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
                     </Button>
                 </StackPanel>
             </StackPanel>
@@ -303,335 +562,46 @@
             <!-- Menu Items Grid -->
 
             <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
-                <WrapPanel Orientation="Horizontal">
-                    <!-- Menu Item 1 - Selected -->
-                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15" BorderBrush="#4A7BF7" BorderThickness="2">
-                        <Grid>
-                            <StackPanel>
-                                <!-- Delete Button -->
-                                <Button Width="28" Height="28" Background="#FF5252" BorderThickness="0" 
-                                        HorizontalAlignment="Right" Margin="0,0,-10,0">
-                                    <TextBlock Text="✕" FontSize="16" Foreground="White" FontWeight="Bold"/>
-                                </Button>
+                <ItemsControl ItemsSource="{Binding MenuItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
 
-                                <!-- Image Placeholder -->
-                                <Border Height="150" Background="#E0E0E0" Margin="15,3,15,10"/>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="20"
+                        Background="White"
+                        Width="220"
+                        Margin="0,0,15,15">
 
-                                <!-- Item Info -->
-                                <StackPanel Margin="15,0,15,15">
-                                    <TextBlock Text="Tên món (Giá tiền)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                <StackPanel>
+                                    <Image Source="{Binding imageFullPath}"
+                               Height="150"
+                               Margin="15,15,15,10"
+                               Stretch="UniformToFill"/>
 
-                                    <!-- Quantity Control -->
-                                    <DockPanel>
-                                        <Button Background="#4A7BF7"
-        BorderThickness="0"
-        Padding="25,8"
-        DockPanel.Dock="Left">
+                                    <StackPanel Margin="15,0,15,15">
+                                        <TextBlock Text="{Binding menuItemName}" 
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"/>
 
-
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}"
-                    CornerRadius="20"
-                    Padding="{TemplateBinding Padding}">
-                                                        <ContentPresenter HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Button.Template>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Đã chọn"
-                   FontSize="13"
-                   Foreground="White"
-                   Margin="0,0,5,0"/>
-                                                <TextBlock Text="✓"
-                   FontSize="13"
-                   Foreground="White"/>
-                                            </StackPanel>
-
-                                        </Button>
-
-
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="−" 
-                                                    FontSize="18" FontWeight="Bold" Margin="0,0"/>
-                                            <TextBlock Text="1" FontSize="16" VerticalAlignment="Center" Margin="1.5,0,5,0"/>
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="+" 
-                                                    FontSize="18" FontWeight="Bold" Margin="-2,0"/>
-                                        </StackPanel>
-                                    </DockPanel>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- Menu Item 2 - Add Item -->
-                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15">
-                        <StackPanel>
-                            <Border Height="150" Background="#E0E0E0" Margin="15,15,15,10"/>
-                            <StackPanel Margin="15,0,15,15">
-                                <TextBlock Text="Tên món (Giá tiền)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
-                                <Button Background="White" BorderBrush="#4A7BF7" BorderThickness="2" 
-                                        Padding="0,8" HorizontalAlignment="Stretch">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock Text="Thêm món ăn" FontSize="13" Foreground="#4A7BF7" Margin="0,0,5,0"/>
-                                        <TextBlock Text="+" FontSize="16" Foreground="#4A7BF7" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding unitPriceDisplay, StringFormat={}{0:N0} đ}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"/>
                                     </StackPanel>
-                                </Button>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15" BorderBrush="#4A7BF7" BorderThickness="2">
-                        <Grid>
-                            <StackPanel>
-                                <!-- Delete Button -->
-                                <Button Width="28" Height="28" Background="#FF5252" BorderThickness="0" 
-                                HorizontalAlignment="Right" Margin="0,0,-10,0">
-                                    <TextBlock Text="✕" FontSize="16" Foreground="White" FontWeight="Bold"/>
-                                </Button>
-
-                                <!-- Image Placeholder -->
-                                <Border Height="150" Background="#E0E0E0" Margin="15,3,15,10"/>
-
-                                <!-- Item Info -->
-                                <StackPanel Margin="15,0,15,15">
-                                    <TextBlock Text="Tên món (Giá tiền)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
-
-                                    <!-- Quantity Control -->
-                                    <DockPanel>
-                                        <Button Background="#4A7BF7"
-BorderThickness="0"
-Padding="25,8"
-DockPanel.Dock="Left">
-
-
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="{x:Type Button}">
-                                                    <Border Background="{TemplateBinding Background}"
-            CornerRadius="20"
-            Padding="{TemplateBinding Padding}">
-                                                        <ContentPresenter HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Button.Template>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Đã chọn"
-           FontSize="13"
-           Foreground="White"
-           Margin="0,0,5,0"/>
-                                                <TextBlock Text="✓"
-           FontSize="13"
-           Foreground="White"/>
-                                            </StackPanel>
-
-                                        </Button>
-
-
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="−" 
-                                            FontSize="18" FontWeight="Bold" Margin="0,0"/>
-                                            <TextBlock Text="1" FontSize="16" VerticalAlignment="Center" Margin="1.5,0,5,0"/>
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="+" 
-                                            FontSize="18" FontWeight="Bold" Margin="-2,0"/>
-                                        </StackPanel>
-                                    </DockPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- Menu Item 3 - Selected -->
-
-
-                    <!-- Menu Item 4 -->
-                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15">
-                        <Grid>
-                            <StackPanel>
-                                <!-- Delete Button -->
-                                <Button Width="28" Height="28" Background="#FF5252" BorderThickness="0" 
-                                HorizontalAlignment="Right" Margin="0,0,-10,0">
-                                    <TextBlock Text="✕" FontSize="16" Foreground="White" FontWeight="Bold"/>
-                                </Button>
-
-                                <!-- Image Placeholder -->
-                                <Border Height="150" Background="#E0E0E0" Margin="15,3,15,10"/>
-
-                                <!-- Item Info -->
-                                <StackPanel Margin="15,0,15,15">
-                                    <TextBlock Text="Tên món (Giá tiền)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
-
-                                    <!-- Quantity Control -->
-                                    <DockPanel>
-                                        <Button Background="#4A7BF7"
-BorderThickness="0"
-Padding="25,8"
-DockPanel.Dock="Left">
-
-
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}"
-            CornerRadius="20"
-            Padding="{TemplateBinding Padding}">
-                                                        <ContentPresenter HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Button.Template>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Đã chọn"
-           FontSize="13"
-           Foreground="White"
-           Margin="0,0,5,0"/>
-                                                <TextBlock Text="✓"
-           FontSize="13"
-           Foreground="White"/>
-                                            </StackPanel>
-
-                                        </Button>
-
-
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="−" 
-                                            FontSize="18" FontWeight="Bold" Margin="0,0"/>
-                                            <TextBlock Text="1" FontSize="16" VerticalAlignment="Center" Margin="1.5,0,5,0"/>
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="+" 
-                                            FontSize="18" FontWeight="Bold" Margin="-2,0"/>
-                                        </StackPanel>
-                                    </DockPanel>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- Menu Item 5 - Add -->
-                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15">
-                        <Grid>
-                            <StackPanel>
-                                <!-- Delete Button -->
-                                <Button Width="28" Height="28" Background="#FF5252" BorderThickness="0" 
-                                HorizontalAlignment="Right" Margin="0,0,-10,0">
-                                    <TextBlock Text="✕" FontSize="16" Foreground="White" FontWeight="Bold"/>
-                                </Button>
-
-                                <!-- Image Placeholder -->
-                                <Border Height="150" Background="#E0E0E0" Margin="15,3,15,10"/>
-
-                                <!-- Item Info -->
-                                <StackPanel Margin="15,0,15,15">
-                                    <TextBlock Text="Tên món (Giá tiền)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
-
-                                    <!-- Quantity Control -->
-                                    <DockPanel>
-                                        <Button Background="#4A7BF7"
-BorderThickness="0"
-Padding="25,8"
-DockPanel.Dock="Left">
-
-
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}"
-            CornerRadius="20"
-            Padding="{TemplateBinding Padding}">
-                                                        <ContentPresenter HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Button.Template>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Đã chọn"
-           FontSize="13"
-           Foreground="White"
-           Margin="0,0,5,0"/>
-                                                <TextBlock Text="✓"
-           FontSize="13"
-           Foreground="White"/>
-                                            </StackPanel>
-
-                                        </Button>
-
-
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="−" 
-                                            FontSize="18" FontWeight="Bold" Margin="0,0"/>
-                                            <TextBlock Text="1" FontSize="16" VerticalAlignment="Center" Margin="1.5,0,5,0"/>
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="+" 
-                                            FontSize="18" FontWeight="Bold" Margin="-2,0"/>
-                                        </StackPanel>
-                                    </DockPanel>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- Menu Item 6 -->
-                    <Border CornerRadius="20" Background="White" Width="220" Margin="0,0,15,15">
-                        <Grid>
-                            <StackPanel>
-                                <!-- Delete Button -->
-                                <Button Width="28" Height="28" Background="#FF5252" BorderThickness="0" 
-                                HorizontalAlignment="Right" Margin="0,0,-10,0">
-                                    <TextBlock Text="✕" FontSize="16" Foreground="White" FontWeight="Bold"/>
-                                </Button>
-
-                                <!-- Image Placeholder -->
-                                <Border Height="150" Background="#E0E0E0" Margin="15,3,15,10"/>
-
-                                <!-- Item Info -->
-                                <StackPanel Margin="15,0,15,15">
-                                    <TextBlock Text="Tên món (Giá tiền)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
-
-                                    <!-- Quantity Control -->
-                                    <DockPanel>
-                                        <Button Background="#4A7BF7"
-BorderThickness="0"
-Padding="25,8"
-DockPanel.Dock="Left">
-
-
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Border Background="{TemplateBinding Background}"
-            CornerRadius="20"
-            Padding="{TemplateBinding Padding}">
-                                                        <ContentPresenter HorizontalAlignment="Center"
-                          VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Button.Template>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Đã chọn"
-           FontSize="13"
-           Foreground="White"
-           Margin="0,0,5,0"/>
-                                                <TextBlock Text="✓"
-           FontSize="13"
-           Foreground="White"/>
-                                            </StackPanel>
-
-                                        </Button>
-
-
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="−" 
-                                            FontSize="18" FontWeight="Bold" Margin="0,0"/>
-                                            <TextBlock Text="1" FontSize="16" VerticalAlignment="Center" Margin="1.5,0,5,0"/>
-                                            <Button Width="30" Height="30" Background="#F5F5F5" BorderThickness="0" Content="+" 
-                                            FontSize="18" FontWeight="Bold" Margin="-2,0"/>
-                                        </StackPanel>
-                                    </DockPanel>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </WrapPanel>
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Gray" BlurRadius="10" ShadowDepth="2"/>
+                                </Border.Effect>
+                            </Border>
+                            
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
         </Grid>
 
