@@ -1297,3 +1297,10 @@ BEGIN
 END;
 GO
 
+-------------------
+--Thêm vào 2 thuộc tính còn thiếu cho Employee là email và phone
+ALTER TABLE Employee
+ADD email varchar(30) not null;
+
+ALTER TABLE Employee
+ADD phone varchar(20) not null;
