@@ -32,55 +32,78 @@
             Content="🏠︎" 
             Command="{Binding ShowHomeCommand}" 
             FontSize="21" 
-            Foreground="#697D96" 
             BorderThickness="0" 
             Margin="0,0,0,16">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
-                                <Border x:Name="ButtonBorder" 
-                        Width="{TemplateBinding Width}" 
-                        Height="{TemplateBinding Height}" 
-                        CornerRadius="20" 
-                        Background="White"
-                        ClipToBounds="True">
-                        <ContentPresenter HorizontalAlignment="Center" 
-                                          VerticalAlignment="Center" />
+
+                                <Border x:Name="ButtonBorder"
+                                          CornerRadius="20"
+                                          Background="White">
+
+                                    <!-- đây là đối tượng bạn cần đổi màu -->
+                                    <ContentPresenter x:Name="IconContent"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        TextElement.Foreground="#697D96"/>
                                 </Border>
+
                                 <ControlTemplate.Triggers>
+
                                     <DataTrigger Binding="{Binding SelectedMenu}" Value="Home">
-                                        <Setter TargetName="ButtonBorder" Property="Background" Value="#D0E8FF"/>
-                                        <Setter Property="Foreground" Value="#2563EB"/>
+                                        <Setter TargetName="ButtonBorder"
+                                                Property="Background"
+                                                Value="#D0E8FF"/>
+
+                                        <!-- quan trọng: đổi Foreground trên ContentPresenter -->
+                                        <Setter TargetName="IconContent"
+                                                Property="TextElement.Foreground"
+                                                Value="#3861FB"/>
                                     </DataTrigger>
+
                                 </ControlTemplate.Triggers>
+
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
 
 
                     <Button Width="40" Height="40" 
-            Content="🛍️" 
-            Command="{Binding ShowMenuCommand}" 
-            FontSize="22" 
-            Foreground="#697D96" 
-            BorderThickness="0" 
-            Margin="0,0,0,16">
+            Content="🛍️"
+        Command="{Binding ShowMenuCommand}"
+        FontSize="22"
+        BorderThickness="0"
+        Margin="0,0,0,16">
+
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
-                                <Border x:Name="ButtonBorder" 
-                        Width="{TemplateBinding Width}" 
-                        Height="{TemplateBinding Height}" 
-                        CornerRadius="20" 
-                        Background="White" 
-                        ClipToBounds="True">
-                                    <ContentPresenter HorizontalAlignment="Center" 
-                                      VerticalAlignment="Center" />
+
+                                <Border x:Name="ButtonBorder"
+                    CornerRadius="20"
+                    Background="White">
+
+                                    <!-- đây là đối tượng bạn cần đổi màu -->
+                                    <ContentPresenter x:Name="IconContent"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  TextElement.Foreground="#697D96"/>
                                 </Border>
+
                                 <ControlTemplate.Triggers>
+
                                     <DataTrigger Binding="{Binding SelectedMenu}" Value="Menu">
-                                        <Setter TargetName="ButtonBorder" Property="Background" Value="#D0E8FF"/>
-                                        <Setter Property="Foreground" Value="#2563EB"/>
+                                        <Setter TargetName="ButtonBorder"
+                            Property="Background"
+                            Value="#D0E8FF"/>
+
+                                        <!-- quan trọng: đổi Foreground trên ContentPresenter -->
+                                        <Setter TargetName="IconContent"
+                            Property="TextElement.Foreground"
+                            Value="#3861FB"/>
                                     </DataTrigger>
+
                                 </ControlTemplate.Triggers>
+
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
@@ -89,26 +112,37 @@
             Content="👷" 
             Command="{Binding ShowUserCommand}" 
             FontSize="24" 
-            Foreground="#697D96" 
             BorderThickness="0" 
             Margin="0,0,0,16">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
-                                <Border x:Name="ButtonBorder" 
-                        Width="{TemplateBinding Width}" 
-                        Height="{TemplateBinding Height}" 
-                        CornerRadius="20"
-                                    Background="White" 
-                        ClipToBounds="True">
-                                    <ContentPresenter HorizontalAlignment="Center" 
-                                      VerticalAlignment="Center" />
+
+                                <Border x:Name="ButtonBorder"
+                                          CornerRadius="20"
+                                          Background="White">
+
+                                    <!-- đây là đối tượng bạn cần đổi màu -->
+                                    <ContentPresenter x:Name="IconContent"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                TextElement.Foreground="#697D96"/>
                                 </Border>
+
                                 <ControlTemplate.Triggers>
+
                                     <DataTrigger Binding="{Binding SelectedMenu}" Value="Staff">
-                                        <Setter TargetName="ButtonBorder" Property="Background" Value="#D0E8FF"/>
-                                        <Setter Property="Foreground" Value="#2563EB"/>
+                                        <Setter TargetName="ButtonBorder"
+                                                Property="Background"
+                                                Value="#D0E8FF"/>
+
+                                        <!-- quan trọng: đổi Foreground trên ContentPresenter -->
+                                        <Setter TargetName="IconContent"
+                                                Property="TextElement.Foreground"
+                                                Value="#3861FB"/>
                                     </DataTrigger>
+
                                 </ControlTemplate.Triggers>
+
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
@@ -117,26 +151,37 @@
             Content="📦" 
             Command="{Binding ShowWareHouseCommand}" 
             FontSize="24" 
-            Foreground="#697D96" 
             BorderThickness="0" 
             Margin="0,0,0,16">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
-                                <Border x:Name="ButtonBorder" 
-                        Width="{TemplateBinding Width}" 
-                        Height="{TemplateBinding Height}" 
-                        CornerRadius="20"  
-                        Background="White" 
-                        ClipToBounds="True">
-                                    <ContentPresenter HorizontalAlignment="Center" 
-                                      VerticalAlignment="Center" />
+
+                                <Border x:Name="ButtonBorder"
+                                          CornerRadius="20"
+                                          Background="White">
+
+                                    <!-- đây là đối tượng bạn cần đổi màu -->
+                                    <ContentPresenter x:Name="IconContent"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        TextElement.Foreground="#697D96"/>
                                 </Border>
+
                                 <ControlTemplate.Triggers>
+
                                     <DataTrigger Binding="{Binding SelectedMenu}" Value="WareHouse">
-                                        <Setter TargetName="ButtonBorder" Property="Background" Value="#D0E8FF"/>
-                                        <Setter Property="Foreground" Value="#2563EB"/>
+                                        <Setter TargetName="ButtonBorder"
+                                                Property="Background"
+                                                Value="#D0E8FF"/>
+
+                                        <!-- quan trọng: đổi Foreground trên ContentPresenter -->
+                                        <Setter TargetName="IconContent"
+                                                Property="TextElement.Foreground"
+                                                Value="#3861FB"/>
                                     </DataTrigger>
+
                                 </ControlTemplate.Triggers>
+
                             </ControlTemplate>
                         </Button.Template>
                     </Button>

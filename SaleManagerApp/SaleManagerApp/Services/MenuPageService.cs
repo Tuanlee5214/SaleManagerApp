@@ -4,7 +4,13 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MaterialDesignColors;
+using System.Windows.Controls.Primitives;
+using System.Windows.Forms;
+using System.Windows.Shapes;
 using SaleManagerApp.Models;
+using MenuItem = SaleManagerApp.Models.MenuItem;
+using System.Data;
 
 namespace SaleManagerApp.Services
 {
@@ -56,6 +62,74 @@ namespace SaleManagerApp.Services
             }
         }
 
+        public GetMenuItemsResult GetMenuItems(string type, string searchText)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+
+                    cmd.CommandText =
+                        "SELECT menuItemId, menuItemName, unitPrice, imageUrl, size, specialInfo, description, type " +
+                        "FROM MenuItem " +
+                        "WHERE (@type IS NULL OR type = @type) " +
+                        "AND (@search IS NULL OR menuItemName LIKE '%' + @search + '%')";
+
+                    // Nếu null => truyền DBNull.Value để WHERE hoạt động đúng
+                    cmd.Parameters.Add("@type", SqlDbType.NVarChar, 30)
+                        .Value = (object)type ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@search", SqlDbType.NVarChar, 30)
+                        .Value = (object)searchText ?? DBNull.Value;
+
+                    var list = new List<MenuItem>();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new MenuItem
+                            {
+                                menuItemId = reader["menuItemId"].ToString(),
+                                menuItemName = reader["menuItemName"].ToString(),
+                                unitPrice = (decimal)reader["unitPrice"],
+                                imageUrl = reader["imageUrl"].ToString(),
+                                size = reader["size"].ToString(),
+                                specialInfo = reader["specialInfo"].ToString(),
+                                description = reader["description"].ToString(),
+                                type = reader["type"].ToString()
+                            });
+                        }
+                    }
+
+                    if (list.Count == 0)
+                    {
+                        return new GetMenuItemsResult
+                        {
+                            Success = true,
+                            MenuItemList = list
+                        };
+                    }
+
+                    return new GetMenuItemsResult
+                    {
+                        Success = true,
+                        MenuItemList = list
+                    };
+                }
+            }
+            catch (SqlException)
+            {
+                return new GetMenuItemsResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới server"
+                };
+            }
+        }
+
+
     }
 }   
 
@@ -65,4 +139,13 @@ public class InsertItemResult
     public bool Success { get; set; }
     public string ErrorMessage { get; set; }
     public string SuccessMessage { get; set; }
+}
+
+public class GetMenuItemsResult
+{
+    public bool Success { get; set; }
+    public string ErrorMessage { get; set; }
+    public string SuccessMessage { get; set; }
+
+    public List<MenuItem> MenuItemList;
 }

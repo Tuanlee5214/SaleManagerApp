@@ -246,7 +246,6 @@ CREATE TABLE Customer
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
-
 CREATE TABLE Invoice 
 (
 	invoiceId char(7) primary key,
@@ -1297,3 +1296,10 @@ BEGIN
 END;
 GO
 
+-------------------
+--Thêm vào 2 thuộc tính còn thiếu cho Employee là email và phone
+ALTER TABLE Employee
+ADD email varchar(30) not null;
+
+ALTER TABLE Employee
+ADD phone varchar(20) not null;

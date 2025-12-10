@@ -12,13 +12,15 @@ namespace SaleManagerApp.Models
 
         public string dateofBirth { get; set; }
 
-        public string position { get; set; }
+
 
         public string phone { get; set; }
 
         public string email { get; set; }
 
         public string groupId { get; set; }
+
+
 
         public string StaffId { get; set; }
     }

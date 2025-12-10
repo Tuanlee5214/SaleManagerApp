@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:SaleManagerApp.Views" 
-        xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels" 
+        xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels" xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:behaviors="clr-namespace:SaleManagerApp.Behaviors"
         d:DataContext="{d:DesignInstance Type=viewmodels:InsertMenuItemViewModel}"
         mc:Ignorable="d"
         Title="Thêm Món"
@@ -63,15 +63,21 @@
                 </Border>
             </StackPanel>
 
-            <StackPanel Grid.Row="6" Orientation="Vertical">
-                <TextBlock Text="Giá tiền:" FontWeight="SemiBold" Margin="0 0 0 5"/>
-                <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
-                    <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged}"
-                             Height="30" BorderThickness="0" Background="Transparent" Padding="5 0" VerticalContentAlignment="Center"/>
-                </Border>
-            </StackPanel>
+                <StackPanel Grid.Row="6" Orientation="Vertical">
+                    <TextBlock Text="Giá tiền:" FontWeight="SemiBold" Margin="0 0 0 5"/>
+                    <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
+                        <TextBox Text="{Binding UnitPriceRaw, UpdateSourceTrigger=PropertyChanged}"
+                 Height="30" BorderThickness="0" Background="Transparent"
+                 Padding="5 0" VerticalContentAlignment="Center">
+                            <i:Interaction.Behaviors>
+                                <behaviors:NumericFormatBehavior />
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                    </Border>
+                </StackPanel>
 
-            <StackPanel Grid.Row="8" Orientation="Vertical">
+
+                <StackPanel Grid.Row="8" Orientation="Vertical">
                 <TextBlock Text="Kích cỡ:" FontWeight="SemiBold" Margin="0 0 0 5"/>
                 <Border CornerRadius="10" Background="#EEE" BorderBrush="#DDD" BorderThickness="1">
                     <TextBox Text="{Binding Size, UpdateSourceTrigger=PropertyChanged}"
