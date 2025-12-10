@@ -19,53 +19,73 @@
 
         <Grid.ColumnDefinitions>
             <!-- Sidebar -->
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="897*"/>
+            <ColumnDefinition Width="263*"/>
             <!-- Main UI -->
         </Grid.ColumnDefinitions>
 
-        <!-- SIDEBAR -->
-        
-
         <!-- HEADER -->
-        <Grid Grid.Row="0" Background="White" Height="80">
-    <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto"/> <!-- Cột trái: Title -->
-        <ColumnDefinition Width="*"/>    <!-- Cột giữa: Menu -->
-        <ColumnDefinition Width="Auto"/> <!-- Cột phải: User info -->
-    </Grid.ColumnDefinitions>
+        <Grid Height="60" Grid.Row="0" Background="White" Margin="-19,-25,-19,35" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <!-- Cột trái: Title -->
+                <ColumnDefinition Width="*"/>
+                <!-- Cột giữa: Menu -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Cột phải: User info -->
+            </Grid.ColumnDefinitions>
 
-    <!-- Cột trái: Title -->
-    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="30,0,20,0" Grid.Column="0">
-        <TextBlock Text="Staff Management" FontWeight="SemiBold" FontSize="22" VerticalAlignment="Center"/>
-    </StackPanel>
+            <!-- Cột trái: Title -->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="30,0,20,0" Grid.Column="0">
+                <TextBlock Text="Staff Management" FontWeight="SemiBold" FontSize="22" VerticalAlignment="Center"/>
+            </StackPanel>
 
-    <!-- Cột giữa: Menu / navigation -->
-    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
-        <StackPanel Margin="20,0" VerticalAlignment="Center">
-            <TextBlock Text="Quản lý" FontSize="16" HorizontalAlignment="Center" Foreground="#888"/>
-        </StackPanel>
+            <!-- Cột giữa: Menu / navigation -->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
+                <!-- Tab Quản lý -->
+                <Border Background="Transparent" 
+                        Padding="16,8" 
+                        Margin="4,0"
+                        CornerRadius="8"
+                        Cursor="Hand">
+                    <TextBlock Text="Quản lý" 
+                               FontSize="15" 
+                               Foreground="#6B7280"/>
+                </Border>
 
-        <StackPanel Margin="20,0" VerticalAlignment="Center">
-            <TextBlock Text="Phụ bếp" FontSize="16" HorizontalAlignment="Center" Foreground="#5B7FFF" FontWeight="SemiBold"/>
-            <Border Height="3" Background="#5B7FFF" CornerRadius="2" Margin="0,4,0,0"/>
-        </StackPanel>
+                <!-- Tab Phụ bếp (Active) -->
+                <Border Background="#EEF2FF" 
+                        Padding="16,8" 
+                        Margin="4,0"
+                        CornerRadius="8"
+                        Cursor="Hand">
+                    <TextBlock Text="Phụ bếp" 
+                               FontSize="15" 
+                               Foreground="#5B7FFF" 
+                               FontWeight="SemiBold"/>
+                </Border>
 
-        <StackPanel Margin="20,0" VerticalAlignment="Center">
-            <TextBlock Text="Phục vụ" FontSize="16" HorizontalAlignment="Center" Foreground="#888"/>
-        </StackPanel>
-    </StackPanel>
+                <!-- Tab Phục vụ -->
+                <Border Background="Transparent" 
+                        Padding="16,8" 
+                        Margin="4,0"
+                        CornerRadius="8"
+                        Cursor="Hand">
+                    <TextBlock Text="Phục vụ" 
+                               FontSize="15" 
+                               Foreground="#6B7280"/>
+                </Border>
+            </StackPanel>
 
-    <!-- Cột phải: User info -->
-    <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" Grid.Column="2">
-        <TextBlock Text="Tên admin/user" FontWeight="Bold" HorizontalAlignment="Right"/>
-        <TextBlock Text="Mã NV/ADMIN" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
-    </StackPanel>
-</Grid>
-
-
+            <!-- Cột phải: User info -->
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" Grid.Column="2">
+                <TextBlock Text="Tên admin/user" FontWeight="Bold" HorizontalAlignment="Right"/>
+                <TextBlock Text="Mã NV/ADMIN" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
+            </StackPanel>
+        </Grid>
 
         <!-- MAIN CONTENT -->
-        <Grid Grid.Row="1" Grid.Column="1">
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <!-- Button Row -->
@@ -85,14 +105,19 @@
                            VerticalAlignment="Center"
                            HorizontalAlignment="Left"
                            Margin="8,0,0,0"/>
-                    
+
                     <!-- Actual TextBox -->
-                    <TextBox x:Name="SearchBox"
-                             VerticalAlignment="Center"
-                             Padding="28,4,6,4"
-                             Background="White"
-                             BorderBrush="#D0D0D0"
-                             BorderThickness="1" TextChanged="SearchBox_TextChanged"/>
+                    <Border CornerRadius="15" 
+                            BorderBrush="#D0D0D0" 
+                            BorderThickness="1" 
+                            Background="White"
+                            VerticalAlignment="Center" Height="34">
+                        <TextBox x:Name="SearchBox"
+                                 Padding="28,4,6,4"
+                                 Background="Transparent"
+                                 BorderThickness="0" 
+                                 TextChanged="SearchBox_TextChanged"/>
+                    </Border>
 
                     <!-- Placeholder TextBlock (shows only when TextBox.Text is empty) -->
                     <TextBlock Text="Tìm kiếm nhân viên"
@@ -124,21 +149,21 @@
                         Height="36"
                         Margin="10"
                         Background="#407BFF"
-                        Foreground="White">
+                        Foreground="White"
+                        Click="ChamCongButton_Click">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border CornerRadius="18"
-                    Background="{TemplateBinding Background}"
-                    Padding="10"
-                    SnapsToDevicePixels="True">
+                                    Background="{TemplateBinding Background}"
+                                    Padding="10"
+                                    SnapsToDevicePixels="True">
                                 <ContentPresenter HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  RecognizesAccessKey="True"/>
+                                                  VerticalAlignment="Center"
+                                                  RecognizesAccessKey="True"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-
 
                 <!-- Thêm nhân viên -->
                 <Button Content="+ Thêm nhân viên"
@@ -152,12 +177,12 @@
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border CornerRadius="18"
-                    Background="{TemplateBinding Background}"
-                    Padding="10"
-                    SnapsToDevicePixels="True">
+                                    Background="{TemplateBinding Background}"
+                                    Padding="10"
+                                    SnapsToDevicePixels="True">
                                 <ContentPresenter HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  RecognizesAccessKey="True"/>
+                                                  VerticalAlignment="Center"
+                                                  RecognizesAccessKey="True"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
@@ -172,7 +197,52 @@
                           RowHeight="48"
                           IsReadOnly="True"
                           CanUserAddRows="False"
-                          ItemsSource="{Binding StaffList}" SelectionChanged="DataGrid_SelectionChanged">
+                          ItemsSource="{Binding StaffList}" 
+                          SelectionChanged="DataGrid_SelectionChanged"
+                          GridLinesVisibility="None"
+                          BorderThickness="0" Margin="-10,-10,-10,-10">
+
+                    <!-- Style cho Header -->
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#F9FAFB"/>
+                            <Setter Property="Foreground" Value="#111827"/>
+                            <Setter Property="FontWeight" Value="Normal"/>
+                            <Setter Property="FontSize" Value="13"/>
+                            <Setter Property="Padding" Value="12,12"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
+                    <!-- Style cho Rows -->
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                    </DataGrid.RowStyle>
+
+                    <!-- Style cho Cells -->
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Padding" Value="12,0"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="#111827"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="DataGridCell">
+                                        <Border Background="{TemplateBinding Background}" 
+                                                BorderThickness="0" 
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGrid.CellStyle>
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Tên nhân viên" Binding="{Binding Name}" Width="2*"/>
@@ -200,7 +270,6 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-
                     </DataGrid.Columns>
 
                 </DataGrid>

@@ -20,35 +20,35 @@ public class StaffManagementService
                 using (SqlCommand cmd = new SqlCommand("sp_InsertStaffInformation", conn))
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@fullName", System.Data.SqlDbType.NVarChar, 30).Value = staff.;
-                    cmd.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Money).Value = item.unitPrice;
-                    cmd.Parameters.Add("@ImageUrl", System.Data.SqlDbType.VarChar, 100).Value = item.imageUrl ?? "";
-                    cmd.Parameters.Add("@Size", System.Data.SqlDbType.VarChar, 7).Value = item.size ?? "";
-                    cmd.Parameters.Add("@SpecialInfo", System.Data.SqlDbType.NVarChar, 75).Value = item.specialInfo ?? "";
-                    cmd.Parameters.Add("@Type", System.Data.SqlDbType.NVarChar, 30).Value = item.type ?? "";
+                    cmd.Parameters.Add("@fullName", System.Data.SqlDbType.NVarChar, 30).Value = staff.fullName;
+                    cmd.Parameters.Add("@dateOfBirth", System.Data.SqlDbType.Date).Value = staff.dateofBirth;
+                    cmd.Parameters.Add("@position", System.Data.SqlDbType.VarChar, 20).Value = staff.position;
+                    cmd.Parameters.Add("@email", System.Data.SqlDbType.NVarChar, 30).Value = staff.email;
+                    cmd.Parameters.Add("@phone", System.Data.SqlDbType.NVarChar, 20).Value = staff.phone;
+                    cmd.Parameters.Add("@employeeId", System.Data.SqlDbType.Char, 7).Value = staff.StaffId;
 
                     int row = cmd.ExecuteNonQuery();
                     if (row != 0)
                     {
-                        return new InsertItemResult
+                        return new InsertStaffResult
                         {
                             Success = true,
-                            SuccessMessage = "Thêm món thành công"
+                            SuccessMessage = "Thêm nhân viên thành công"
                         };
                     }
                     else
                     {
-                        return new InsertItemResult
+                        return new InsertStaffResult
                         {
                             Success = false,
-                            ErrorMessage = "Thêm món không thành công"
+                            ErrorMessage = "Thêm nhân viên không thành công"
                         };
                     }
                 }
             }
             catch (SqlException ex)
             {
-                return new InsertItemResult
+                return new InsertStaffResult
                 {
                     Success = false,
                     ErrorMessage = "Lỗi kết nối tới server"
