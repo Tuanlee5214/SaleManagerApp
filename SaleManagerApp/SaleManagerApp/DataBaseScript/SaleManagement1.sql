@@ -246,7 +246,6 @@ CREATE TABLE Customer
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
-
 CREATE TABLE Invoice 
 (
 	invoiceId char(7) primary key,
