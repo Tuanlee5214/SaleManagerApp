@@ -12,7 +12,7 @@ namespace SaleManagerApp.Models
 
         public string dateofBirth { get; set; }
 
-        public string address { get; set; }
+
 
         public string phone { get; set; }
 
@@ -20,9 +20,7 @@ namespace SaleManagerApp.Models
 
         public string groupId { get; set; }
 
-        public DateTime createdAt { get; set; }
 
-        public DateTime updatedAt { get; set; }
 
         public string StaffId { get; set; }
     }

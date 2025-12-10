@@ -1,45 +1,41 @@
-﻿using SaleManagerApp.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using SaleManagerApp.ViewModels;
 
 namespace SaleManagerApp.Views
 {
-    /// <summary>
-    /// Interaction logic for UserPage.xaml
-    /// </summary>
     public partial class UserPage : UserControl
     {
+        private UserPageViewModel _viewModel;
+
         public UserPage()
         {
             InitializeComponent();
-            this.DataContext = new UserPageViewModel();
+            _viewModel = new UserPageViewModel();
+            this.DataContext = _viewModel;
         }
 
-        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ChamCongButton_Click(object sender, RoutedEventArgs e)
         {
-
+            // Gọi ViewModel để xử lý logic
+            _viewModel.ChamCong();
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            // Logic tìm kiếm nếu cần
+            _viewModel.SearchStaff(SearchBox.Text);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            // Logic thêm nhân viên
+            _viewModel.ThemNhanVien();
+        }
 
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Logic khi chọn row
         }
     }
 }

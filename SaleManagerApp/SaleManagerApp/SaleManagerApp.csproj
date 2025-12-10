@@ -78,10 +78,12 @@
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Helpers\ToastService.cs" />
     <Compile Include="Models\MenuItem.cs" />
+    <Compile Include="Models\Staff.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Services\MenuPageService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\DBConnectionService.cs" />
+    <Compile Include="Services\StaffManagementService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\UserSession.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
@@ -117,6 +119,9 @@
     </Compile>
     <Compile Include="Views\SmallForms\TablePicker.xaml.cs">
       <DependentUpon>TablePicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SmallForms\AddStaffWindow.xaml.cs">
+      <DependentUpon>AddStaffWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserPage.xaml.cs">
       <DependentUpon>UserPage.xaml</DependentUpon>
@@ -165,6 +170,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SmallForms\TablePicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SmallForms\AddStaffWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
