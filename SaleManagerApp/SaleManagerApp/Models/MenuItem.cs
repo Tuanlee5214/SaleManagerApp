@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace SaleManagerApp.Models
 {
-    public class MenuItem
+    public class MenuItem : INotifyPropertyChanged
     {
         public string menuItemId { get; set; }
         public string menuItemName { get; set; }
@@ -26,13 +24,48 @@ namespace SaleManagerApp.Models
                 return System.IO.Path.Combine(baseDir, imageUrl);
             }
         }
-        public string unitPriceDisplay {
+
+        public string unitPriceDisplay
+        {
             get
             {
-                 return unitPrice.ToString("N0", new CultureInfo("vi-VN"));
-
+                return unitPrice.ToString("N0", new CultureInfo("vi-VN"));
             }
-          }
-    }
+        }
 
+        private int _quantity;
+        public int Quantity
+        {
+            get => _quantity;
+            set
+            {
+                if (_quantity != value)
+                {
+                    _quantity = value;
+                    OnPropertyChanged(nameof(Quantity));
+                }
+            }
+        }
+
+        public ICommand IncreaseCommand { get; }
+        public ICommand DecreaseCommand { get; }
+
+        public MenuItem()
+        {
+            IncreaseCommand = new RelayCommand(o =>
+            {
+                Quantity++;
+            });
+
+            DecreaseCommand = new RelayCommand(o =>
+            {
+                if (Quantity > 0)
+                    Quantity--;
+            });
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propName)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+    }
 }

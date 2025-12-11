@@ -563,6 +563,7 @@
 
             <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding MenuItems}">
+
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal"/>
@@ -571,34 +572,112 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border CornerRadius="20"
-                        Background="White"
-                        Width="220"
-                        Margin="0,0,15,15">
+                            <Border CornerRadius="20" Background="White" Width="225" Margin="0,0,15,15">
+
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Gray" BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
+                                </Border.Effect>
 
                                 <StackPanel>
-                                    <Image Source="{Binding imageFullPath}"
-                               Height="150"
-                               Margin="15,15,15,10"
-                               Stretch="UniformToFill"/>
+                                    <Image Source="{Binding imageFullPath}" Height="180" Margin="15,15,15,10" Stretch="UniformToFill"/>
 
                                     <StackPanel Margin="15,0,15,15">
-                                        <TextBlock Text="{Binding menuItemName}" 
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Margin="0,0,0,10"/>
+                                        <TextBlock Text="{Binding menuItemName}" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10" TextTrimming="CharacterEllipsis"/>
 
-                                        <TextBlock Text="{Binding unitPriceDisplay, StringFormat={}{0:N0} đ}"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Margin="0,0,0,10"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0" 
+                                                       Text="{Binding unitPrice, StringFormat={}{0:N0} đ}" 
+                                                       FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" 
+                                                       Foreground="#4A7BF7"/>
+
+                                            <Grid Grid.Column="1">
+
+                                                <Button Command="{Binding IncreaseCommand}" Width="32" Height="32" Background="Transparent" BorderThickness="0" Padding="0">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border CornerRadius="16" Background="White" BorderBrush="#4A7BF7" BorderThickness="1.5">
+                                                                            <TextBlock Text="+" FontSize="22" Foreground="#4A7BF7" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-4,0,0" FontWeight="Bold"/>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Quantity}" Value="0">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Quantity}" Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+
+                                                <Border Background="#F0F0F0" CornerRadius="16" Height="32" MinWidth="85">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                            <Setter Property="IsHitTestVisible" Value="True"/>
+
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Quantity}" Value="0">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Setter Property="IsHitTestVisible" Value="False"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Quantity}" Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Setter Property="IsHitTestVisible" Value="False"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <Button Command="{Binding DecreaseCommand}" Width="28" Background="Transparent" BorderThickness="0" Cursor="Hand">
+                                                            <TextBlock Text="-" FontSize="20" FontWeight="Bold" Foreground="#555" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-2,0,0"/>
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border Background="Transparent">
+                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
+
+                                                        <TextBlock Text="{Binding Quantity}" 
+                       FontSize="15" FontWeight="Bold" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       MinWidth="20" TextAlignment="Center" Margin="2,0"/>
+
+                                                        <Button Command="{Binding IncreaseCommand}" Width="28" Background="Transparent" BorderThickness="0" Cursor="Hand">
+                                                            <TextBlock Text="+" FontSize="18" FontWeight="Bold" Foreground="#555" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-1,0,0"/>
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border Background="Transparent">
+                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Border>
+
+                                            </Grid>
+                                        </Grid>
                                     </StackPanel>
                                 </StackPanel>
-                                <Border.Effect>
-                                    <DropShadowEffect Color="Gray" BlurRadius="10" ShadowDepth="2"/>
-                                </Border.Effect>
                             </Border>
-                            
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

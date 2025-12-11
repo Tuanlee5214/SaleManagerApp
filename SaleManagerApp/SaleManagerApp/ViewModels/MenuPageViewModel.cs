@@ -45,6 +45,8 @@ namespace SaleManagerApp.ViewModels
             }
         }
 
+
+
         public ObservableCollection<MenuItem> MenuItems { get; } = new ObservableCollection<MenuItem>();
 
 
