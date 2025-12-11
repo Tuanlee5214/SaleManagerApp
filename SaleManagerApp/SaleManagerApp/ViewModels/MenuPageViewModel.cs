@@ -55,11 +55,14 @@ namespace SaleManagerApp.ViewModels
         public ICommand SelectChickenCommand { get; }
         public ICommand SelectAnotherCommand { get; }
         public ICommand SelectDrinkCommand { get; }
+        public ICommand OpenInsertCustomerFormCommand { get; }
+
         public MenuPageViewModel()
         {
             SelectedType = "Tất cả";
             Type = null;
             OpenInsertMenuItemFormCommand = new RelayCommand(OpenInsertMenuItemForm);
+            OpenInsertCustomerFormCommand = new RelayCommand(OpenInsertCustomerForm);
             SelectAllCommand = new RelayCommand(o =>
             {
                 SelectedType = "Tất cả";
@@ -109,6 +112,15 @@ namespace SaleManagerApp.ViewModels
             var vm = new InsertMenuItemViewModel();
             vm.ReloadMenuItem = LoadMenuItems;
             var window = new InsertMenuItemForm { DataContext = vm };
+            vm.CloseAction = () => window.Close();
+            window.ShowDialog();
+        }
+
+        public void OpenInsertCustomerForm(object obj)
+        {
+            var vm = new InsertCustomerViewModel();
+            vm.ReloadCustomer = LoadMenuItems;
+            var window = new InsertCustomerWindow { DataContext = vm };
             vm.CloseAction = () => window.Close();
             window.ShowDialog();
         }

@@ -62,6 +62,51 @@ namespace SaleManagerApp.Services
             }
         }
 
+        //  Insert khách hàng
+        public InsertCustomerResult InsertCustomer(Customer item)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (SqlCommand cmd = new SqlCommand("sp_InsertCustomer", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@FullName", SqlDbType.NVarChar, 30).Value = item.fullName;
+                    cmd.Parameters.Add("@Phone", SqlDbType.VarChar, 25).Value = item.phone;
+                    cmd.Parameters.Add("@Email", SqlDbType.VarChar, 30).Value = item.email;
+                    cmd.Parameters.Add("@Location", SqlDbType.NVarChar, 100).Value = item.address;
+
+                    int row = cmd.ExecuteNonQuery();
+
+                    if (row > 0)
+                    {
+                        return new InsertCustomerResult
+                        {
+                            Success = true,
+                            SuccessMessage = "Thêm khách hàng thành công"
+                        };
+                    }
+                    else
+                    {
+                        return new InsertCustomerResult
+                        {
+                            Success = false,
+                            ErrorMessage = "Thêm khách hàng thất bại"
+                        };
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                return new InsertCustomerResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới server"
+                };
+            }
+        }
+
         public GetMenuItemsResult GetMenuItems(string type, string searchText)
         {
             try
@@ -148,4 +193,11 @@ public class GetMenuItemsResult
     public string SuccessMessage { get; set; }
 
     public List<MenuItem> MenuItemList;
+}
+
+public class InsertCustomerResult
+{
+    public bool Success { get; set; }
+    public string SuccessMessage { get; set; }
+    public string ErrorMessage { get; set; }
 }
