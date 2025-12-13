@@ -5,10 +5,12 @@ using SaleManagerApp.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace SaleManagerApp.ViewModels
 {
@@ -32,6 +34,48 @@ namespace SaleManagerApp.ViewModels
                 LoadMenuItems();
             }
         }
+
+        //public IEnumerable<MenuItem> CartItems
+        //    => MenuItems.Where(x => x.Quantity > 0);
+
+
+        //public decimal TotalAmount =>
+        //    MenuItems
+        //        .Where(x => x.Quantity > 0)
+        //        .Sum(x => x.Quantity * x.unitPrice);
+
+        //private void MenuItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        //{
+        //    if (e.PropertyName == nameof(MenuItem.Quantity))
+        //    {
+        //        OnPropertyChanged(nameof(CartItems));
+        //        OnPropertyChanged(nameof(TotalAmount));
+        //    }
+        //}
+
+        public ObservableCollection<MenuItem> CartItems { get; }
+            = new ObservableCollection<MenuItem>();
+
+        public decimal TotalAmount =>
+            CartItems.Sum(x => x.Quantity * x.unitPrice);
+
+        private void MenuItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(MenuItem.Quantity))
+            {
+                var item = (MenuItem)sender;
+
+                if (item.Quantity > 0 && !CartItems.Contains(item))
+                    CartItems.Add(item);
+
+                if (item.Quantity == 0 && CartItems.Contains(item))
+                    CartItems.Remove(item);
+
+                OnPropertyChanged(nameof(TotalAmount));
+            }
+        }
+
+
 
         private string _searchText;
         public string SearchText
@@ -58,6 +102,8 @@ namespace SaleManagerApp.ViewModels
         public ICommand SelectAnotherCommand { get; }
         public ICommand SelectDrinkCommand { get; }
         public ICommand OpenInsertCustomerFormCommand { get; }
+        public ICommand RemoveItemCommand { get; }
+
 
         public MenuPageViewModel()
         {
@@ -65,6 +111,13 @@ namespace SaleManagerApp.ViewModels
             Type = null;
             OpenInsertMenuItemFormCommand = new RelayCommand(OpenInsertMenuItemForm);
             OpenInsertCustomerFormCommand = new RelayCommand(OpenInsertCustomerForm);
+            //RemoveItemCommand = new RelayCommand(o =>
+            //{
+            //    if (o is MenuItem item)
+            //        RemoveItem(item);
+            //});
+
+            RemoveItemCommand = new RelayCommand(RemoveItem);
             SelectAllCommand = new RelayCommand(o =>
             {
                 SelectedType = "Tất cả";
@@ -118,6 +171,19 @@ namespace SaleManagerApp.ViewModels
             window.ShowDialog();
         }
 
+        //public void RemoveItem(MenuItem item)
+        //{
+        //    if (item == null) return;
+        //    item.Quantity = 0;
+        //    OnPropertyChanged(nameof(CartItems));
+        //    OnPropertyChanged(nameof(TotalAmount));
+        //}
+
+        public void RemoveItem(object obj)
+        {
+            if (obj is MenuItem item)
+                item.Quantity = 0;   
+        }
         public void OpenInsertCustomerForm(object obj)
         {
             var vm = new InsertCustomerViewModel();
@@ -126,6 +192,7 @@ namespace SaleManagerApp.ViewModels
             vm.CloseAction = () => window.Close();
             window.ShowDialog();
         }
+
 
         private void LoadMenuItems()
         {
@@ -137,7 +204,13 @@ namespace SaleManagerApp.ViewModels
             {
                 MenuItems.Clear();
                 foreach (var item in result.MenuItemList)
-                MenuItems.Add(item);
+                {
+                    item.PropertyChanged += MenuItem_PropertyChanged;
+                    MenuItems.Add(item);
+                }
+
+                //OnPropertyChanged(nameof(CartItems));
+                //OnPropertyChanged(nameof(TotalAmount));
             }
         }
     }

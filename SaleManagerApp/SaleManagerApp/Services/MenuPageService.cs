@@ -79,7 +79,7 @@ namespace SaleManagerApp.Services
 
                     int row = cmd.ExecuteNonQuery();
 
-                    if (row > 0)
+                    if (row != 0)
                     {
                         return new InsertCustomerResult
                         {
@@ -97,13 +97,15 @@ namespace SaleManagerApp.Services
                     }
                 }
             }
-            catch (SqlException)
+            catch (SqlException ex)
             {
+                Console.WriteLine(ex.Message);
                 return new InsertCustomerResult
                 {
                     Success = false,
-                    ErrorMessage = "Lỗi kết nối tới server"
+                    ErrorMessage = "Lỗi kết nối tới server",
                 };
+
             }
         }
 

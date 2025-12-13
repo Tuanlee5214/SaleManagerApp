@@ -19,9 +19,6 @@ namespace SaleManagerApp.Models
         public string email { get; set; }
 
         public string groupId { get; set; }
-
-
-
         public string StaffId { get; set; }
     }
 }

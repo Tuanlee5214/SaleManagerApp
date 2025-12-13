@@ -195,7 +195,8 @@
         Background="White"
         BorderBrush="#DDD"
         BorderThickness="1"
-        Margin="10,0">
+        Margin="10,0"
+        Command="{Binding OpenInsertCustomerFormCommand}"                        >
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}"
@@ -697,119 +698,80 @@
 
                 <!-- Header -->
                 <StackPanel Grid.Row="0" Margin="0,0,0,20">
-                    <TextBlock Text="Thông tin đơn hàng" FontSize="18" FontWeight="Bold" Margin="0,0,0,5"/>
-                    <TextBlock Text="Mã đơn hàng hiện tại" FontSize="13" Foreground="#4A7BF7"/>
+                    <TextBlock Text="Đơn hàng hiện tại" HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Margin="0,0,0,5"/>
                 </StackPanel>
 
                 <!-- Order Items Header -->
                 <TextBlock Grid.Row="1" Text="Thông tin món (Số món ăn)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,15"/>
 
                 <!-- Order Items List -->
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <!-- Order Item 1 -->
-                        <Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="0,10" Height="81">
-                            <DockPanel>
-                                <Button DockPanel.Dock="Right" Background="Transparent" BorderThickness="0" 
-                                        VerticalAlignment="Top" Padding="5">
-                                    <TextBlock Text="🗑️" FontSize="18" Foreground="#FF5252"/>
-                                </Button>
-                                <StackPanel>
-                                    <Border Width="60" Height="60" Background="#E0E0E0" CornerRadius="8" Margin="-250,0,0,10" RenderTransformOrigin="0.5,0.5">
-                                        <Border.RenderTransform>
-                                            <TransformGroup>
-                                                <ScaleTransform/>
-                                                <SkewTransform/>
-                                                <RotateTransform Angle="0"/>
-                                                <TranslateTransform/>
-                                            </TransformGroup>
-                                        </Border.RenderTransform>
-                                    </Border>
-                                    <DockPanel>
-                                        <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
-                                            <TextBlock Text="Thịt heo quay" FontSize="13" FontWeight="SemiBold" Margin="88,-70,0,0"/>
-                                            <TextBlock Text="159.000 VND" FontSize="12" Foreground="#666" Margin="88,-50,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
-                                                <TextBlock Text="Size" FontSize="15" VerticalAlignment="Center" Margin="-130,-120,5,0"/>
-                                                <TextBlock Text="x3" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" Margin="-1,-120,5,0"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </DockPanel>
-                                </StackPanel>
-                            </DockPanel>
-                        </Border>
+                <Border Grid.Row="2"
+        BorderBrush="#E0E0E0"
+        BorderThickness="1"
+        CornerRadius="12"
+        Padding="5">
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding CartItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="#E0E0E0"
+                        BorderThickness="0,0,0,1"
+                        Padding="10">
 
-                        <!-- Order Item 2 -->
-                        <Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="0,15" Height="96">
-                            <DockPanel>
-                                <Button DockPanel.Dock="Right" Background="Transparent" BorderThickness="0" 
-                VerticalAlignment="Top" Padding="5">
-                                    <TextBlock Text="🗑️" FontSize="18" Foreground="#FF5252"/>
-                                </Button>
-                                <StackPanel>
-                                    <Border Width="60" Height="60" Background="#E0E0E0" CornerRadius="8" Margin="-250,0,0,10" RenderTransformOrigin="0.5,0.5">
-                                        <Border.RenderTransform>
-                                            <TransformGroup>
-                                                <ScaleTransform/>
-                                                <SkewTransform/>
-                                                <RotateTransform Angle="0"/>
-                                                <TranslateTransform/>
-                                            </TransformGroup>
-                                        </Border.RenderTransform>
-                                    </Border>
-                                    <DockPanel>
-                                        <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
-                                            <TextBlock Text="Thịt heo quay" FontSize="13" FontWeight="SemiBold" Margin="88,-70,0,0"/>
-                                            <TextBlock Text="159.000 VND" FontSize="12" Foreground="#666" Margin="88,-50,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
-                                                <TextBlock Text="Size" FontSize="15" VerticalAlignment="Center" Margin="-130,-120,5,0"/>
-                                                <TextBlock Text="x3" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" Margin="-1,-120,5,0"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </DockPanel>
-                                </StackPanel>
-                            </DockPanel>
-                        </Border>
+                                        <DockPanel LastChildFill="True">
 
-                        <!-- Order Item 3 -->
-                        <Border Padding="0,15" Height="95">
-                            <DockPanel>
-                                <Button DockPanel.Dock="Right" Background="Transparent" BorderThickness="0" 
-                VerticalAlignment="Top" Padding="5">
-                                    <TextBlock Text="🗑️" FontSize="18" Foreground="#FF5252"/>
-                                </Button>
-                                <StackPanel>
-                                    <Border Width="60" Height="60" Background="#E0E0E0" CornerRadius="8" Margin="-250,0,0,10" RenderTransformOrigin="0.5,0.5">
-                                        <Border.RenderTransform>
-                                            <TransformGroup>
-                                                <ScaleTransform/>
-                                                <SkewTransform/>
-                                                <RotateTransform Angle="0"/>
-                                                <TranslateTransform/>
-                                            </TransformGroup>
-                                        </Border.RenderTransform>
-                                    </Border>
-                                    <DockPanel>
-                                        <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
-                                            <TextBlock Text="Thịt heo quay" FontSize="13" FontWeight="SemiBold" Margin="88,-70,0,0"/>
-                                            <TextBlock Text="159.000 VND" FontSize="12" Foreground="#666" Margin="88,-50,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
-                                                <TextBlock Text="Size" FontSize="15" VerticalAlignment="Center" Margin="-130,-120,5,0"/>
-                                                <TextBlock Text="x3" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" Margin="-1,-120,5,0"/>
+                                            <!-- Xóa -->
+                                            <Button DockPanel.Dock="Right"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding DataContext.RemoveItemCommand,
+                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                    CommandParameter="{Binding}">
+                                                <TextBlock Text="🗑"
+                                       FontSize="18"
+                                       Foreground="#FF5252"/>
+                                            </Button>
+
+                                            <!-- Nội dung -->
+                                            <StackPanel Orientation="Horizontal">
+
+                                                <!-- Ảnh -->
+                                                <Image Source="{Binding imageFullPath}"
+                                   Width="55"
+                                   Height="55"
+                                   Stretch="UniformToFill"  
+                                   Margin="0,0,10,0"
+                                   />
+
+                                                <!-- Tên + giá -->
+                                                <StackPanel VerticalAlignment="Center" Width="140">
+                                                    <TextBlock Text="{Binding menuItemName}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding unitPrice,
+                                      StringFormat={}{0:N0} VND}"
+                                           FontSize="12"
+                                           Foreground="#666"/>
+                                                </StackPanel>
+
+                                                <!-- Số lượng -->
+                                                <TextBlock Text="{Binding Quantity,
+                                   StringFormat=x{0}}"
+                                       FontSize="13"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0,0,0"/>
                                             </StackPanel>
-                                        </StackPanel>
-                                    </DockPanel>
-                                </StackPanel>
-                            </DockPanel>
-                        </Border>
-                    </StackPanel>
-                </ScrollViewer>
+
+                                        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+
 
                 <!-- Payment Summary -->
                 <StackPanel Grid.Row="3" Margin="0,20,0,0">
@@ -817,24 +779,41 @@
 
                     <DockPanel Margin="0,0,0,8">
                         <TextBlock Text="Tổng giá trị" FontSize="13" Foreground="#666"/>
-                        <TextBlock Text="000 VND" FontSize="13" HorizontalAlignment="Right"/>
+                        <TextBlock Text="{Binding TotalAmount,
+                                                      StringFormat={}{0:N0} VND}" FontSize="13" HorizontalAlignment="Right"/>
                     </DockPanel>
 
                     <DockPanel Margin="0,0,0,8">
                         <TextBlock Text="Phí" FontSize="13" Foreground="#666"/>
-                        <TextBlock Text="000 VND" FontSize="13" HorizontalAlignment="Right"/>
+                        <TextBlock Text="0 VND" FontSize="13" HorizontalAlignment="Right"/>
                     </DockPanel>
 
                     <DockPanel Margin="0,0,0,15">
                         <TextBlock Text="Giảm giá" FontSize="13" Foreground="#666"/>
-                        <TextBlock Text="XX%" FontSize="13" HorizontalAlignment="Right"/>
+                        <TextBlock Text="0%" FontSize="13" HorizontalAlignment="Right"/>
                     </DockPanel>
 
                     <Border BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Padding="0,15,0,0">
-                        <DockPanel>
-                            <TextBlock Text="Tổng" FontSize="15" FontWeight="Bold"/>
-                            <TextBlock Text="000VND" FontSize="16" FontWeight="Bold" Foreground="#4A7BF7" HorizontalAlignment="Right"/>
-                        </DockPanel>
+                        <Grid Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Label -->
+                            <TextBlock Grid.Column="0"
+               Text="Tổng"
+               FontSize="15"
+               FontWeight="Bold"/>
+
+                            <!-- Amount -->
+                            <TextBlock Grid.Column="1"
+               Text="{Binding TotalAmount, StringFormat={}{0:N0} VND}"
+               FontSize="16"
+               FontWeight="Bold"
+               Foreground="#4A7BF7"
+               HorizontalAlignment="Right"/>
+                        </Grid>
                     </Border>
                 </StackPanel>
 
