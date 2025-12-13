@@ -8,6 +8,8 @@ namespace SaleManagerApp.Models
         public string MenuItemName { get; }
         public decimal UnitPrice { get; }
 
+        public string ImageUrl { get; }
+
         private int _quantity;
         public int Quantity
         {
@@ -28,6 +30,8 @@ namespace SaleManagerApp.Models
             MenuItemId = item.menuItemId;
             MenuItemName = item.menuItemName;
             UnitPrice = item.unitPrice;
+            var baseDir = System.AppDomain.CurrentDomain.BaseDirectory;
+            ImageUrl = System.IO.Path.Combine(baseDir, item.imageUrl);
             Quantity = 1;
         }
 

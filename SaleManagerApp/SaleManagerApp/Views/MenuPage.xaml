@@ -766,34 +766,43 @@
                                             <Button DockPanel.Dock="Right"
                                 Content="🗑"
                                 FontSize="16"
-                                 Foreground="Red"                   
+                                Foreground="Red"
                                 Background="Transparent"
                                 BorderThickness="0"
                                 Command="{Binding DataContext.RemoveItemCommand,
                                           RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                 CommandParameter="{Binding}"/>
 
-                                            <StackPanel>
+                                            <!-- IMAGE -->
+                                            <Image DockPanel.Dock="Left"
+                               Width="50"
+                               Height="50"
+                               Margin="0,0,10,0"
+                               Source="{Binding ImageUrl}"
+                               Stretch="UniformToFill"/>
 
-                                                <!-- NAME -->
+                                            <!-- INFO -->
+                                            <StackPanel VerticalAlignment="Center">
+
                                                 <TextBlock Text="{Binding MenuItemName}"
                                        FontWeight="SemiBold"/>
 
-                                                <!-- PRICE -->
                                                 <TextBlock Text="{Binding UnitPrice, StringFormat={}{0:N0} đ}"
                                        Foreground="#666"/>
-
-                                                <!-- QTY -->
                                                 <TextBlock Text="{Binding Quantity, StringFormat=x{0}}"
-                                       FontWeight="Bold"/>
+                                 FontSize="12" FontWeight="Bold"/>
+
 
                                             </StackPanel>
+
+                                            
                                         </DockPanel>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
+
 
                 </Border>
 
