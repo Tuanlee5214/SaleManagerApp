@@ -75,9 +75,13 @@
     <Compile Include="Command\RelayCommand.cs" />
     <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\CornerRadiusHelper.cs" />
+    <Compile Include="Helpers\MenuItemInCartConverter.cs" />
+    <Compile Include="Helpers\MenuItemNotInCartConverter.cs" />
+    <Compile Include="Helpers\MenuItemToQuantityConverter.cs" />
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Helpers\QuantityToVisibilityConverter.cs" />
     <Compile Include="Helpers\ToastService.cs" />
+    <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="Models\Staff.cs" />

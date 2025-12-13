@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace SaleManagerApp.Models
@@ -33,39 +34,21 @@ namespace SaleManagerApp.Models
             }
         }
 
-        private int _quantity;
-        public int Quantity
+        private int _displayQuantity;
+        public int DisplayQuantity
         {
-            get => _quantity;
+            get => _displayQuantity;
             set
             {
-                if (_quantity != value)
-                {
-                    _quantity = value;
-                    OnPropertyChanged(nameof(Quantity));
-                }
+                _displayQuantity = value;
+                OnPropertyChanged(nameof(DisplayQuantity));
             }
         }
-
-        public ICommand IncreaseCommand { get; }
-        public ICommand DecreaseCommand { get; }
-
-        public MenuItem()
-        {
-            IncreaseCommand = new RelayCommand(o =>
-            {
-                Quantity++;
-            });
-
-            DecreaseCommand = new RelayCommand(o =>
-            {
-                if (Quantity > 0)
-                    Quantity--;
-            });
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propName)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
