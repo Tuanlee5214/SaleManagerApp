@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace SaleManagerApp.Models
 {
-    public class MenuItem
+    public class MenuItem : INotifyPropertyChanged
     {
         public string menuItemId { get; set; }
         public string menuItemName { get; set; }
@@ -26,13 +25,30 @@ namespace SaleManagerApp.Models
                 return System.IO.Path.Combine(baseDir, imageUrl);
             }
         }
-        public string unitPriceDisplay {
+
+        public string unitPriceDisplay
+        {
             get
             {
-                 return unitPrice.ToString("N0", new CultureInfo("vi-VN"));
-
+                return unitPrice.ToString("N0", new CultureInfo("vi-VN"));
             }
-          }
-    }
+        }
 
+        private int _displayQuantity;
+        public int DisplayQuantity
+        {
+            get => _displayQuantity;
+            set
+            {
+                _displayQuantity = value;
+                OnPropertyChanged(nameof(DisplayQuantity));
+            }
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
 }

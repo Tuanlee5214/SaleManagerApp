@@ -16,8 +16,6 @@ CREATE TABLE [User]
 	createdAt datetime default getdate(),
 	updatedAt datetime
 )
-
-
 CREATE TABLE [Group]
 (
 	groupId char(7) primary key,

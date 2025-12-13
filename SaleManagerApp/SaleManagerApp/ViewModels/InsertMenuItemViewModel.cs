@@ -127,7 +127,8 @@ public string UnitPriceRaw
                 "Nước uống",
                 "Thịt heo",
                 "Thịt bò",
-                "Thịt gà"
+                "Thịt gà",
+                "Món khác"
             };
         }
 

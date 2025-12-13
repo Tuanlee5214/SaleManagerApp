@@ -1,26 +1,19 @@
 ﻿using SaleManagerApp.Models;
-using SaleManagerApp.Navigation;
 using SaleManagerApp.Services;
-using SaleManagerApp.Views;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace SaleManagerApp.ViewModels
 {
-    public class MenuPageViewModel:BaseViewModel
+    public class MenuPageViewModel : BaseViewModel
     {
-        public MenuPageService _service = new MenuPageService();
-        private string _selectedType;
-        public string SelectedType
-        {
-            get => _selectedType;
-            set { _selectedType = value; OnPropertyChanged();}
-        }
+        private readonly MenuPageService _service = new MenuPageService();
+
+        /* ===================== MENU ===================== */
+
+        public ObservableCollection<MenuItem> MenuItems { get; }
+            = new ObservableCollection<MenuItem>();
 
         private string _type;
         public string Type
@@ -28,7 +21,8 @@ namespace SaleManagerApp.ViewModels
             get => _type;
             set
             {
-                _type = value; OnPropertyChanged();
+                _type = value;
+                OnPropertyChanged();
                 LoadMenuItems();
             }
         }
@@ -45,98 +39,136 @@ namespace SaleManagerApp.ViewModels
             }
         }
 
-        public ObservableCollection<MenuItem> MenuItems { get; } = new ObservableCollection<MenuItem>();
+        /* ===================== CART ===================== */
 
+        public ObservableCollection<CartItem> CartItems { get; }
+            = new ObservableCollection<CartItem>();
 
-        public ICommand OpenInsertMenuItemFormCommand { get; }
+        public decimal TotalAmount => CartItems.Sum(x => x.SubTotal);
+
+        private CartItem FindCartItem(MenuItem item)
+        {
+            return CartItems.FirstOrDefault(c => c.MenuItemId == item.menuItemId);
+        }
+
+        /* ===================== COMMANDS ===================== */
+
+        public ICommand AddToCartCommand { get; }
+        public ICommand IncreaseCommand { get; }
+        public ICommand DecreaseCommand { get; }
+        public ICommand RemoveItemCommand { get; }
+
         public ICommand SelectAllCommand { get; }
         public ICommand SelectBeefCommand { get; }
         public ICommand SelectPorkCommand { get; }
         public ICommand SelectChickenCommand { get; }
         public ICommand SelectAnotherCommand { get; }
         public ICommand SelectDrinkCommand { get; }
-        public ICommand OpenInsertCustomerFormCommand { get; }
+
+        /* ===================== CONSTRUCTOR ===================== */
 
         public MenuPageViewModel()
         {
-            SelectedType = "Tất cả";
-            Type = null;
-            OpenInsertMenuItemFormCommand = new RelayCommand(OpenInsertMenuItemForm);
-            OpenInsertCustomerFormCommand = new RelayCommand(OpenInsertCustomerForm);
-            SelectAllCommand = new RelayCommand(o =>
-            {
-                SelectedType = "Tất cả";
-                Type = null;
-                Console.WriteLine("Selected = " + SelectedType);
-            });
+            AddToCartCommand = new RelayCommand(o => AddToCart(o as MenuItem));
+            IncreaseCommand = new RelayCommand(o => Increase(o as MenuItem));
+            DecreaseCommand = new RelayCommand(o => Decrease(o as MenuItem));
+            RemoveItemCommand = new RelayCommand(RemoveCartItem);
 
-            SelectBeefCommand = new RelayCommand(o =>
-            {
-                SelectedType = "Thịt bò";
-                Type = "Thịt bò";
-                Console.WriteLine("Selected = " + SelectedType);
-            });
+            SelectAllCommand = new RelayCommand(_ => Type = null);
+            SelectBeefCommand = new RelayCommand(_ => Type = "Thịt bò");
+            SelectPorkCommand = new RelayCommand(_ => Type = "Thịt heo");
+            SelectChickenCommand = new RelayCommand(_ => Type = "Thịt gà");
+            SelectAnotherCommand = new RelayCommand(_ => Type = "Món khác");
+            SelectDrinkCommand = new RelayCommand(_ => Type = "Nước uống");
 
-            SelectPorkCommand = new RelayCommand(o =>
-            {
-                SelectedType = "Thịt heo";
-                Type = "Thịt heo";
-                Console.WriteLine("Selected = " + SelectedType);
-            });
-
-            SelectChickenCommand = new RelayCommand(o =>
-            {
-                SelectedType = "Thịt gà";
-                Type = "Thịt gà";
-                Console.WriteLine("Selected = " + SelectedType);
-            });
-
-            SelectAnotherCommand = new RelayCommand(o =>
-            {
-                SelectedType = "Món khác";
-                Type = "Món khác";
-                Console.WriteLine("Selected = " + SelectedType);
-            });
-
-            SelectDrinkCommand = new RelayCommand(o =>
-            {
-                SelectedType = "Nước uống";
-                Type = "Nước uống";
-                Console.WriteLine("Selected = " + SelectedType);
-            });
             LoadMenuItems();
         }
 
-        public void OpenInsertMenuItemForm(object obj)
+        /* ===================== CART LOGIC ===================== */
+
+        private void AddToCart(MenuItem item)
         {
-            var vm = new InsertMenuItemViewModel();
-            vm.ReloadMenuItem = LoadMenuItems;
-            var window = new InsertMenuItemForm { DataContext = vm };
-            vm.CloseAction = () => window.Close();
-            window.ShowDialog();
+            if (item == null) return;
+
+            var cartItem = FindCartItem(item);
+            if (cartItem == null)
+                CartItems.Add(new CartItem(item));
+            else
+                cartItem.Quantity++;
+
+            SyncMenuDisplayQuantity();
+            RaiseCartChanged();
         }
 
-        public void OpenInsertCustomerForm(object obj)
+        private void Increase(MenuItem item)
         {
-            var vm = new InsertCustomerViewModel();
-            vm.ReloadCustomer = LoadMenuItems;
-            var window = new InsertCustomerWindow { DataContext = vm };
-            vm.CloseAction = () => window.Close();
-            window.ShowDialog();
+            if (item == null) return;
+
+            var cartItem = FindCartItem(item);
+            if (cartItem == null) return;
+
+            cartItem.Quantity++;
+            SyncMenuDisplayQuantity();
+            RaiseCartChanged();
         }
+
+        private void Decrease(MenuItem item)
+        {
+            if (item == null) return;
+
+            var cartItem = FindCartItem(item);
+            if (cartItem == null) return;
+
+            if (cartItem.Quantity > 1)
+                cartItem.Quantity--;
+            else
+                CartItems.Remove(cartItem);
+
+            SyncMenuDisplayQuantity();
+            RaiseCartChanged();
+        }
+
+        private void RemoveCartItem(object o)
+        {
+            if (o is  CartItem cartItem)
+            {
+                CartItems.Remove(cartItem);
+                SyncMenuDisplayQuantity();
+                RaiseCartChanged();
+            } 
+        }
+
+        private void RaiseCartChanged()
+        {
+            OnPropertyChanged(nameof(CartItems));
+            OnPropertyChanged(nameof(TotalAmount));
+        }
+
+        /* ===================== SYNC ===================== */
+
+        private void SyncMenuDisplayQuantity()
+        {
+            foreach (var menu in MenuItems)
+            {
+                var cartItem = CartItems
+                    .FirstOrDefault(c => c.MenuItemId == menu.menuItemId);
+
+                menu.DisplayQuantity = cartItem?.Quantity ?? 0;
+            }
+        }
+
+        /* ===================== LOAD MENU ===================== */
 
         private void LoadMenuItems()
         {
-            var type = string.IsNullOrWhiteSpace(Type) ? null : Type;
-            var search = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText;
+            var result = _service.GetMenuItems(Type, SearchText);
+            if (!result.Success) return;
 
-            var result = _service.GetMenuItems(type, search);
-            if(result.Success)
-            {
-                MenuItems.Clear();
-                foreach (var item in result.MenuItemList)
+            MenuItems.Clear();
+            foreach (var item in result.MenuItemList)
                 MenuItems.Add(item);
-            }
+
+            SyncMenuDisplayQuantity();
         }
     }
 }
