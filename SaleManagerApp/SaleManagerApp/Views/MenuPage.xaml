@@ -7,11 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1200"
              Background="#F5F5F5">
-    <UserControl.Resources>
-        <converters:MenuItemInCartConverter x:Key="MenuItemInCartConverter"/>
-        <converters:MenuItemNotInCartConverter x:Key="MenuItemNotInCartConverter"/>
-        <converters:MenuItemToQuantityConverter x:Key="MenuItemToQuantityConverter"/>
-    </UserControl.Resources>
 
     <Grid Margin="-10,0,10,0">
         <Grid.ColumnDefinitions>
@@ -269,7 +264,7 @@
                             </Setter>
                         </Style>
                     </StackPanel.Resources>
-        <!--Button All-->
+                    <!--Button All-->
                     <Button Width="100"
                 Padding="0,10"
                 BorderThickness="0"
@@ -307,7 +302,7 @@
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
-                                
+
                                 <!-- Khi được chọn -->
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding SelectedType}" Value="Tất cả">
@@ -320,13 +315,13 @@
                         </Button.Style>
                     </Button>
 
-                    <!--Button Thịt bò--> 
+                    <!--Button Thịt bò-->
                     <Button Width="100"
                             Padding="0,10"
                             BorderThickness="0"
                             Margin="0,0,20,0"
                             Command="{Binding SelectBeefCommand}">
-                        
+
                         <Button.Style>
                             <Style TargetType="Button">
 
@@ -633,8 +628,23 @@
         Background="Transparent"
         BorderThickness="0"
         Command="{Binding DataContext.AddToCartCommand,
-                          RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
         CommandParameter="{Binding}">
+
+                                                        <Button.Style>
+                                                            <Style TargetType="Button">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding DisplayQuantity}" Value="0">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding DisplayQuantity}" Value="1">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Button.Style>
+
                                                         <Button.Template>
                                                             <ControlTemplate TargetType="Button">
                                                                 <Border Width="32"
@@ -654,6 +664,7 @@
                                                             </ControlTemplate>
                                                         </Button.Template>
                                                     </Button>
+
 
 
                                                     <!-- QTY -->
@@ -751,26 +762,31 @@
 
                                         <DockPanel>
 
-                                            <!-- Delete -->
+                                            <!-- DELETE -->
                                             <Button DockPanel.Dock="Right"
                                 Content="🗑"
                                 FontSize="16"
+                                 Foreground="Red"                   
                                 Background="Transparent"
                                 BorderThickness="0"
                                 Command="{Binding DataContext.RemoveItemCommand,
-                                                  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                          RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                 CommandParameter="{Binding}"/>
 
                                             <StackPanel>
-                                                <TextBlock Text="{Binding Item.menuItemName}"
+
+                                                <!-- NAME -->
+                                                <TextBlock Text="{Binding MenuItemName}"
                                        FontWeight="SemiBold"/>
 
-                                                <TextBlock Text="{Binding Item.unitPriceDisplay}"
+                                                <!-- PRICE -->
+                                                <TextBlock Text="{Binding UnitPrice, StringFormat={}{0:N0} đ}"
                                        Foreground="#666"/>
 
-                                                <TextBlock Text="{Binding Quantity,
-                                       StringFormat=x{0}}"
+                                                <!-- QTY -->
+                                                <TextBlock Text="{Binding Quantity, StringFormat=x{0}}"
                                        FontWeight="Bold"/>
+
                                             </StackPanel>
                                         </DockPanel>
                                     </Border>
@@ -778,6 +794,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
+
                 </Border>
 
 

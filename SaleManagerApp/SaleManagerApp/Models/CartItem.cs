@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace SaleManagerApp.Models
 {
     public class CartItem : INotifyPropertyChanged
     {
-        public MenuItem Item { get; }
+        public string MenuItemId { get; }
+        public string MenuItemName { get; }
+        public decimal UnitPrice { get; }
 
         private int _quantity;
         public int Quantity
@@ -17,17 +14,20 @@ namespace SaleManagerApp.Models
             get => _quantity;
             set
             {
+                if (_quantity == value) return;
                 _quantity = value;
                 OnPropertyChanged(nameof(Quantity));
                 OnPropertyChanged(nameof(SubTotal));
             }
         }
 
-        public decimal SubTotal => Quantity * Item.unitPrice;
+        public decimal SubTotal => Quantity * UnitPrice;
 
         public CartItem(MenuItem item)
         {
-            Item = item;
+            MenuItemId = item.menuItemId;
+            MenuItemName = item.menuItemName;
+            UnitPrice = item.unitPrice;
             Quantity = 1;
         }
 

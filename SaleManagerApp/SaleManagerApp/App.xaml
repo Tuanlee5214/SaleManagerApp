@@ -8,14 +8,7 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         
-        <conv:MenuItemToQuantityConverter
-        x:Key="MenuItemToQuantityConverter"/>
-
-        <conv:MenuItemInCartConverter
-        x:Key="MenuItemInCartConverter"/>
-
-        <conv:MenuItemNotInCartConverter
-        x:Key="MenuItemNotInCartConverter"/>
+       
 
         <DataTemplate DataType="{x:Type vm:LoginViewModel}">
             <v:LoginScreen />
