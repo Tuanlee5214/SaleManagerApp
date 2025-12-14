@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using SaleManagerApp.Model;
+using SaleManagerApp.Services;
 
 namespace SaleManagerApp.ViewModels
 {
     public class UserPageViewModel : BaseViewModel
     {
-        private ObservableCollection<Staff> _allStaffList; // Lưu toàn bộ danh sách gốc
+        private readonly StaffManagementService _service = new StaffManagementService();
+        private ObservableCollection<Staff> _allStaffList;
         private ObservableCollection<Staff> _staffList;
+
         public ObservableCollection<Staff> StaffList
         {
             get => _staffList;
@@ -23,7 +26,6 @@ namespace SaleManagerApp.ViewModels
 
         public UserPageViewModel()
         {
-            // Khởi tạo danh sách nhân viên
             _allStaffList = new ObservableCollection<Staff>();
             StaffList = new ObservableCollection<Staff>();
             LoadStaffData();
@@ -31,78 +33,70 @@ namespace SaleManagerApp.ViewModels
 
         private void LoadStaffData()
         {
-            // Load dữ liệu nhân viên từ database hoặc service
-            // Đây là dữ liệu mẫu
-            _allStaffList.Clear();
-            _allStaffList.Add(new Staff
-            {
-                Name = "Nguyễn Văn A",
-                Code = "NV001",
-                Birthday = "01/01/1990",
-                StartDate = "01/01/2020",
-                Phone = "0123456789",
-                Email = "nguyenvana@example.com"
-            });
-            _allStaffList.Add(new Staff
-            {
-                Name = "Trần Thị B",
-                Code = "NV002",
-                Birthday = "15/05/1992",
-                StartDate = "15/03/2021",
-                Phone = "0987654321",
-                Email = "tranthib@example.com"
-            });
+            var result = _service.GetAllStaff();
 
-            // Copy sang StaffList để hiển thị
+            _allStaffList.Clear();
+
+            if (result.Success && result.StaffList != null)
+            {
+                foreach (var staff in result.StaffList)
+                {
+                    _allStaffList.Add(staff);
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
+                {
+                    MessageBox.Show(result.ErrorMessage, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
             StaffList = new ObservableCollection<Staff>(_allStaffList);
         }
 
-        // Logic chấm công
-        public void ChamCong()
+        // CHẤM CÔNG VÀO
+        public void CheckIn(string employeeId)
         {
-            DateTime now = DateTime.Now;
-            TimeSpan currentTime = now.TimeOfDay;
+            var result = _service.CheckIn(employeeId);
 
-            // Định nghĩa khung giờ chấm công hợp lệ: 19:00 - 20:00 (7PM - 8PM)
-            TimeSpan startTime = new TimeSpan(19, 0, 0);  // 7:00 PM
-            TimeSpan endTime = new TimeSpan(20, 0, 0);    // 8:00 PM
-
-            bool isSuccess = false;
-
-            // Kiểm tra nếu thời gian hiện tại trong khoảng 19:00 - 20:00
-            if (currentTime >= startTime && currentTime < endTime)
+            if (result.Success)
             {
-                isSuccess = true;
+                ShowAttendanceDialog(true, $"{result.Message}\nThời gian: {result.CheckInTime:hh\\:mm\\:ss}");
+                LoadStaffData(); // Reload để cập nhật trạng thái
             }
-            // Kiểm tra nếu qua 12h đêm (00:00 - 20:00 ngày hôm sau)
-            else if (currentTime < endTime)
+            else
             {
-                isSuccess = true;
-            }
-
-            // Hiển thị dialog thông báo
-            ShowAttendanceDialog(isSuccess);
-
-            // Lưu kết quả chấm công vào database
-            if (isSuccess)
-            {
-                SaveAttendanceRecord(now);
+                ShowAttendanceDialog(false, result.Message);
             }
         }
 
-        private void SaveAttendanceRecord(DateTime time)
+        // CHẤM CÔNG RA
+        public void CheckOut(string employeeId)
         {
-            // Logic lưu bản ghi chấm công vào database
-            // TODO: Implement database logic
+            var result = _service.CheckOut(employeeId);
+
+            if (result.Success)
+            {
+                string message = $"{result.Message}\n" +
+                                $"Giờ vào: {result.CheckInTime:hh\\:mm\\:ss}\n" +
+                                $"Giờ ra: {result.CheckOutTime:hh\\:mm\\:ss}\n" +
+                                $"Số giờ làm: {result.WorkedHours} giờ";
+                ShowAttendanceDialog(true, message);
+                LoadStaffData(); // Reload để cập nhật số giờ
+            }
+            else
+            {
+                ShowAttendanceDialog(false, result.Message);
+            }
         }
 
-        private void ShowAttendanceDialog(bool isSuccess)
+        private void ShowAttendanceDialog(bool isSuccess, string message)
         {
-            // Tạo Window popup
             Window dialog = new Window
             {
-                Width = 400,
-                Height = 250,
+                Width = 450,
+                Height = 300,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 ResizeMode = ResizeMode.NoResize,
                 WindowStyle = WindowStyle.None,
@@ -110,7 +104,6 @@ namespace SaleManagerApp.ViewModels
                 AllowsTransparency = true
             };
 
-            // Tạo nội dung
             Border border = new Border
             {
                 Background = System.Windows.Media.Brushes.White,
@@ -124,22 +117,33 @@ namespace SaleManagerApp.ViewModels
                 HorizontalAlignment = HorizontalAlignment.Center
             };
 
-            // Tiêu đề
             TextBlock title = new TextBlock
             {
-                Text = isSuccess ? "CHẤM CÔNG THÀNH CÔNG" : "CHẤM CÔNG THẤT BẠI",
-                FontSize = 20,
+                Text = isSuccess ? "✓ THÀNH CÔNG" : "✗ THẤT BẠI",
+                FontSize = 24,
                 FontWeight = FontWeights.Bold,
                 TextAlignment = TextAlignment.Center,
-                Margin = new Thickness(0, 20, 0, 30),
+                Margin = new Thickness(0, 10, 0, 20),
+                Foreground = new System.Windows.Media.SolidColorBrush(
+                    isSuccess ?
+                        System.Windows.Media.Color.FromRgb(40, 167, 69) :
+                        System.Windows.Media.Color.FromRgb(220, 53, 69))
+            };
+
+            TextBlock messageBlock = new TextBlock
+            {
+                Text = message,
+                FontSize = 16,
+                TextAlignment = TextAlignment.Center,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 0, 0, 30),
                 Foreground = new System.Windows.Media.SolidColorBrush(
                     System.Windows.Media.Color.FromRgb(17, 24, 39))
             };
 
-            // Button Quay lại
             Button backButton = new Button
             {
-                Content = "Quay lại",
+                Content = "Đóng",
                 Width = 200,
                 Height = 45,
                 Background = new System.Windows.Media.SolidColorBrush(
@@ -151,7 +155,6 @@ namespace SaleManagerApp.ViewModels
                 BorderThickness = new Thickness(0)
             };
 
-            // Bo tròn button
             backButton.Template = new System.Windows.Controls.ControlTemplate(typeof(Button))
             {
                 VisualTree = CreateButtonTemplate()
@@ -159,8 +162,8 @@ namespace SaleManagerApp.ViewModels
 
             backButton.Click += (s, e) => dialog.Close();
 
-            // Thêm các control vào stack panel
             stackPanel.Children.Add(title);
+            stackPanel.Children.Add(messageBlock);
             stackPanel.Children.Add(backButton);
 
             border.Child = stackPanel;
@@ -186,70 +189,71 @@ namespace SaleManagerApp.ViewModels
             return borderFactory;
         }
 
-        // Logic tìm kiếm nhân viên
         public void SearchStaff(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
-                // Hiển thị lại toàn bộ danh sách
                 StaffList = new ObservableCollection<Staff>(_allStaffList);
                 return;
             }
 
-            // Filter danh sách theo keyword (case-insensitive)
             var filtered = _allStaffList.Where(s =>
-                s.Name.ToLower().Contains(keyword.ToLower()) ||
-                s.Code.ToLower().Contains(keyword.ToLower()) ||
-                s.Phone.Contains(keyword) ||
-                s.Email.ToLower().Contains(keyword.ToLower())
+                s.fullName.ToLower().Contains(keyword.ToLower()) ||
+                s.StaffId.ToLower().Contains(keyword.ToLower()) ||
+                s.phone.Contains(keyword) ||
+                s.email.ToLower().Contains(keyword.ToLower())
             ).ToList();
 
             StaffList = new ObservableCollection<Staff>(filtered);
         }
 
-        // Logic thêm nhân viên
         public void ThemNhanVien()
         {
             var addStaffWindow = new SaleManagerApp.Views.AddStaffWindow();
+            addStaffWindow.ShowDialog();
+            LoadStaffData();
+        }
 
-            if (addStaffWindow.ShowDialog() == true && addStaffWindow.IsConfirmed)
+        public void EditStaff(string employeeId)
+        {
+            MessageBox.Show($"Chức năng sửa nhân viên {employeeId} đang được phát triển",
+                "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        public void DeleteStaff(string employeeId)
+        {
+            var staff = _allStaffList.FirstOrDefault(s => s.StaffId == employeeId);
+            if (staff == null)
             {
-                // Tạo mã nhân viên tự động
-                string newCode = $"NV{(_allStaffList.Count + 1):D3}";
+                MessageBox.Show("Không tìm thấy nhân viên!", "Lỗi",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
-                // Tạo đối tượng nhân viên mới
-                var newStaff = new Staff
-                {
-                    Name = addStaffWindow.StaffName,
-                    Code = newCode,
-                    Birthday = addStaffWindow.Birthday?.ToString("dd/MM/yyyy"),
-                    StartDate = DateTime.Now.ToString("dd/MM/yyyy"),
-                    Phone = addStaffWindow.Phone,
-                    Email = addStaffWindow.Email
-                };
+            var result = MessageBox.Show(
+                $"Bạn có chắc chắn muốn xóa nhân viên '{staff.fullName}' (Mã: {employeeId})?\n\n" +
+                "Lưu ý: Dữ liệu chấm công và lương của nhân viên này cũng sẽ bị xóa!",
+                "Xác nhận xóa",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning
+            );
 
-                // Thêm vào danh sách gốc
-                _allStaffList.Add(newStaff);
+            if (result != MessageBoxResult.Yes)
+                return;
 
-                // Thêm vào danh sách hiển thị
-                StaffList.Add(newStaff);
+            var deleteResult = _service.DeleteStaff(employeeId);
 
-                // Lưu vào database
-                // TODO: Implement database save logic
-
-                MessageBox.Show("Thêm nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (deleteResult.Success)
+            {
+                MessageBox.Show(deleteResult.SuccessMessage, "Thành công",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                LoadStaffData();
+            }
+            else
+            {
+                MessageBox.Show(deleteResult.ErrorMessage, "Lỗi",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-    }
-
-    // Model cho Staff
-    public class Staff
-    {
-        public string Name { get; set; }
-        public string Code { get; set; }
-        public string Birthday { get; set; }
-        public string StartDate { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
     }
 }
