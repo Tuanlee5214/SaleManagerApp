@@ -17,7 +17,7 @@ namespace SaleManagerApp.Views
         private void BtnSaveOrder_Click(object sender, RoutedEventArgs e)
         {
             // Tính tổng giá trị đơn hàng
-            decimal totalPrice = 477000;
+            decimal totalPrice = 000000;
 
             // Mở cửa sổ OrderSavingConfirm (đã sửa namespace)
             SaleManagerApp.OrderSavingConfirm confirmWindow = new SaleManagerApp.OrderSavingConfirm(totalPrice);

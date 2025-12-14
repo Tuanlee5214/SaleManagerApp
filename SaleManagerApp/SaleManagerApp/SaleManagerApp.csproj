@@ -74,6 +74,7 @@
     <Compile Include="Command\RelayCommand.cs" />
     <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\CornerRadiusHelper.cs" />
+    <Compile Include="Helpers\NullableImageConverter.cs" />
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Helpers\ToastService.cs" />
     <Compile Include="Models\MenuItem.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MenuPageViewModel.cs" />
     <Compile Include="ViewModels\SideBarViewModel.cs" />
+    <Compile Include="ViewModels\SmallFormsModels\AddStaffWindowModel.cs" />
     <Compile Include="ViewModels\UserPageViewModel.cs" />
     <Compile Include="ViewModels\WareHousePageViewModel.cs" />
     <Compile Include="Views\HomePage.xaml.cs">
