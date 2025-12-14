@@ -113,13 +113,13 @@
 
 
             <!-- Order Status Cards -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,30">
-                <TextBlock Text="Đơn hàng gần đây" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,20,0"/>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,-120,0,10">
+                <TextBlock Text="Đơn hàng gần đây" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,20,0"/>
             </StackPanel>
 
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,40,0,20">
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,40,0,20">
                 <!-- Card 1 - Available -->
-                <Border CornerRadius="20" Background="White" Padding="20" Margin="0,0,15,0" Width="235">
+                <Border CornerRadius="20" Background="White" Padding="20" HorizontalAlignment="Left" Margin="0,0,20,0" Width="235">
                     <StackPanel>
                         <DockPanel Margin="0,0,0,10">
                             <TextBlock Text="🛒 # Mã đơn" FontSize="14" Foreground="#666"/>
@@ -135,7 +135,7 @@
                 </Border>
 
                 <!-- Card 2 - Pending -->
-                <Border CornerRadius="20" Background="White" Padding="20" Margin="0,0,15,0" Width="235">
+                <Border CornerRadius="20" Background="White" Padding="20" Margin="0,0,20,0" Width="235">
                     <StackPanel>
                         <DockPanel Margin="0,0,0,10">
                             <TextBlock Text="🚗 # Mã đơn" FontSize="14" Foreground="#666"/>
@@ -165,12 +165,14 @@
                         </Border>
                     </StackPanel>
                 </Border>
+
+                
             </StackPanel>
 
             <!-- Menu Section with Search -->
-            <StackPanel Grid.Row="3" Margin="0,20,0,20">
+            <StackPanel Grid.Row="3" Margin="0,30,0,10">
                 <DockPanel Margin="0,0,0,15">
-                    <TextBlock Text="Menu (Tổng số món)" FontSize="18" FontWeight="SemiBold" DockPanel.Dock="Left"/>
+                    <TextBlock Text="Menu (Tổng số món)" FontSize="15" VerticalAlignment="Center" FontWeight="SemiBold" DockPanel.Dock="Left"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <TextBox Width="300"
          Height="40"
@@ -577,6 +579,22 @@
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
+                    </Button>
+
+                    <Button Width="100" Height="40" Margin="180,0,0,0" Background="#4A7BF7" Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"
+                            Command="{Binding OpenListTableWindowCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+    BorderBrush="{TemplateBinding BorderBrush}"
+    BorderThickness="1"
+    CornerRadius="15">
+                                    <!-- Bo viền -->
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                        📍Chi tiết bàn
                     </Button>
                 </StackPanel>
             </StackPanel>

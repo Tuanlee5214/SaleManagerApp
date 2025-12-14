@@ -109,6 +109,51 @@ namespace SaleManagerApp.Services
             }
         }
 
+        public UpdateTableStatus UpdateTableStatus(string tableId, string status)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "UPDATE [Table] SET tableStatus = @status WHERE tableId = @id";
+
+
+                    cmd.Parameters.Add("@status", SqlDbType.NVarChar, 30).Value = status;
+                    cmd.Parameters.Add("@id", SqlDbType.Char, 7).Value = tableId;
+
+                    int row = cmd.ExecuteNonQuery();
+
+                    if (row != 0)
+                    {
+                        return new UpdateTableStatus
+                        {
+                            Success = true,
+                            SuccessMessage = "Sửa trạng thái bàn thành công"
+                        };
+                    }
+                    else
+                    {
+                        return new UpdateTableStatus
+                        {
+                            Success = false,
+                            ErrorMessage = "Sửa trạng thái bàn thất bại"
+                        };
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new UpdateTableStatus
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới server",
+                };
+
+            }
+        }
+
         public GetMenuItemsResult GetMenuItems(string type, string searchText)
         {
             try
@@ -176,6 +221,61 @@ namespace SaleManagerApp.Services
             }
         }
 
+        public GetTableResult GetTable()
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+
+                    cmd.CommandText =
+                        "SELECT tableId, tableName, [location], seatCount, tableStatus " +
+                        "FROM [Table] ";
+
+                    var list = new List<Table>();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new Table
+                            {
+                                tableId = reader["tableId"].ToString(),
+                                tableName = reader["tableName"].ToString(),
+                                location = reader["location"].ToString(),
+                                seatCount = (int)reader["seatCount"],
+                                tableStatus = reader["tableStatus"].ToString()
+                            });
+                        }
+                    }
+
+                    if (list.Count == 0)
+                    {
+                        return new GetTableResult
+                        {
+                            Success = true,
+                            TableList = list
+                        };
+                    }
+
+                    return new GetTableResult
+                    {
+                        Success = true,
+                        TableList = list
+                    };
+                }
+            }
+            catch (SqlException)
+            {
+                return new GetTableResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới server"
+                };
+            }
+        }
+
 
     }
 }   
@@ -197,9 +297,25 @@ public class GetMenuItemsResult
     public List<MenuItem> MenuItemList;
 }
 
+public class GetTableResult
+{
+    public bool Success { get; set; }
+    public string ErrorMessage { get; set; }
+    public string SuccessMessage { get; set; }
+
+    public  List<Table> TableList;
+}
+
 public class InsertCustomerResult
 {
     public bool Success { get; set; }
     public string SuccessMessage { get; set; }
     public string ErrorMessage { get; set; }
 }
+public class UpdateTableStatus
+{
+    public bool Success { get; set; }
+    public string SuccessMessage { get; set; }
+    public string ErrorMessage { get; set; }
+}
+
