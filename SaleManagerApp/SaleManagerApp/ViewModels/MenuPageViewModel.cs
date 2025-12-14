@@ -22,6 +22,8 @@ namespace SaleManagerApp.ViewModels
         public ObservableCollection<MenuItem> MenuItems { get; }
             = new ObservableCollection<MenuItem>();
 
+        
+
         private string _type;
         public string Type
         {
@@ -68,6 +70,8 @@ namespace SaleManagerApp.ViewModels
 
         public ICommand OpenInsertCustomerFormCommand { get; }
 
+        public ICommand OpenListTableWindowCommand { get; }
+
         public ICommand SelectAllCommand { get; }
         public ICommand SelectBeefCommand { get; }
         public ICommand SelectPorkCommand { get; }
@@ -83,6 +87,7 @@ namespace SaleManagerApp.ViewModels
             Type = null;
             OpenInsertMenuItemFormCommand = new RelayCommand(OpenInsertMenuItemForm);
             OpenInsertCustomerFormCommand = new RelayCommand(OpenInsertCustomerForm);
+            OpenListTableWindowCommand = new RelayCommand(OpenListTableWindow);
             AddToCartCommand = new RelayCommand(o => AddToCart(o as MenuItem));
             IncreaseCommand = new RelayCommand(o => Increase(o as MenuItem));
             DecreaseCommand = new RelayCommand(o => Decrease(o as MenuItem));
@@ -215,10 +220,16 @@ namespace SaleManagerApp.ViewModels
             window.ShowDialog();
         }
 
+        public void OpenListTableWindow(object obj)
+        {
+            var vm = new TableViewModel();
+            var window = new ListTable { DataContext = vm };
+            window.ShowDialog();
+        }
+
         public void OpenInsertCustomerForm(object obj)
         {
             var vm = new InsertCustomerViewModel();
-            vm.ReloadCustomer = LoadMenuItems;
             var window = new InsertCustomerWindow { DataContext = vm };
             vm.CloseAction = () => window.Close();
             window.ShowDialog();
@@ -234,5 +245,6 @@ namespace SaleManagerApp.ViewModels
 
             SyncMenuDisplayQuantity();
         }
+
     }
 }

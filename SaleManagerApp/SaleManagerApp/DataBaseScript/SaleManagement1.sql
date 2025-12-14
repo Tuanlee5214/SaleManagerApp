@@ -107,7 +107,6 @@ CREATE TABLE [Table]
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
-
 CREATE TABLE TableReservation
 (
 	tableReservationId char(7) primary key,
@@ -121,6 +120,7 @@ CREATE TABLE TableReservation
 	createdAt datetime default getdate(),
 	updatedAt datetime
 )
+
 
 CREATE TABLE [Order]
 (
@@ -1301,3 +1301,18 @@ ADD email varchar(30) not null;
 
 ALTER TABLE Employee
 ADD phone varchar(20) not null;
+
+
+-----------------------
+--Sửa lại kiểu dữ liệu của tableName và thêm dữ liệu cho bàn.
+ALTER TABLE [Table] ALTER COLUMN tableName nvarchar(20)
+INSERT INTO [Table] VALUES('TB00001', 'Bàn 1', '1', 5, N'Còn trống', getdate(), getdate()),
+                          ('TB00002', 'Bàn 2', '2', 5, N'Còn trống', getdate(), getdate()),
+                          ('TB00003', 'Bàn 3', '3', 6, N'Còn trống', getdate(), getdate()),
+                          ('TB00004', 'Bàn 4', '4', 7, N'Còn trống', getdate(), getdate()),
+                          ('TB00005', 'Bàn 5', '5', 4, N'Còn trống', getdate(), getdate()), 
+                          ('TB00006', 'Bàn 6', '6', 10, N'Còn trống', getdate(), getdate()),
+                          ('TB00007', 'Bàn 7', '7', 7, N'Còn trống', getdate(), getdate()), 
+                          ('TB00008', 'Bàn 8', '8', 6, N'Còn trống', getdate(), getdate()),
+                          ('TB00009', 'Bàn 9', '9', 5, N'Còn trống', getdate(), getdate()),
+                          ('TB00010', 'Bàn 10', '10', 6, N'Còn trống', getdate(), getdate());
