@@ -1311,6 +1311,10 @@ BEGIN
 END
 GO
 
+ALTER TABLE Employee ADD phone VARCHAR(25)
+ALTER TABLE Employee ADD email VARCHAR(30)
+ALTER TABLE Employee ALTER COLUMN imageUrl VARCHAR(200)
+
 --PROCEDURE THÊM NHÂN VIÊN MỚI
 -- =====================================================
 CREATE PROCEDURE sp_InsertEmployee

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace SaleManagerApp.Model
 {
@@ -15,6 +16,26 @@ namespace SaleManagerApp.Model
         public string ImagePath { get; set; }
         public decimal TotalHoursOfMonth { get; set; }
         public TimeSpan? CheckInTime { get; set; }
+
+        public string ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ImagePath))
+                    return null;
+
+                string path = ImagePath;
+
+                if (!Path.HasExtension(path))
+                    path += ".jpg"; // hoặc logic kiểm tra png/jpg
+
+                return Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    path.Replace("/", "\\")
+                );
+            }
+        }
+
 
         // Thêm property để hiển thị trạng thái
         public string AttendanceStatus
