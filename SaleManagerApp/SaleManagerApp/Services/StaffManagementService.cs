@@ -19,6 +19,16 @@ namespace SaleManagerApp.Services
                 using (var conn = _db.GetConnection())
                 using (SqlCommand cmd = new SqlCommand("sp_InsertEmployee", conn))
                 {
+                    cmd.CommandType = System.Data. CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@fullName", System.Data.SqlDbType.NVarChar, 30).Value = staff.fullName;
+                    cmd.Parameters.Add("@dateOfBirth", System.Data.SqlDbType.Date).Value = staff.dateofBirth;
+                    //cmd.Parameters.Add("@position", System.Data.SqlDbType.VarChar, 20).Value = staff.;
+                    cmd.Parameters.Add("@email", System.Data.SqlDbType.NVarChar, 30).Value = staff.email;
+                    cmd.Parameters.Add("@phone", System.Data.SqlDbType.NVarChar, 20).Value = staff.phone;
+                    cmd.Parameters.Add("@employeeId", System.Data.SqlDbType.Char, 7).Value = staff.StaffId;
+
+                    int row = cmd.ExecuteNonQuery();
+                    if (row != 0)
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                     cmd.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 30).Value = staff.fullName ?? "";

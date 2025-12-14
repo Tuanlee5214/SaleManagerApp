@@ -71,14 +71,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Behaviors\NumericFormatBehavior.cs" />
     <Compile Include="Command\RelayCommand.cs" />
     <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\CornerRadiusHelper.cs" />
     <Compile Include="Helpers\NullableImageConverter.cs" />
     <Compile Include="Helpers\PasswordHasher.cs" />
+    <Compile Include="Helpers\QuantityToVisibilityConverter.cs" />
+    <Compile Include="Helpers\TableStatusToColorConverter.cs" />
     <Compile Include="Helpers\ToastService.cs" />
+    <Compile Include="Models\CartItem.cs" />
+    <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="Models\Staff.cs" />
+    <Compile Include="Models\Table.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Services\MenuPageService.cs" />
     <Compile Include="Services\NavigationService.cs" />
@@ -88,12 +94,14 @@
     <Compile Include="Services\UserSession.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
+    <Compile Include="ViewModels\InsertCustomerViewModel.cs" />
     <Compile Include="ViewModels\InsertMenuItemViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainLayoutViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MenuPageViewModel.cs" />
     <Compile Include="ViewModels\SideBarViewModel.cs" />
+    <Compile Include="ViewModels\TableViewModel.cs" />
     <Compile Include="ViewModels\SmallFormsModels\AddStaffWindowModel.cs" />
     <Compile Include="ViewModels\UserPageViewModel.cs" />
     <Compile Include="ViewModels\WareHousePageViewModel.cs" />
@@ -102,6 +110,9 @@
     </Compile>
     <Compile Include="Views\InsertMenuItemForm.xaml.cs">
       <DependentUpon>InsertMenuItemForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ListTable.xaml.cs">
+      <DependentUpon>ListTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginScreen.xaml.cs">
       <DependentUpon>LoginScreen.xaml</DependentUpon>
@@ -114,6 +125,9 @@
     </Compile>
     <Compile Include="Views\SideBar.xaml.cs">
       <DependentUpon>SideBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InsertCustomerWindow.xaml.cs">
+      <DependentUpon>InsertCustomerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SmallForms\OrderSavingConfirm.xaml.cs">
       <DependentUpon>OrderSavingConfirm.xaml</DependentUpon>
@@ -150,6 +164,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ListTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoginScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -163,6 +181,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SideBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\InsertCustomerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
