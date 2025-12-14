@@ -177,8 +177,8 @@
          Background="White"
          BorderBrush="#DDD"
          BorderThickness="1"
-         Padding="15,10"
          FontSize="14"
+         Padding="-5,10,15,10"
          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
                             <TextBox.Template>
                                 <ControlTemplate TargetType="TextBox">
@@ -186,11 +186,30 @@
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="15">
-                                        <ScrollViewer x:Name="PART_ContentHost"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="40"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Icon search -->
+                                            <TextBlock Text="🔍"
+                               FontSize="16"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Foreground="Black"
+                               IsHitTestVisible="False"/>
+
+                                            <!-- Text input -->
+                                            <ScrollViewer x:Name="PART_ContentHost"
+                                  Grid.Column="1"/>
+                                        </Grid>
                                     </Border>
                                 </ControlTemplate>
                             </TextBox.Template>
                         </TextBox>
+
+
                         <!-- Nút Search -->
                         <Button Width="40"
         Height="40"
@@ -211,7 +230,7 @@
                                 </ControlTemplate>
                             </Button.Template>
 
-                            <TextBlock Text="🔍" FontSize="18"/>
+                            <TextBlock Text="👤" FontSize="22"/>
                         </Button>
 
                         <!-- Nút "+" -->
