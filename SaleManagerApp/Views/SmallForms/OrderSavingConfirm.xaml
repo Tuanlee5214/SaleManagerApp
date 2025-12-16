@@ -1,0 +1,101 @@
+﻿<Window x:Class="SaleManagerApp.OrderSavingConfirm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Xác nhận lưu đơn hàng" Height="400" Width="700"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="White">
+    <Window.Resources>
+        <Style x:Key="RoundButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Padding" Value="30,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="25">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="OrderTypeButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="MinWidth" Value="110"/>
+            <Setter Property="Margin" Value="8,0"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="25">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="40,40,30,40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0" Text="XÁC NHẬN LƯU ĐƠN HÀNG" FontSize="18" FontWeight="Bold" Foreground="#333" HorizontalAlignment="Center" Margin="0,0,0,40"/>
+
+        <!-- Middle Section -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="282*"/>
+                <ColumnDefinition Width="28*"/>
+                <ColumnDefinition Width="199*"/>
+                <ColumnDefinition Width="111*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: Chọn bàn -->
+            <StackPanel Grid.Column="0" HorizontalAlignment="Left" Margin="44,0,0,0">
+                <TextBlock Text="Chọn bàn tương ứng:" FontSize="14" Foreground="#333" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                <Button x:Name="BtnSelectTable" Content="Chọn bàn" Style="{StaticResource RoundButtonStyle}" Background="#E0E0E0" Foreground="#666666" Click="ChangeTable_Click"/>
+            </StackPanel>
+
+            <!-- Right: Loại đơn hàng -->
+            <StackPanel HorizontalAlignment="Left" Width="388" Grid.ColumnSpan="4" Margin="248,0,0,0">
+                <TextBlock Text="Loại đơn hàng:" FontSize="14" Foreground="#333" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="BtnTaiBan" Content="Tại bàn" Style="{StaticResource OrderTypeButtonStyle}" Background="#E0E0E0" Foreground="#666666" Tag="TaiBan" Click="OrderType_Click" Width="80"/>
+                    <Button x:Name="BtnGiaoHang" Content="Giao hàng" Style="{StaticResource OrderTypeButtonStyle}" Background="#E0E0E0" Foreground="#666666" Tag="GiaoHang" Click="OrderType_Click"/>
+                    <Button x:Name="BtnChoDatBan" Content="Chờ đặt bàn" Style="{StaticResource OrderTypeButtonStyle}" Background="#E0E0E0" Foreground="#666666" Tag="ChoDatBan" Click="OrderType_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <!-- Bottom Section -->
+        <StackPanel Grid.Row="3" VerticalAlignment="Bottom">
+            <!-- Total Price -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,30">
+                <TextBlock Text="Tổng giá trị đơn hàng:" FontSize="16" Foreground="#333" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                <TextBlock x:Name="TotalPriceText" Text="000VND" FontSize="22" FontWeight="Bold" Foreground="#4A7BF7" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Hủy" Style="{StaticResource RoundButtonStyle}" Background="#2C2C2C" Foreground="White" Click="Cancel_Click"/>
+                <Button x:Name="BtnSave" Content="Lưu" Style="{StaticResource RoundButtonStyle}" Background="#4A7BF7" Foreground="#FFFFFF" IsEnabled="False" Click="Save_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
