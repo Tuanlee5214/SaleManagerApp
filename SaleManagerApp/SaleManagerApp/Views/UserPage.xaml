@@ -234,10 +234,8 @@
                                                 <Image Stretch="UniformToFill" 
                                                        Width="48" 
                                                        Height="48"
-                                                       Source="{Binding ImagePath, 
-                                                               Converter={StaticResource NullableImageConverter},
-                                                               FallbackValue={x:Null},
-                                                               TargetNullValue={x:Null}}">
+                                                       Source="{Binding ImageFullPath,
+                        TargetNullValue={x:Null}}">
                                                     <Image.Clip>
                                                         <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24"/>
                                                     </Image.Clip>
