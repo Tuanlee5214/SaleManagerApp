@@ -1,51 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
+using SaleManagerApp.Models;
 
 namespace SaleManagerApp.Services
 {
-    public class ImportWarehouseService
+    public class WarehouseService
     {
         private readonly DBConnectionService _db = new DBConnectionService();
 
-        public ImportIngredientResult ImportIngredient(ImportIngredientItem item)
+        // Lấy danh sách nguyên liệu
+        public GetIngredientsResult GetAllIngredients()
+        {
+            try
+            {
+                var list = new List<Ingredient>();
+
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText =
+                        "SELECT ingredientId, ingredientName, unit, quantity, minQuantity " +
+                        "FROM Ingredient";
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new Ingredient
+                            {
+                                ingredientId = reader["ingredientId"].ToString(),
+                                ingredientName = reader["ingredientName"].ToString(),
+                                unit = reader["unit"].ToString(),
+                                quantity = (int)reader["quantity"],
+                                minQuantity = (int)reader["minQuantity"]
+                            });
+                        }
+                    }
+                }
+
+                return new GetIngredientsResult
+                {
+                    Success = true,
+                    IngredientList = list
+                };
+            }
+            catch (SqlException)
+            {
+                return new GetIngredientsResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới server"
+                };
+            }
+        }
+
+        // Nhập kho
+        public ImportIngredientResult ImportIngredient(string ingredientId, int quantity)
         {
             try
             {
                 using (var conn = _db.GetConnection())
-                using (var tran = conn.BeginTransaction())
+                using (SqlCommand cmd = new SqlCommand("sp_ImportIngredient", conn))
                 {
-                    // 1. Tạo phiếu nhập
-                    var cmdImport = new SqlCommand(
-                        "sp_InsertImportOrder", conn, tran);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@IngredientId", SqlDbType.Char, 7).Value = ingredientId;
+                    cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = quantity;
 
-                    cmdImport.CommandType = CommandType.StoredProcedure;
-                    cmdImport.Parameters.Add("@Note", SqlDbType.NVarChar, 100)
-                        .Value = item.note ?? "";
-
-                    string importOrderId = cmdImport.ExecuteScalar().ToString();
-
-                    // 2. Chi tiết nhập
-                    var cmdDetail = new SqlCommand(
-                        "sp_InsertImportOrderDetail", conn, tran);
-
-                    cmdDetail.CommandType = CommandType.StoredProcedure;
-                    cmdDetail.Parameters.Add("@ImportOrderId", SqlDbType.Char, 7)
-                        .Value = importOrderId;
-                    cmdDetail.Parameters.Add("@IngredientId", SqlDbType.Char, 7)
-                        .Value = item.ingredientId;
-                    cmdDetail.Parameters.Add("@Quantity", SqlDbType.Int)
-                        .Value = item.quantity;
-                    cmdDetail.Parameters.Add("@UnitPrice", SqlDbType.Money)
-                        .Value = 0; // kho không cần tiền
-
-                    cmdDetail.ExecuteNonQuery();
-
-                    tran.Commit();
+                    cmd.ExecuteNonQuery();
 
                     return new ImportIngredientResult
                     {
@@ -54,15 +77,68 @@ namespace SaleManagerApp.Services
                     };
                 }
             }
-            catch
+            catch (SqlException)
             {
                 return new ImportIngredientResult
                 {
                     Success = false,
-                    ErrorMessage = "Lỗi nhập kho"
+                    ErrorMessage = "Nhập kho không thành công"
+                };
+            }
+        }
+
+        // Xuất kho
+        public ExportIngredientResult ExportIngredient(string ingredientId, int quantity)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (SqlCommand cmd = new SqlCommand("sp_ExportIngredient", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@IngredientId", SqlDbType.Char, 7).Value = ingredientId;
+                    cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = quantity;
+
+                    cmd.ExecuteNonQuery();
+
+                    return new ExportIngredientResult
+                    {
+                        Success = true,
+                        SuccessMessage = "Xuất kho thành công"
+                    };
+                }
+            }
+            catch (SqlException)
+            {
+                return new ExportIngredientResult
+                {
+                    Success = false,
+                    ErrorMessage = "Xuất kho không thành công"
                 };
             }
         }
     }
-}
 
+    // ===== RESULT CLASSES (GIỐNG MENU PAGE) =====
+
+    public class GetIngredientsResult
+    {
+        public bool Success { get; set; }
+        public string ErrorMessage { get; set; }
+        public List<Ingredient> IngredientList { get; set; }
+    }
+
+    public class ImportIngredientResult
+    {
+        public bool Success { get; set; }
+        public string SuccessMessage { get; set; }
+        public string ErrorMessage { get; set; }
+    }
+
+    public class ExportIngredientResult
+    {
+        public bool Success { get; set; }
+        public string SuccessMessage { get; set; }
+        public string ErrorMessage { get; set; }
+    }
+}
