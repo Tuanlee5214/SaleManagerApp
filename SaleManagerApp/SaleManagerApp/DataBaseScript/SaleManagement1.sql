@@ -1301,3 +1301,51 @@ ADD email varchar(30) not null;
 
 ALTER TABLE Employee
 ADD phone varchar(20) not null;
+
+-------------------
+--Thêm vào nhập kho
+CREATE PROCEDURE sp_ImportIngredient
+(
+    @IngredientId CHAR(7),
+    @Quantity INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @Quantity <= 0
+    BEGIN
+        RAISERROR(N'Số lượng không hợp lệ',16,1);
+        RETURN;
+    END
+
+    UPDATE Ingredient
+    SET quantity = quantity + @Quantity,
+        updatedAt = GETDATE()
+    WHERE ingredientId = @IngredientId;
+END
+
+--Thêm vào xuất kho
+CREATE PROCEDURE sp_ExportIngredient
+(
+    @IngredientId CHAR(7),
+    @Quantity INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Current INT;
+    SELECT @Current = quantity FROM Ingredient WHERE ingredientId=@IngredientId;
+
+    IF @Quantity <= 0 OR @Quantity > @Current
+    BEGIN
+        RAISERROR(N'Số lượng xuất không hợp lệ',16,1);
+        RETURN;
+    END
+
+    UPDATE Ingredient
+    SET quantity = quantity - @Quantity,
+        updatedAt = GETDATE()
+    WHERE ingredientId = @IngredientId;
+END
