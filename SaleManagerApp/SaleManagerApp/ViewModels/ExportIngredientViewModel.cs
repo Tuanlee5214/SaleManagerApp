@@ -5,11 +5,12 @@ using System.Windows.Input;
 
 namespace SaleManagerApp.ViewModels
 {
-    public class ImportIngredientViewModel : BaseViewModel
+    public class ExportIngredientViewModel : BaseViewModel
     {
         private readonly WarehouseService _service = new WarehouseService();
 
         public string IngredientId { get; set; }
+        public int CurrentQuantity { get; set; }
 
         private int _quantity;
         public int Quantity
@@ -28,21 +29,27 @@ namespace SaleManagerApp.ViewModels
         public Action CloseAction { get; set; }
         public Action ReloadAction { get; set; }
 
-        public ImportIngredientViewModel()
+        public ExportIngredientViewModel()
         {
-            ConfirmCommand = new RelayCommand(Import);
+            ConfirmCommand = new RelayCommand(Export);
             CancelCommand = new RelayCommand(_ => CloseAction?.Invoke());
         }
 
-        private void Import(object obj)
+        private void Export(object obj)
         {
             if (Quantity <= 0)
             {
-                ToastService.ShowError("Số lượng nhập không hợp lệ");
+                ToastService.ShowError("Số lượng xuất không hợp lệ");
                 return;
             }
 
-            var result = _service.Import(IngredientId, Quantity);
+            if (Quantity > CurrentQuantity)
+            {
+                ToastService.ShowError("Số lượng không đủ để xuất kho");
+                return;
+            }
+
+            var result = _service.Export(IngredientId, Quantity);
             if (result.Success)
             {
                 ReloadAction?.Invoke();
