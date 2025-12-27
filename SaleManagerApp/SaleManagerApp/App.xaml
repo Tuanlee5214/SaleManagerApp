@@ -30,7 +30,7 @@
                 <v:UserPage />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type vm:WareHousePageViewModel}">
+        <DataTemplate DataType="{x:Type vm:WarehousePageViewModel}">
             <v:WarehousePage />
         </DataTemplate>
 

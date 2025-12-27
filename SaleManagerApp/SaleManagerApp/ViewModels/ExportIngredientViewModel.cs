@@ -49,16 +49,16 @@ namespace SaleManagerApp.ViewModels
                 return;
             }
 
-            var result = _service.Export(IngredientId, Quantity);
+            var result = _service.ExportIngredient(IngredientId, Quantity);
             if (result.Success)
             {
                 ReloadAction?.Invoke();
-                ToastService.Show(result.Message);
+                ToastService.Show(result.SuccessMessage);
                 CloseAction?.Invoke();
             }
             else
             {
-                ToastService.ShowError(result.Message);
+                ToastService.ShowError(result.ErrorMessage);
             }
         }
     }

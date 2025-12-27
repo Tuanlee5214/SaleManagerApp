@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using SaleManagerApp.ViewModels;
 
 namespace SaleManagerApp.ViewModels
 {
@@ -74,7 +75,7 @@ namespace SaleManagerApp.ViewModels
 
             });
             ShowWareHouseCommand = new RelayCommand(o => {
-                CurrentViewModel = new WareHousePageViewModel();
+                CurrentViewModel = new WarehousePageViewModel();
                 SelectedMenu = "WareHouse";
                 Console.WriteLine("SELECTED = warehouse");
 

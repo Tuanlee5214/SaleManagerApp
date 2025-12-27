@@ -113,10 +113,7 @@
                 <TextBlock Text="WMS" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Margin="0,0,40,0"/>
 
                 <!-- Top nav links -->
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <StackPanel Margin="20,0" VerticalAlignment="Center">
-                        <TextBlock Text="Dụng cụ bếp" Foreground="#888" FontSize="14" HorizontalAlignment="Center"/>
-                    </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 
                     <StackPanel Margin="20,0" VerticalAlignment="Center">
                         <TextBlock Text="Nguyên liệu" Foreground="#5B7FFF" FontWeight="SemiBold" FontSize="14" HorizontalAlignment="Center"/>
@@ -148,10 +145,10 @@
             <!-- FILTER + SEARCH ROW -->
             <DockPanel Grid.Row="0" LastChildFill="False" Margin="10,10,10,20">
                 <!-- Button Nhập kho - bên phải cùng -->
-                <Button Content="Nhập kho" 
-                        Style="{StaticResource AddButton}"
-                        DockPanel.Dock="Right"
-                        Margin="0,0,0,0"/>
+                <Button Content="Nhập kho"
+                    Style="{StaticResource AddButton}"
+                    DockPanel.Dock="Right"
+                    Command="{Binding OpenImportCommand}"/> 
 
                 <!-- Tag buttons bên trái -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
@@ -208,8 +205,11 @@
             </DockPanel>
 
             <!-- ITEMS CARDS -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{Binding ToolList}">
+            <ScrollViewer Grid.Row="1"
+              VerticalScrollBarVisibility="Auto"
+              HorizontalScrollBarVisibility="Disabled">
+
+                <ItemsControl ItemsSource="{Binding Ingredients}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal"/>
@@ -226,63 +226,108 @@
                                     </Grid.RowDefinitions>
 
                                     <!-- Avatar -->
-                                    <Ellipse Width="64" Height="64" Fill="#E5D5D5" HorizontalAlignment="Left"/>
+                                    <Ellipse Width="64"
+                                 Height="64"
+                                 Fill="#E5D5D5"
+                                 HorizontalAlignment="Left"/>
 
                                     <!-- Card content -->
                                     <StackPanel Grid.Row="1" Margin="0,16,0,0">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                            <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold"/>
-                                            <TextBlock Text=" (KG)" Foreground="#999" Margin="4,4,0,0" VerticalAlignment="Top" FontSize="13"/>
+
+                                        <!-- Name + unit -->
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding ingredientName}"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"/>
+
+                                            <TextBlock Text="{Binding unit, StringFormat= ({0})}"
+                                           Foreground="#999"
+                                           Margin="4,4,0,0"
+                                           FontSize="13"/>
                                         </StackPanel>
 
-                                        <TextBlock Text="{Binding Code}" Foreground="#333" FontWeight="SemiBold" Margin="0,8,0,0" FontSize="14"/>
+                                        <!-- ID -->
+                                        <TextBlock Text="{Binding ingredientId}"
+                                       Foreground="#333"
+                                       FontWeight="SemiBold"
+                                       Margin="0,8,0,0"
+                                       FontSize="14"/>
 
-                                        <TextBlock Text="Ngày nhập: DD/MM/YYYY" Foreground="#999" Margin="0,12,0,4" FontSize="13"/>
-                                        <TextBlock Text="Hạn sử dụng: DD/MM/YYYY" Foreground="#999" Margin="0,0,0,16" FontSize="13"/>
+                                        <!-- Placeholder date -->
+                                        <TextBlock Text="Ngày nhập: --/--/----"
+                                       Foreground="#999"
+                                       Margin="0,12,0,4"
+                                       FontSize="13"/>
 
-                                        <!-- Status pill -->
-                                        <Border x:Name="StatusPill" CornerRadius="20" Padding="14,8" HorizontalAlignment="Left" Background="#5B7FFF">
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <Ellipse x:Name="StatusIcon" Width="16" Height="16" Fill="White" Margin="0,0,8,0">
-                                                    <Ellipse.OpacityMask>
-                                                        <VisualBrush>
-                                                            <VisualBrush.Visual>
-                                                                <Canvas Width="16" Height="16">
-                                                                    <Path Data="M6,11 L3,8 L4.5,6.5 L6,8 L11.5,2.5 L13,4 Z" Fill="Black" StrokeThickness="0"/>
-                                                                </Canvas>
-                                                            </VisualBrush.Visual>
-                                                        </VisualBrush>
-                                                    </Ellipse.OpacityMask>
-                                                </Ellipse>
-                                                <TextBlock x:Name="StatusText" Text="{Binding StatusLabel}" Foreground="White" FontWeight="SemiBold" FontSize="13"/>
+                                        <TextBlock Text="Hạn sử dụng: --/--/----"
+                                       Foreground="#999"
+                                       Margin="0,0,0,16"
+                                       FontSize="13"/>
+
+                                        <!-- STATUS -->
+                                        <Border x:Name="StatusPill"
+                                    CornerRadius="20"
+                                    Padding="14,8"
+                                    HorizontalAlignment="Left"
+                                    Background="#5B7FFF">
+
+                                            <StackPanel Orientation="Horizontal">
+                                                <Ellipse x:Name="StatusIcon"
+                                             Width="16"
+                                             Height="16"
+                                             Fill="White"
+                                             Margin="0,0,8,0"/>
+
+                                                <TextBlock x:Name="StatusText"
+                                               Text="{Binding StatusLabel}"
+                                               Foreground="White"
+                                               FontWeight="SemiBold"
+                                               FontSize="13"/>
                                             </StackPanel>
                                         </Border>
+
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!-- Triggers -->
+                            <!-- STATUS TRIGGERS -->
                             <DataTemplate.Triggers>
-                                <!-- Available (Còn) -->
+
+                                <!-- Còn -->
                                 <DataTrigger Binding="{Binding Status}" Value="Available">
-                                    <Setter TargetName="StatusPill" Property="Background" Value="#5B7FFF"/>
-                                    <Setter TargetName="StatusText" Property="Foreground" Value="White"/>
+                                    <Setter TargetName="StatusPill"
+                                Property="Background"
+                                Value="#5B7FFF"/>
+                                    <Setter TargetName="StatusText"
+                                Property="Foreground"
+                                Value="White"/>
                                 </DataTrigger>
 
-                                <!-- Empty (Đã hết) -->
+                                <!-- Sắp hết -->
+                                <DataTrigger Binding="{Binding Status}" Value="Low">
+                                    <Setter TargetName="StatusPill"
+                                Property="Background"
+                                Value="#FFA500"/>
+                                    <Setter TargetName="StatusText"
+                                Property="Foreground"
+                                Value="White"/>
+                                </DataTrigger>
+
+                                <!-- Đã hết -->
                                 <DataTrigger Binding="{Binding Status}" Value="Empty">
-                                    <Setter TargetName="StatusPill" Property="Background" Value="#E8E8E8"/>
-                                    <Setter TargetName="StatusText" Property="Foreground" Value="#999"/>
-                                    <Setter TargetName="StatusIcon" Property="Fill" Value="#999"/>
+                                    <Setter TargetName="StatusPill"
+                                Property="Background"
+                                Value="#E8E8E8"/>
+                                    <Setter TargetName="StatusText"
+                                Property="Foreground"
+                                Value="#999"/>
+                                    <Setter TargetName="StatusIcon"
+                                Property="Fill"
+                                Value="#999"/>
                                 </DataTrigger>
 
-                                <!-- Expired (Hết HSD) -->
-                                <DataTrigger Binding="{Binding Status}" Value="Expired">
-                                    <Setter TargetName="StatusPill" Property="Background" Value="#FF4444"/>
-                                    <Setter TargetName="StatusText" Property="Foreground" Value="White"/>
-                                    <Setter TargetName="StatusIcon" Property="Fill" Value="White"/>
-                                </DataTrigger>
                             </DataTemplate.Triggers>
+
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

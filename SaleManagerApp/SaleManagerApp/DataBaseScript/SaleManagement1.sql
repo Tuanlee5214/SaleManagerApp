@@ -1349,3 +1349,4 @@ BEGIN
         updatedAt = GETDATE()
     WHERE ingredientId = @IngredientId;
 END
+

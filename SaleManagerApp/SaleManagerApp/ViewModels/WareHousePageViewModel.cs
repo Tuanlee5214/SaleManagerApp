@@ -1,6 +1,7 @@
 ﻿using SaleManagerApp.Helpers;
 using SaleManagerApp.Models;
 using SaleManagerApp.Services;
+using SaleManagerApp.Views;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -38,14 +39,37 @@ namespace SaleManagerApp.ViewModels
         public void LoadData()
         {
             Ingredients.Clear();
-            var list = _service.GetAllIngredients();
-            foreach (var item in list)
+
+            var result = _service.GetAllIngredients();
+
+            if (!result.Success)
+            {
+                ToastService.ShowError(result.ErrorMessage);
+                return;
+            }
+
+            foreach (var item in result.IngredientList)
+            {
                 Ingredients.Add(item);
+            }
         }
 
         private void OpenImport()
         {
-            // UI mở popup ImportWarehouseView
+            if (SelectedIngredient == null)
+                return;
+
+            var window = new ImportIngredientView();
+
+            if (window.DataContext is ImportIngredientViewModel vm)
+            {
+                vm.SetIngredient(SelectedIngredient);
+                vm.ReloadAction = LoadData;
+                vm.CloseAction = () => window.Close();
+            }
+
+            window.Owner = Application.Current.MainWindow;
+            window.ShowDialog();
         }
 
         private void OpenExport()
