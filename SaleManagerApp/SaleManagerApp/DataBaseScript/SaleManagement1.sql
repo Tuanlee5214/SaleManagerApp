@@ -107,7 +107,6 @@ CREATE TABLE [Table]
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
-
 CREATE TABLE TableReservation
 (
 	tableReservationId char(7) primary key,
@@ -121,6 +120,7 @@ CREATE TABLE TableReservation
 	createdAt datetime default getdate(),
 	updatedAt datetime
 )
+
 
 CREATE TABLE [Order]
 (
@@ -1293,12 +1293,155 @@ BEGIN
     END CATCH;
 END;
 GO
+-----------------------------------
+--Sửa TABLE Employee
 
--------------------
---Thêm vào 2 thuộc tính còn thiếu cho Employee là email và phone
 ALTER TABLE Employee
-ADD email varchar(30) not null;
+ADD imageUrl varchar(50) ; 
 
+GO 
+
+--XÓA STORED PROCEDURE CŨ
+-- =====================================================
+IF EXISTS (SELECT * FROM sys.objects 
+           WHERE object_id = OBJECT_ID(N'[dbo].[sp_InsertEmployee]') 
+           AND type in (N'P', N'PC'))
+BEGIN
+    DROP PROCEDURE [dbo].[sp_InsertEmployee];
+END
+GO
+
+ALTER TABLE Employee ADD phone VARCHAR(25)
+ALTER TABLE Employee ADD email VARCHAR(30)
+ALTER TABLE Employee ALTER COLUMN imageUrl VARCHAR(200)
+
+--PROCEDURE THÊM NHÂN VIÊN MỚI
+-- =====================================================
+CREATE PROCEDURE sp_InsertEmployee
+    @FullName    NVARCHAR(30),
+    @Position    VARCHAR(20),
+    @DateOfBirth DATE,
+    @Phone       VARCHAR(25) = NULL,
+    @Email       VARCHAR(30) = NULL,
+    @ImageUrl    VARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @EmpId CHAR(7);
+
+    -- Tạo ID mới
+    EXEC sp_GenerateId 
+        @prefix    = 'EM',        
+        @tableName = 'Employee', 
+        @idColumn  = 'employeeId',
+        @idLength  = 7,
+        @newId     = @EmpId OUTPUT;
+
+    -- Insert nhân viên
+    INSERT INTO Employee(
+        employeeId, 
+        fullName, 
+        dateOfBirth, 
+        position, 
+        phone, 
+        email, 
+        imageUrl, 
+        createdAt, 
+        updatedAt
+    )
+    VALUES(
+        @EmpId, 
+        @FullName, 
+        @DateOfBirth, 
+        @Position, 
+        @Phone, 
+        @Email, 
+        @ImageUrl, 
+        GETDATE(), 
+        GETDATE()
+    );
+
+    -- Trả về ID vừa tạo
+    SELECT @EmpId AS employeeId;
+END;
+GO
+
+-- THÊM: Stored procedure xóa nhân viên
+CREATE PROCEDURE sp_DeleteEmployee
+    @EmployeeId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        BEGIN TRAN;
+
+        -- Kiểm tra nhân viên có tồn tại không
+        IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+        BEGIN
+            RAISERROR(N'Nhân viên không tồn tại trong hệ thống', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        -- Kiểm tra nhân viên có đang được sử dụng ở bảng khác không
+        IF EXISTS (SELECT 1 FROM [User] WHERE employeeId = @EmployeeId)
+        BEGIN
+            RAISERROR(N'Không thể xóa nhân viên này vì đã có tài khoản User liên kết', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM TableReservation WHERE employeeId = @EmployeeId)
+        BEGIN
+            RAISERROR(N'Không thể xóa nhân viên này vì có dữ liệu đặt bàn liên quan', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM [Order] WHERE employeeId = @EmployeeId)
+        BEGIN
+            RAISERROR(N'Không thể xóa nhân viên này vì có đơn hàng liên quan', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM ImportOrder WHERE employeeId = @EmployeeId)
+        BEGIN
+            RAISERROR(N'Không thể xóa nhân viên này vì có đơn nhập hàng liên quan', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM ExportOrder WHERE employeeId = @EmployeeId)
+        BEGIN
+            RAISERROR(N'Không thể xóa nhân viên này vì có đơn xuất hàng liên quan', 16, 1);
+            ROLLBACK;
+            RETURN;
+        END
+
+        -- Xóa dữ liệu liên quan trong bảng Attendance
+        DELETE FROM Attendance WHERE employeeId = @EmployeeId;
+
+        -- Xóa dữ liệu liên quan trong bảng PayRoll
+        DELETE FROM PayRoll WHERE employeeId = @EmployeeId;
+
+        -- Xóa nhân viên
+        DELETE FROM Employee WHERE employeeId = @EmployeeId;
+
+        COMMIT;
+        
+        SELECT 1 AS Success;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- BỔ SUNG 2 CỘT VÀO BẢNG EMPLOYEE
 ALTER TABLE Employee
 ADD phone varchar(20) not null;
 
@@ -1309,6 +1452,19 @@ CREATE PROCEDURE sp_ImportIngredient
     @IngredientId CHAR(7),
     @Quantity INT
 )
+ADD totalHoursOfMonth DECIMAL(10,2) DEFAULT 0,
+    checkInTime TIME NULL;
+
+GO
+
+-- CẬP NHẬT STORED PROCEDURE INSERT EMPLOYEE
+ALTER PROCEDURE sp_InsertEmployee
+    @FullName   NVARCHAR(30),
+    @Position   VARCHAR(20),
+    @DateOfBirth DATE,
+    @Phone VARCHAR(30),
+    @Email VARCHAR(30),
+    @ImageUrl VARCHAR(50)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -1349,3 +1505,139 @@ BEGIN
         updatedAt = GETDATE()
     WHERE ingredientId = @IngredientId;
 END
+    DECLARE @EmpId CHAR(7);
+
+    EXEC sp_GenerateId 
+        @prefix    = 'EM',        
+        @tableName = 'Employee', 
+        @idColumn  = 'employeeId',
+        @idLength  = 7,
+        @newId     = @EmpId OUTPUT;
+
+    INSERT INTO Employee(
+        employeeId, fullName, dateOfBirth, position, phone, email, imageUrl, 
+        totalHoursOfMonth, checkInTime, createdAt, updatedAt
+    )
+    VALUES(
+        @EmpId, @FullName, @DateOfBirth, @Position, @Phone, @Email, @ImageUrl,
+        0, NULL, GETDATE(), GETDATE()
+    );
+
+    -- TRẢ VỀ employeeId
+    SELECT @EmpId AS employeeId;
+END;
+GO
+
+-- STORED PROCEDURE CHẤM CÔNG VÀO
+CREATE PROCEDURE sp_CheckIn
+    @EmployeeId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @CurrentTime TIME = CAST(GETDATE() AS TIME);
+    DECLARE @StartTime TIME = '19:00:00';
+    DECLARE @EndTime TIME = '20:00:00';
+    
+    -- Kiểm tra nhân viên tồn tại
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra đã chấm công vào chưa
+    IF EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId AND checkInTime IS NOT NULL)
+    BEGIN
+        SELECT 0 AS Success, N'Bạn đã chấm công vào rồi' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra thời gian hợp lệ (19:00 - 20:00)
+    IF @CurrentTime < @StartTime OR @CurrentTime >= @EndTime
+    BEGIN
+        SELECT 0 AS Success, N'Chấm công vào chỉ được phép từ 19:00 - 20:00' AS Message;
+        RETURN;
+    END
+    
+    -- Cập nhật thời gian chấm công vào
+    UPDATE Employee
+    SET checkInTime = @CurrentTime,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    SELECT 1 AS Success, N'Chấm công vào thành công' AS Message, @CurrentTime AS CheckInTime;
+END;
+GO
+
+-- STORED PROCEDURE CHẤM CÔNG RA
+CREATE PROCEDURE sp_CheckOut
+    @EmployeeId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @CurrentTime TIME = CAST(GETDATE() AS TIME);
+    DECLARE @StartTime TIME = '22:00:00';
+    DECLARE @EndTime TIME = '23:00:00';
+    DECLARE @CheckInTime TIME;
+    DECLARE @WorkedHours DECIMAL(10,2);
+    
+    -- Kiểm tra nhân viên tồn tại
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+        RETURN;
+    END
+    
+    -- Lấy thời gian chấm công vào
+    SELECT @CheckInTime = checkInTime 
+    FROM Employee 
+    WHERE employeeId = @EmployeeId;
+    
+    -- Kiểm tra đã chấm công vào chưa
+    IF @CheckInTime IS NULL
+    BEGIN
+        SELECT 0 AS Success, N'Bạn chưa chấm công vào' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra thời gian hợp lệ (22:00 - 23:00)
+    IF @CurrentTime < @StartTime OR @CurrentTime >= @EndTime
+    BEGIN
+        SELECT 0 AS Success, N'Chấm công ra chỉ được phép từ 22:00 - 23:00' AS Message;
+        RETURN;
+    END
+    
+    -- Tính số giờ làm việc (lấy phần nguyên)
+    SET @WorkedHours = FLOOR(DATEDIFF(MINUTE, @CheckInTime, @CurrentTime) / 60.0);
+    
+    -- Cập nhật tổng giờ làm trong tháng và reset checkInTime
+    UPDATE Employee
+    SET totalHoursOfMonth = totalHoursOfMonth + @WorkedHours,
+        checkInTime = NULL,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    SELECT 1 AS Success, 
+           N'Chấm công ra thành công' AS Message, 
+           @CheckInTime AS CheckInTime,
+           @CurrentTime AS CheckOutTime,
+           @WorkedHours AS WorkedHours;
+END;
+GO
+
+-- STORED PROCEDURE RESET TỔNG GIỜ THÁNG (dùng đầu tháng mới)
+CREATE PROCEDURE sp_ResetMonthlyHours
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    UPDATE Employee
+    SET totalHoursOfMonth = 0,
+        checkInTime = NULL,
+        updatedAt = GETDATE();
+    
+    SELECT @@ROWCOUNT AS RowsAffected;
+END;
+GO
