@@ -82,6 +82,7 @@
     <Compile Include="Helpers\ToastService.cs" />
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\IngredientItem.cs" />
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="Models\Staff.cs" />
     <Compile Include="Models\Table.cs" />
@@ -92,8 +93,10 @@
     <Compile Include="Services\StaffManagementService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\UserSession.cs" />
+    <Compile Include="Services\WarehouseService.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
+    <Compile Include="ViewModels\ImportWarehouseViewModel.cs" />
     <Compile Include="ViewModels\InsertCustomerViewModel.cs" />
     <Compile Include="ViewModels\InsertMenuItemViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
