@@ -74,39 +74,39 @@
 
                 <!-- BÊN TRÁI: Title -->
                 <TextBlock Text="Menu"
-               FontSize="22"
-               FontWeight="Bold"
-               DockPanel.Dock="Left"
-               VerticalAlignment="Center"
-               Margin="30,0,20,0"/>
+           FontSize="22"
+           FontWeight="Bold"
+           DockPanel.Dock="Left"
+           VerticalAlignment="Center"
+           Margin="30,0,20,0"/>
 
                 <!-- BÊN PHẢI: Admin Info -->
                 <StackPanel DockPanel.Dock="Right"
-                Orientation="Vertical"
-                HorizontalAlignment="Right"
-                Margin="0,0,20,0"
-                VerticalAlignment="Center">
+            Orientation="Vertical"
+            HorizontalAlignment="Right"
+            Margin="0,0,20,0"
+            VerticalAlignment="Center">
                     <TextBlock Text="Tên admin/user"
-                   FontSize="14"
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Right"/>
+               FontSize="14"
+               FontWeight="SemiBold"
+               HorizontalAlignment="Right"/>
                     <TextBlock Text="Mã NV/ADMIN"
-                   FontSize="12"
-                   Foreground="#666"
-                   HorizontalAlignment="Right"
-                   Margin="0,2,0,0"/>
+               FontSize="12"
+               Foreground="#666"
+               HorizontalAlignment="Right"
+               Margin="0,2,0,0"/>
                 </StackPanel>
 
                 <!-- Ở GIỮA: Menu -->
                 <StackPanel Orientation="Horizontal"
-                VerticalAlignment="Center"
-                Margin="250,0,40,0">
+            VerticalAlignment="Center"
+            Margin="250,0,40,0">
                     <TextBlock Text="Menu" Margin="0,0,30,0"
-                   FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
+               FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
                     <TextBlock Text="Đơn hàng" Margin="0,0,30,0"
-                   FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
+               FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
                     <TextBlock Text="Lịch sử thanh toán"
-                   FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
+               FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
                 </StackPanel>
 
             </DockPanel>
@@ -175,19 +175,19 @@
                     <TextBlock Text="Menu (Tổng số món)" FontSize="15" VerticalAlignment="Center" FontWeight="SemiBold" DockPanel.Dock="Left"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <TextBox Width="300"
-         Height="40"
-         Background="White"
-         BorderBrush="#DDD"
-         BorderThickness="1"
-         FontSize="14"
-         Padding="-5,10,15,10"
-         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+     Height="40"
+     Background="White"
+     BorderBrush="#DDD"
+     BorderThickness="1"
+     FontSize="14"
+     Padding="-5,10,15,10"
+     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
                             <TextBox.Template>
                                 <ControlTemplate TargetType="TextBox">
                                     <Border Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="15">
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="15">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="40"/>
@@ -196,15 +196,15 @@
 
                                             <!-- Icon search -->
                                             <TextBlock Text="🔍"
-                               FontSize="16"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               Foreground="Black"
-                               IsHitTestVisible="False"/>
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Foreground="Black"
+                           IsHitTestVisible="False"/>
 
                                             <!-- Text input -->
                                             <ScrollViewer x:Name="PART_ContentHost"
-                                  Grid.Column="1"/>
+                              Grid.Column="1"/>
                                         </Grid>
                                     </Border>
                                 </ControlTemplate>
@@ -214,20 +214,20 @@
 
                         <!-- Nút Search -->
                         <Button Width="40"
-        Height="40"
-        Background="White"
-        BorderBrush="#DDD"
-        BorderThickness="1"
-        Margin="10,0"
-        Command="{Binding OpenInsertCustomerFormCommand}"                        >
+    Height="40"
+    Background="White"
+    BorderBrush="#DDD"
+    BorderThickness="1"
+    Margin="10,0"
+    Command="{Binding OpenInsertCustomerFormCommand}"                        >
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="20">
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="20">
                                         <ContentPresenter HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"/>
+                              VerticalAlignment="Center"/>
                                     </Border>
                                 </ControlTemplate>
                             </Button.Template>
@@ -237,30 +237,30 @@
 
                         <!-- Nút "+" -->
                         <Button Width="40"
-        Height="40"
-        Background="#4A7BF7"
-        BorderThickness="0"
-        HorizontalContentAlignment="Center"
-        VerticalContentAlignment="Center"
-        Command="{Binding OpenInsertMenuItemFormCommand}">
+    Height="40"
+    Background="#4A7BF7"
+    BorderThickness="0"
+    HorizontalContentAlignment="Center"
+    VerticalContentAlignment="Center"
+    Command="{Binding OpenInsertMenuItemFormCommand}">
 
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}"
-                    CornerRadius="20"
-                    Padding="{TemplateBinding Padding}">
+                CornerRadius="20"
+                Padding="{TemplateBinding Padding}">
 
                                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                     </Border>
                                 </ControlTemplate>
                             </Button.Template>
 
                             <TextBlock Text="+" 
-               FontSize="24" 
-               Foreground="White" 
-               FontWeight="Bold"
-               Margin="0,-3.7,0.5,0"                        />
+           FontSize="24" 
+           Foreground="White" 
+           FontWeight="Bold"
+           Margin="0,-3.7,0.5,0"                        />
                         </Button>
 
 
@@ -275,10 +275,10 @@
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Button">
                                         <Border Background="{TemplateBinding Background}"
-                                CornerRadius="20"
-                                Padding="{TemplateBinding Padding}">
+                            CornerRadius="20"
+                            Padding="{TemplateBinding Padding}">
                                             <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                                          VerticalAlignment="Center"/>
                                         </Border>
                                     </ControlTemplate>
                                 </Setter.Value>
@@ -287,10 +287,10 @@
                     </StackPanel.Resources>
                     <!--Button All-->
                     <Button Width="100"
-                Padding="0,10"
-                BorderThickness="0"
-                Margin="0,0,20,0"
-                Command="{Binding SelectAllCommand}">
+            Padding="0,10"
+            BorderThickness="0"
+            Margin="0,0,20,0"
+            Command="{Binding SelectAllCommand}">
 
                         <Button.Style>
                             <Style TargetType="Button">
@@ -303,21 +303,21 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="ButtonBorder"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="20"
-                                Padding="{TemplateBinding Padding}">
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="20"
+                            Padding="{TemplateBinding Padding}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock x:Name="Icon"
-                                           Text="📦"
-                                           FontSize="16"
-                                           Margin="10,0,0,0"
-                                           Foreground="{TemplateBinding Foreground}"/>
+                                       Text="📦"
+                                       FontSize="16"
+                                       Margin="10,0,0,0"
+                                       Foreground="{TemplateBinding Foreground}"/>
                                                     <TextBlock x:Name="Label"
-                                           Text="Tất cả"
-                                           FontSize="14"
-                                           FontWeight="SemiBold"
-                                           Margin="6,0,0,0"
-                                           Foreground="{TemplateBinding Foreground}"/>
+                                       Text="Tất cả"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="6,0,0,0"
+                                       Foreground="{TemplateBinding Foreground}"/>
                                                 </StackPanel>
                                             </Border>
                                         </ControlTemplate>
@@ -338,10 +338,10 @@
 
                     <!--Button Thịt bò-->
                     <Button Width="100"
-                            Padding="0,10"
-                            BorderThickness="0"
-                            Margin="0,0,20,0"
-                            Command="{Binding SelectBeefCommand}">
+                        Padding="0,10"
+                        BorderThickness="0"
+                        Margin="0,0,20,0"
+                        Command="{Binding SelectBeefCommand}">
 
                         <Button.Style>
                             <Style TargetType="Button">
@@ -354,21 +354,21 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="ButtonBorder"
-                                                      Background="{TemplateBinding Background}"
-                                                      CornerRadius="20"
-                                                      Padding="{TemplateBinding Padding}">
+                                                  Background="{TemplateBinding Background}"
+                                                  CornerRadius="20"
+                                                  Padding="{TemplateBinding Padding}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock x:Name="Icon"
-                                                                Text="🥩"
-                                                                FontSize="16"
-                                                                Margin="10,0,0,0"
-                                                                Foreground="{TemplateBinding Foreground}"/>
+                                                            Text="🥩"
+                                                            FontSize="16"
+                                                            Margin="10,0,0,0"
+                                                            Foreground="{TemplateBinding Foreground}"/>
                                                     <TextBlock x:Name="Label"
-                                                                 Text="Thịt bò"
-                                                                 FontSize="14"
-                                                                 FontWeight="SemiBold"
-                                                                 Margin="6,0,0,0"
-                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                             Text="Thịt bò"
+                                                             FontSize="14"
+                                                             FontWeight="SemiBold"
+                                                             Margin="6,0,0,0"
+                                                             Foreground="{TemplateBinding Foreground}"/>
                                                 </StackPanel>
                                             </Border>
                                         </ControlTemplate>
@@ -387,10 +387,10 @@
 
                     <!--Thịt heo-->
                     <Button Width="100"
-                            Padding="0,10"
-                            BorderThickness="0"
-                            Margin="0,0,20,0"
-                            Command="{Binding SelectPorkCommand}">
+                        Padding="0,10"
+                        BorderThickness="0"
+                        Margin="0,0,20,0"
+                        Command="{Binding SelectPorkCommand}">
 
                         <Button.Style>
                             <Style TargetType="Button">
@@ -403,21 +403,21 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="ButtonBorder"
-                                  Background="{TemplateBinding Background}"
-                                  CornerRadius="20"
-                                  Padding="{TemplateBinding Padding}">
+                              Background="{TemplateBinding Background}"
+                              CornerRadius="20"
+                              Padding="{TemplateBinding Padding}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock x:Name="Icon"
-                                            Text="🍖"
-                                            FontSize="16"
-                                            Margin="10,0,-2,0"
-                                            Foreground="{TemplateBinding Foreground}"/>
+                                        Text="🍖"
+                                        FontSize="16"
+                                        Margin="10,0,-2,0"
+                                        Foreground="{TemplateBinding Foreground}"/>
                                                     <TextBlock x:Name="Label"
-                                             Text="Thịt heo"
-                                             FontSize="14"
-                                             FontWeight="SemiBold"
-                                             Margin="6,0,0,0"
-                                             Foreground="{TemplateBinding Foreground}"/>
+                                         Text="Thịt heo"
+                                         FontSize="14"
+                                         FontWeight="SemiBold"
+                                         Margin="6,0,0,0"
+                                         Foreground="{TemplateBinding Foreground}"/>
                                                 </StackPanel>
                                             </Border>
                                         </ControlTemplate>
@@ -436,10 +436,10 @@
 
                     <!--Thịt gà-->
                     <Button Width="100"
-                            Padding="0,10"
-                            BorderThickness="0"
-                            Margin="0,0,20,0"
-                            Command="{Binding SelectChickenCommand}">
+                        Padding="0,10"
+                        BorderThickness="0"
+                        Margin="0,0,20,0"
+                        Command="{Binding SelectChickenCommand}">
 
                         <Button.Style>
                             <Style TargetType="Button">
@@ -452,21 +452,21 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="ButtonBorder"
-                                                      Background="{TemplateBinding Background}"
-                                                      CornerRadius="20"
-                                                      Padding="{TemplateBinding Padding}">
+                                                  Background="{TemplateBinding Background}"
+                                                  CornerRadius="20"
+                                                  Padding="{TemplateBinding Padding}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock x:Name="Icon"
-                                                                 Text="🍱"
-                                                                 FontSize="16"
-                                                                 Margin="10,-3,-2,0"
-                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                             Text="🍱"
+                                                             FontSize="16"
+                                                             Margin="10,-3,-2,0"
+                                                             Foreground="{TemplateBinding Foreground}"/>
                                                     <TextBlock x:Name="Label"
-                                                                 Text="Thịt gà"
-                                                                 FontSize="14"
-                                                                 FontWeight="SemiBold"
-                                                                 Margin="6,0,0,0"
-                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                             Text="Thịt gà"
+                                                             FontSize="14"
+                                                             FontWeight="SemiBold"
+                                                             Margin="6,0,0,0"
+                                                             Foreground="{TemplateBinding Foreground}"/>
                                                 </StackPanel>
                                             </Border>
                                         </ControlTemplate>
@@ -485,10 +485,10 @@
 
                     <!--Button món khác -->
                     <Button Width="100"
-                            Padding="0,10"
-                            BorderThickness="0"
-                            Margin="0,0,20,0"
-                            Command="{Binding SelectAnotherCommand}">
+                        Padding="0,10"
+                        BorderThickness="0"
+                        Margin="0,0,20,0"
+                        Command="{Binding SelectAnotherCommand}">
 
                         <Button.Style>
                             <Style TargetType="Button">
@@ -501,21 +501,21 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="ButtonBorder"
-                                  Background="{TemplateBinding Background}"
-                                  CornerRadius="20"
-                                  Padding="{TemplateBinding Padding}">
+                              Background="{TemplateBinding Background}"
+                              CornerRadius="20"
+                              Padding="{TemplateBinding Padding}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock x:Name="Icon"
-                                             Text="🍽️"
-                                             FontSize="16"
-                                             Margin="8,-1,-5,0"
-                                             Foreground="{TemplateBinding Foreground}"/>
+                                         Text="🍽️"
+                                         FontSize="16"
+                                         Margin="8,-1,-5,0"
+                                         Foreground="{TemplateBinding Foreground}"/>
                                                     <TextBlock x:Name="Label"
-                                             Text="Món khác"
-                                             FontSize="14"
-                                             FontWeight="SemiBold"
-                                             Margin="6,0,0,0"
-                                             Foreground="{TemplateBinding Foreground}"/>
+                                         Text="Món khác"
+                                         FontSize="14"
+                                         FontWeight="SemiBold"
+                                         Margin="6,0,0,0"
+                                         Foreground="{TemplateBinding Foreground}"/>
                                                 </StackPanel>
                                             </Border>
                                         </ControlTemplate>
@@ -534,10 +534,10 @@
 
                     <!--Nước uống-->
                     <Button Width="100"
-                            Padding="0,10"
-                            BorderThickness="0"
-                            Margin="0,0,10,0"
-                            Command="{Binding SelectDrinkCommand}">
+                        Padding="0,10"
+                        BorderThickness="0"
+                        Margin="0,0,10,0"
+                        Command="{Binding SelectDrinkCommand}">
 
                         <Button.Style>
                             <Style TargetType="Button">
@@ -550,21 +550,21 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="ButtonBorder"
-                                                            Background="{TemplateBinding Background}"
-                                                            CornerRadius="20"
-                                                            Padding="{TemplateBinding Padding}">
+                                                        Background="{TemplateBinding Background}"
+                                                        CornerRadius="20"
+                                                        Padding="{TemplateBinding Padding}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock x:Name="Icon"
-                                                                 Text="🥤"
-                                                                 FontSize="16"
-                                                                 Margin="1,-1,-8,0"
-                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                             Text="🥤"
+                                                             FontSize="16"
+                                                             Margin="1,-1,-8,0"
+                                                             Foreground="{TemplateBinding Foreground}"/>
                                                     <TextBlock x:Name="Label"
-                                                                 Text="Nước uống"
-                                                                 FontSize="14"
-                                                                 FontWeight="SemiBold"
-                                                                 Margin="8,0,0,0"
-                                                                 Foreground="{TemplateBinding Foreground}"/>
+                                                             Text="Nước uống"
+                                                             FontSize="14"
+                                                             FontWeight="SemiBold"
+                                                             Margin="8,0,0,0"
+                                                             Foreground="{TemplateBinding Foreground}"/>
                                                 </StackPanel>
                                             </Border>
                                         </ControlTemplate>
@@ -582,13 +582,13 @@
                     </Button>
 
                     <Button Width="100" Height="40" Margin="180,0,0,0" Background="#4A7BF7" Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center"
-                            Command="{Binding OpenListTableWindowCommand}">
+                        Command="{Binding OpenListTableWindowCommand}">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border Background="{TemplateBinding Background}"
-    BorderBrush="{TemplateBinding BorderBrush}"
-    BorderThickness="1"
-    CornerRadius="15">
+BorderBrush="{TemplateBinding BorderBrush}"
+BorderThickness="1"
+CornerRadius="15">
                                     <!-- Bo viền -->
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
@@ -614,33 +614,33 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Width="225"
-                        Margin="0,0,15,15"
-                        CornerRadius="20"
-                        Background="White">
+                    Margin="0,0,15,15"
+                    CornerRadius="20"
+                    Background="White">
 
                                 <Border.Effect>
                                     <DropShadowEffect Color="Gray"
-                                          BlurRadius="10"
-                                          ShadowDepth="2"
-                                          Opacity="0.2"/>
+                                      BlurRadius="10"
+                                      ShadowDepth="2"
+                                      Opacity="0.2"/>
                                 </Border.Effect>
 
                                 <StackPanel>
 
                                     <!-- IMAGE -->
                                     <Image Source="{Binding imageFullPath}"
-                               Height="180"
-                               Margin="15,15,15,10"
-                               Stretch="UniformToFill"/>
+                           Height="180"
+                           Margin="15,15,15,10"
+                           Stretch="UniformToFill"/>
 
                                     <StackPanel Margin="15,0,15,15">
 
                                         <!-- NAME -->
                                         <TextBlock Text="{Binding menuItemName}"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       TextTrimming="CharacterEllipsis"
-                                       Margin="0,0,0,10"/>
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis"
+                                   Margin="0,0,0,10"/>
 
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -650,10 +650,10 @@
 
                                             <!-- PRICE -->
                                             <TextBlock Text="{Binding unitPriceDisplay}"
-                                           FontSize="14"
-                                           FontWeight="SemiBold"
-                                           Foreground="#4A7BF7"
-                                           VerticalAlignment="Center"/>
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#4A7BF7"
+                                       VerticalAlignment="Center"/>
 
                                             <!-- ACTION -->
                                             <Grid Grid.Column="1">
@@ -661,12 +661,12 @@
 
                                                     <!-- ADD -->
                                                     <Button Width="32"
-        Height="32"
-        Background="Transparent"
-        BorderThickness="0"
-        Command="{Binding DataContext.AddToCartCommand,
-                  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-        CommandParameter="{Binding}">
+    Height="32"
+    Background="Transparent"
+    BorderThickness="0"
+    Command="{Binding DataContext.AddToCartCommand,
+              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+    CommandParameter="{Binding}">
 
                                                         <Button.Style>
                                                             <Style TargetType="Button">
@@ -685,18 +685,18 @@
                                                         <Button.Template>
                                                             <ControlTemplate TargetType="Button">
                                                                 <Border Width="32"
-                    Height="32"
-                    CornerRadius="16"
-                    BorderBrush="#4A7BF7"
-                    BorderThickness="1.5"
-                    Background="White">
+                Height="32"
+                CornerRadius="16"
+                BorderBrush="#4A7BF7"
+                BorderThickness="1.5"
+                Background="White">
                                                                     <TextBlock Text="+"
-                           FontSize="22"
-                           FontWeight="Bold"
-                           Foreground="#4A7BF7"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Margin="0,0,0,5"/>
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Foreground="#4A7BF7"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Margin="0,0,0,5"/>
                                                                 </Border>
                                                             </ControlTemplate>
                                                         </Button.Template>
@@ -706,9 +706,9 @@
 
                                                     <!-- QTY -->
                                                     <Border Background="#F0F0F0"
-                                                            CornerRadius="16"
-                                                            Height="32"
-                                                            MinWidth="85">
+                                                        CornerRadius="16"
+                                                        Height="32"
+                                                        MinWidth="85">
 
                                                         <Border.Style>
                                                             <Style TargetType="Border">
@@ -724,23 +724,23 @@
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 
                                                             <Button Command="{Binding DataContext.DecreaseCommand,
-                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                    CommandParameter="{Binding}"
-                    Width="28" Background="Transparent" BorderThickness="0">
+                          RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                CommandParameter="{Binding}"
+                Width="28" Background="Transparent" BorderThickness="0">
                                                                 <TextBlock Text="-" FontSize="20" FontWeight="Bold"/>
                                                             </Button>
 
                                                             <TextBlock Text="{Binding DisplayQuantity}"
-                       FontSize="15"
-                       FontWeight="Bold"
-                       MinWidth="20"
-                       TextAlignment="Center"
-                       VerticalAlignment="Center"/>
+                   FontSize="15"
+                   FontWeight="Bold"
+                   MinWidth="20"
+                   TextAlignment="Center"
+                   VerticalAlignment="Center"/>
 
                                                             <Button Command="{Binding DataContext.IncreaseCommand,
-                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                    CommandParameter="{Binding}"
-                    Width="28" Background="Transparent" BorderThickness="0">
+                          RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                CommandParameter="{Binding}"
+                Width="28" Background="Transparent" BorderThickness="0">
                                                                 <TextBlock Text="+" FontSize="18" FontWeight="Bold"/>
                                                             </Button>
 
@@ -769,6 +769,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -776,60 +777,117 @@
 
                 <!-- Header -->
                 <StackPanel Grid.Row="0" Margin="0,0,0,20">
-                    <TextBlock Text="Đơn hàng hiện tại" HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Margin="0,0,0,5"/>
+                    <TextBlock Text="Đơn hàng hiện tại" HorizontalAlignment="Left" FontSize="24" FontWeight="Bold" Margin="0,0,0,0"/>
                 </StackPanel>
 
-                <TextBlock></TextBlock>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+                    <TextBlock Text="Mã đơn hàng hiện tại: "
+           FontSize="14"
+           FontWeight="SemiBold"/>
+
+                    <TextBlock Text="{Binding CurrentOrderId}"
+           FontSize="14"
+           FontWeight="Bold"
+           Foreground="DarkBlue"/>
+                </StackPanel>
+                <StackPanel Grid.Row="2" Margin="0,0,0,15">
+
+                    <!-- Trạng thái -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+               Text="Trạng thái:"
+               FontSize="14"
+               FontWeight="SemiBold"
+               VerticalAlignment="Center"/>
+
+                        <ComboBox Grid.Column="1"
+              Width="200"
+              ItemsSource="{Binding OrderTypes}"
+      SelectedItem="{Binding SelectedOrderType}"
+      DisplayMemberPath="Display"/>
+                    </Grid>
+
+                    <!-- Chọn bàn -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+               Text="Chọn bàn:"
+               FontSize="14"
+               FontWeight="SemiBold"
+               VerticalAlignment="Center"/>
+
+                        <ComboBox Grid.Column="1"
+              Width="200"
+              ItemsSource="{Binding Tables}"
+              DisplayMemberPath="tableName"
+              SelectedValuePath="tableId"
+              SelectedValue="{Binding SelectedTableId}"
+              IsEnabled="{Binding IsTableSelectionEnabled}"
+              DropDownOpened="TableComboBox_DropDownOpened"/>
+                    </Grid>
+
+                </StackPanel>
+
+
                 <!-- Order Items Header -->
-                <TextBlock Grid.Row="2" Text="Thông tin món (Số món ăn)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,15"/>
+                <TextBlock Grid.Row="3" Text="Thông tin món (Số món ăn)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,15"/>
 
                 <!-- Order Items List -->
-                <Border Grid.Row="3"
-        BorderBrush="#E0E0E0"
-        BorderThickness="1"
-        CornerRadius="12"
-        Padding="5">
+                <Border Grid.Row="4"
+    BorderBrush="#E0E0E0"
+    BorderThickness="1"
+    CornerRadius="12"
+    Padding="5">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding CartItems}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Padding="10"
-                        Margin="0,0,0,10"
-                        BorderThickness="1"
-                        BorderBrush="#E0E0E0"
-                        CornerRadius="8">
+                    Margin="0,0,0,10"
+                    BorderThickness="1"
+                    BorderBrush="#E0E0E0"
+                    CornerRadius="8">
 
                                         <DockPanel>
 
                                             <!-- DELETE -->
                                             <Button DockPanel.Dock="Right"
-                                Content="🗑"
-                                FontSize="16"
-                                Foreground="Red"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Command="{Binding DataContext.RemoveItemCommand,
-                                          RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                CommandParameter="{Binding}"/>
+                            Content="🗑"
+                            FontSize="16"
+                            Foreground="Red"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding DataContext.RemoveItemCommand,
+                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}"/>
 
                                             <!-- IMAGE -->
                                             <Image DockPanel.Dock="Left"
-                               Width="50"
-                               Height="50"
-                               Margin="0,0,10,0"
-                               Source="{Binding ImageUrl}"
-                               Stretch="UniformToFill"/>
+                           Width="50"
+                           Height="50"
+                           Margin="0,0,10,0"
+                           Source="{Binding ImageUrl}"
+                           Stretch="UniformToFill"/>
 
                                             <!-- INFO -->
                                             <StackPanel VerticalAlignment="Center">
 
                                                 <TextBlock Text="{Binding MenuItemName}"
-                                       FontWeight="SemiBold"/>
+                                   FontWeight="SemiBold"/>
 
                                                 <TextBlock Text="{Binding UnitPrice, StringFormat={}{0:N0} đ}"
-                                       Foreground="#666"/>
+                                   Foreground="#666"/>
                                                 <TextBlock Text="{Binding Quantity, StringFormat=x{0}}"
-                                 FontSize="12" FontWeight="Bold"/>
+                             FontSize="12" FontWeight="Bold"/>
 
 
                                             </StackPanel>
@@ -847,13 +905,13 @@
 
 
                 <!-- Payment Summary -->
-                <StackPanel Grid.Row="4" Margin="0,20,0,0">
+                <StackPanel Grid.Row="5" Margin="0,20,0,0">
                     <TextBlock Text="Thông tin thanh toán" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,15"/>
 
                     <DockPanel Margin="0,0,0,8">
                         <TextBlock Text="Tổng giá trị" FontSize="13" Foreground="#666"/>
                         <TextBlock Text="{Binding TotalAmount,
-                                                      StringFormat={}{0:N0} VND}" FontSize="13" HorizontalAlignment="Right"/>
+                                                  StringFormat={}{0:N0} VND}" FontSize="13" HorizontalAlignment="Right"/>
                     </DockPanel>
 
                     <DockPanel Margin="0,0,0,8">
@@ -875,45 +933,45 @@
 
                             <!-- Label -->
                             <TextBlock Grid.Column="0"
-               Text="Tổng"
-               FontSize="15"
-               FontWeight="Bold"/>
+           Text="Tổng"
+           FontSize="15"
+           FontWeight="Bold"/>
 
                             <!-- Amount -->
                             <TextBlock Grid.Column="1"
-               Text="{Binding TotalAmount, StringFormat={}{0:N0} VND}"
-               FontSize="16"
-               FontWeight="Bold"
-               Foreground="#4A7BF7"
-               HorizontalAlignment="Right"/>
+           Text="{Binding TotalAmount, StringFormat={}{0:N0} VND}"
+           FontSize="16"
+           FontWeight="Bold"
+           Foreground="#4A7BF7"
+           HorizontalAlignment="Right"/>
                         </Grid>
                     </Border>
                 </StackPanel>
 
                 <!-- Save Button -->
                 <Button x:Name="BtnSaveOrder"
-        Grid.Row="5"
-        Background="#4A7BF7"
-        BorderThickness="0"
-        Height="50"
-        Margin="0,20,0,0"
-        Click="BtnSaveOrder_Click">
+    Grid.Row="6"
+    Background="#4A7BF7"
+    BorderThickness="0"
+    Height="50"
+    Margin="0,20,0,0"
+    Command="{Binding SaveOrder}">
 
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border Background="{TemplateBinding Background}"
-                    CornerRadius="20"
-                    Padding="{TemplateBinding Padding}">
+                CornerRadius="20"
+                Padding="{TemplateBinding Padding}">
                                 <ContentPresenter HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"/>
+                              VerticalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
 
                     <TextBlock Text="Lưu đơn hàng"
-               FontSize="15"
-               Foreground="White"
-               FontWeight="SemiBold"/>
+           FontSize="15"
+           Foreground="White"
+           FontWeight="SemiBold"/>
                 </Button>
             </Grid>
         </Border>
