@@ -8,7 +8,7 @@
              d:DesignHeight="800" d:DesignWidth="1200"
              Background="#F5F5F5">
 
-    <Grid Margin="-10,0,10,0">
+    <Grid Margin="-20,0,10,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0"/>
             <!-- Sidebar -->
@@ -70,15 +70,15 @@
             </Grid.RowDefinitions>
 
             <!-- Header -->
-            <DockPanel Grid.Row="0" Margin="0,-17,-43,20" LastChildFill="False" Background="White">
+            <DockPanel Grid.Row="0" Height="60" Margin="-10,-20,-43,20" LastChildFill="False" Background="White">
 
                 <!-- BÊN TRÁI: Title -->
-                <TextBlock Text="Dashboard"
-               FontSize="24"
+                <TextBlock Text="Menu"
+               FontSize="22"
                FontWeight="Bold"
                DockPanel.Dock="Left"
                VerticalAlignment="Center"
-               Margin="0,0,20,0"/>
+               Margin="30,0,20,0"/>
 
                 <!-- BÊN PHẢI: Admin Info -->
                 <StackPanel DockPanel.Dock="Right"
@@ -100,13 +100,13 @@
                 <!-- Ở GIỮA: Menu -->
                 <StackPanel Orientation="Horizontal"
                 VerticalAlignment="Center"
-                Margin="40,0,40,0">
+                Margin="250,0,40,0">
                     <TextBlock Text="Menu" Margin="0,0,30,0"
-                   FontSize="16" Foreground="#4A7BF7" Cursor="Hand"/>
+                   FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
                     <TextBlock Text="Đơn hàng" Margin="0,0,30,0"
-                   FontSize="16" Foreground="#999" Cursor="Hand"/>
+                   FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
                     <TextBlock Text="Lịch sử thanh toán"
-                   FontSize="16" Foreground="#999" Cursor="Hand"/>
+                   FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
                 </StackPanel>
 
             </DockPanel>
