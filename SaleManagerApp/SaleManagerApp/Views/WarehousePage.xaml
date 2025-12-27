@@ -101,7 +101,7 @@
         </Grid.RowDefinitions>
 
         <!-- HEADER / NAV -->
-        <Grid Grid.Row="0" Background="White" Height="60">
+        <Grid Grid.Row="0" Background="White" Height="80">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -110,20 +110,21 @@
             <!-- Top navigation và title -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="30,0,0,0">
                 <!-- Logo text -->
-                <TextBlock Text="Warehouse" FontWeight="Bold" FontSize="22" VerticalAlignment="Center" Margin="0,0,200,0"/>
+                <TextBlock Text="WMS" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Margin="0,0,40,0"/>
 
                 <!-- Top nav links -->
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="210, 0, 0, 0">
-                    <StackPanel Margin="16,0" VerticalAlignment="Center">
-                        <TextBlock Text="Dụng cụ bếp" Foreground="#6B7280" FontSize="15" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel Margin="20,0" VerticalAlignment="Center">
+                        <TextBlock Text="Dụng cụ bếp" Foreground="#888" FontSize="14" HorizontalAlignment="Center"/>
                     </StackPanel>
 
-                    <StackPanel Margin="10,0" VerticalAlignment="Center">
-                        <TextBlock Text="Nguyên liệu" Foreground="#6B7280" FontWeight="Regular" FontSize="15" HorizontalAlignment="Center"/>
+                    <StackPanel Margin="20,0" VerticalAlignment="Center">
+                        <TextBlock Text="Nguyên liệu" Foreground="#5B7FFF" FontWeight="SemiBold" FontSize="14" HorizontalAlignment="Center"/>
+                        <Border Height="3" Background="#5B7FFF" CornerRadius="2" Margin="0,4,0,0"/>
                     </StackPanel>
 
-                    <StackPanel Margin="10,0" VerticalAlignment="Center">
-                        <TextBlock Text="Lịch sử xuất/nhập kho" Foreground="#6B7280" FontSize="15" HorizontalAlignment="Center"/>
+                    <StackPanel Margin="20,0" VerticalAlignment="Center">
+                        <TextBlock Text="Lịch sử xuất/nhập kho" Foreground="#888" FontSize="14" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
