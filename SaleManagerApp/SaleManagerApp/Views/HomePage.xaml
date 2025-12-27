@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1200"
              Background="#E5E5E5">
-    <Grid Margin="0, 20, 20, 20">
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <!-- Header -->
@@ -28,8 +28,8 @@
 
 
         <!-- Header -->
-        <DockPanel Grid.Row="0" Grid.Column="1" Background="White" LastChildFill="True" Margin="0,-20,-18,12" Grid.ColumnSpan="2">
-            <TextBlock Text="Dashboard" FontSize="22" FontWeight="Bold" DockPanel.Dock="Left" Width="200" Margin="30, 16, 16, 16" RenderTransformOrigin="0.872,0.545"/>
+        <DockPanel Grid.Row="0" Grid.Column="1" Background="White" LastChildFill="True" Margin="1,-18,-18,12" Grid.ColumnSpan="2">
+            <TextBlock Text="Homepage" FontSize="20" FontWeight="SemiBold" DockPanel.Dock="Left" Width="200" Margin="16"/>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Margin="16">
                 <TextBlock Text="Tên admin/user" FontWeight="Bold" HorizontalAlignment="Right"/>
                 <TextBlock Text="Mã NV/ADMIN" FontSize="12" HorizontalAlignment="Right"/>
