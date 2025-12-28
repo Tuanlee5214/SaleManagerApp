@@ -1,4 +1,5 @@
 ﻿using SaleManagerApp.Helpers;
+using SaleManagerApp.Models;
 using SaleManagerApp.Services;
 using System;
 using System.Windows.Input;
@@ -8,10 +9,29 @@ namespace SaleManagerApp.ViewModels
     public class ExportIngredientViewModel : BaseViewModel
     {
         private readonly WarehouseService _service = new WarehouseService();
+        private readonly string _exportOrderId = $"EX{DateTime.Now:yyyyMMddHHmmss}";
 
-        public string IngredientId { get; set; }
-        public int CurrentQuantity { get; set; }
+        // =========================
+        // INGREDIENT
+        // =========================
+        private IngredientItem _ingredient;
+        public IngredientItem Ingredient
+        {
+            get => _ingredient;
+            private set
+            {
+                _ingredient = value;
+                OnPropertyChanged();
+            }
+        }
 
+        public string IngredientId => Ingredient?.IngredientId;
+        public int CurrentQuantity => Ingredient?.TotalQuantity ?? 0;
+        public bool HasExpiredBatch => Ingredient?.HasExpiredBatch ?? false;
+
+        // =========================
+        // INPUT
+        // =========================
         private int _quantity;
         public int Quantity
         {
@@ -23,9 +43,15 @@ namespace SaleManagerApp.ViewModels
             }
         }
 
+        // =========================
+        // COMMANDS
+        // =========================
         public ICommand ConfirmCommand { get; }
         public ICommand CancelCommand { get; }
 
+        // =========================
+        // ACTIONS
+        // =========================
         public Action CloseAction { get; set; }
         public Action ReloadAction { get; set; }
 
@@ -35,21 +61,52 @@ namespace SaleManagerApp.ViewModels
             CancelCommand = new RelayCommand(_ => CloseAction?.Invoke());
         }
 
+        // =========================
+        // SET INGREDIENT
+        // =========================
+        public void SetIngredient(IngredientItem item)
+        {
+            Ingredient = item;
+            OnPropertyChanged(nameof(IngredientId));
+            OnPropertyChanged(nameof(CurrentQuantity));
+            OnPropertyChanged(nameof(HasExpiredBatch));
+        }
+
+        // =========================
+        // EXPORT LOGIC
+        // =========================
         private void Export(object obj)
         {
+            if (Ingredient == null)
+            {
+                ToastService.ShowError("Chưa chọn nguyên liệu");
+                return;
+            }
+
+            if (HasExpiredBatch)
+            {
+                ToastService.ShowError("Nguyên liệu có batch đã hết hạn, cần xử lý trước");
+                return;
+            }
+
             if (Quantity <= 0)
             {
-                ToastService.ShowError("Số lượng xuất không hợp lệ");
+                ToastService.ShowError("Số lượng xuất phải lớn hơn 0");
                 return;
             }
 
             if (Quantity > CurrentQuantity)
             {
-                ToastService.ShowError("Số lượng không đủ để xuất kho");
+                ToastService.ShowError("Số lượng tồn kho không đủ");
                 return;
             }
 
-            var result = _service.ExportIngredient(IngredientId, Quantity);
+            var result = _service.ExportIngredient(
+                _exportOrderId,
+                Ingredient.IngredientId,
+                Quantity
+            );
+
             if (result.Success)
             {
                 ReloadAction?.Invoke();

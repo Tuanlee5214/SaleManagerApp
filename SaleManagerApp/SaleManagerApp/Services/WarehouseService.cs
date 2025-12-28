@@ -10,32 +10,56 @@ namespace SaleManagerApp.Services
     {
         private readonly DBConnectionService _db = new DBConnectionService();
 
-        // Lấy danh sách nguyên liệu
+        // =========================
+        // GET INGREDIENT + BATCH
+        // =========================
         public GetIngredientsResult GetAllIngredients()
         {
             try
             {
-                var list = new List<Ingredient>();
+                var ingredients = new Dictionary<string, IngredientItem>();
 
                 using (var conn = _db.GetConnection())
-                using (var cmd = conn.CreateCommand())
+                using (var cmd = new SqlCommand("sp_GetIngredientWithBatch", conn))
                 {
-                    cmd.CommandText =
-                        "SELECT ingredientId, ingredientName, unit, quantity, minQuantity " +
-                        "FROM Ingredient";
+                    cmd.CommandType = CommandType.StoredProcedure;
 
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            list.Add(new Ingredient
+                            var ingredientId = reader["IngredientId"].ToString();
+
+                            if (!ingredients.ContainsKey(ingredientId))
                             {
-                                ingredientId = reader["ingredientId"].ToString(),
-                                ingredientName = reader["ingredientName"].ToString(),
-                                unit = reader["unit"].ToString(),
-                                quantity = (int)reader["quantity"],
-                                minQuantity = (int)reader["minQuantity"]
-                            });
+                                ingredients[ingredientId] = new IngredientItem
+                                {
+                                    IngredientId = ingredientId,
+                                    IngredientName = reader["IngredientName"].ToString(),
+                                    Unit = reader["Unit"].ToString(),
+                                    MinQuantity = (int)reader["MinQuantity"],
+
+                                    // ===== NEW FIELDS =====
+                                    Group = Enum.Parse<IngredientGroup>(
+                                        reader["IngredientGroup"].ToString()
+                                    ),
+                                    ImagePath = reader["ImagePath"]?.ToString()
+                                };
+                            }
+
+                            // ===== MAP BATCH =====
+                            if (reader["BatchId"] != DBNull.Value)
+                            {
+                                ingredients[ingredientId].Batches.Add(
+                                    new IngredientBatch
+                                    {
+                                        BatchId = reader["BatchId"].ToString(),
+                                        Quantity = (int)reader["Quantity"],
+                                        ImportDate = (DateTime)reader["ImportDate"],
+                                        ExpiryDate = reader["ExpiryDate"] as DateTime?
+                                    }
+                                );
+                            }
                         }
                     }
                 }
@@ -43,7 +67,7 @@ namespace SaleManagerApp.Services
                 return new GetIngredientsResult
                 {
                     Success = true,
-                    IngredientList = list
+                    IngredientList = new List<IngredientItem>(ingredients.Values)
                 };
             }
             catch (SqlException)
@@ -51,31 +75,94 @@ namespace SaleManagerApp.Services
                 return new GetIngredientsResult
                 {
                     Success = false,
-                    ErrorMessage = "Lỗi kết nối tới server"
+                    ErrorMessage = "Không thể tải dữ liệu kho"
                 };
             }
         }
 
-        // Nhập kho
-        public ImportIngredientResult ImportIngredient(string ingredientId, int quantity)
+        public CreateIngredientResult CreateIngredient(
+    string name,
+    string unit,
+    IngredientGroup group,
+    int minQuantity,
+    string imagePath)
         {
             try
             {
                 using (var conn = _db.GetConnection())
-                using (SqlCommand cmd = new SqlCommand("sp_ImportIngredient", conn))
+                using (var cmd = new SqlCommand("sp_CreateIngredient", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@IngredientId", SqlDbType.Char, 7).Value = ingredientId;
-                    cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = quantity;
+
+                    cmd.Parameters.AddWithValue("@IngredientName", name);
+                    cmd.Parameters.AddWithValue("@Unit", unit);
+                    cmd.Parameters.AddWithValue("@IngredientGroup", group.ToString());
+                    cmd.Parameters.AddWithValue("@MinQuantity", minQuantity);
+                    cmd.Parameters.AddWithValue("@ImagePath",
+                        string.IsNullOrWhiteSpace(imagePath)
+                            ? (object)DBNull.Value
+                            : imagePath);
 
                     cmd.ExecuteNonQuery();
+                }
 
-                    return new ImportIngredientResult
+                return new CreateIngredientResult
+                {
+                    Success = true,
+                    SuccessMessage = "Thêm nguyên liệu thành công"
+                };
+            }
+            catch (SqlException ex)
+            {
+                // 50002: trùng tên (custom error)
+                if (ex.Number == 50002)
+                {
+                    return new CreateIngredientResult
                     {
-                        Success = true,
-                        SuccessMessage = "Nhập kho thành công"
+                        Success = false,
+                        ErrorMessage = "Nguyên liệu đã tồn tại"
                     };
                 }
+
+                return new CreateIngredientResult
+                {
+                    Success = false,
+                    ErrorMessage = "Không thể thêm nguyên liệu"
+                };
+            }
+        }
+
+        // =========================
+        // IMPORT
+        // =========================
+        public ImportIngredientResult ImportIngredient(
+            string importOrderId,
+            string ingredientId,
+            int quantity,
+            decimal unitPrice,
+            DateTime? expiryDate)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = new SqlCommand("sp_InsertImportOrderDetail", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@ImportOrderId", importOrderId);
+                    cmd.Parameters.AddWithValue("@IngredientId", ingredientId);
+                    cmd.Parameters.AddWithValue("@Quantity", quantity);
+                    cmd.Parameters.AddWithValue("@UnitPrice", unitPrice);
+                    cmd.Parameters.AddWithValue("@ExpiryDate",
+                        expiryDate.HasValue ? expiryDate.Value : (object)DBNull.Value);
+
+                    cmd.ExecuteNonQuery();
+                }
+
+                return new ImportIngredientResult
+                {
+                    Success = true,
+                    SuccessMessage = "Nhập kho thành công"
+                };
             }
             catch (SqlException)
             {
@@ -87,29 +174,45 @@ namespace SaleManagerApp.Services
             }
         }
 
-        // Xuất kho
-        public ExportIngredientResult ExportIngredient(string ingredientId, int quantity)
+        // =========================
+        // EXPORT (FIFO)
+        // =========================
+        public ExportIngredientResult ExportIngredient(
+            string exportOrderId,
+            string ingredientId,
+            int quantity)
         {
             try
             {
                 using (var conn = _db.GetConnection())
-                using (SqlCommand cmd = new SqlCommand("sp_ExportIngredient", conn))
+                using (var cmd = new SqlCommand("sp_ExportIngredientFIFO", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@IngredientId", SqlDbType.Char, 7).Value = ingredientId;
-                    cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = quantity;
+                    cmd.Parameters.AddWithValue("@ExportOrderId", exportOrderId);
+                    cmd.Parameters.AddWithValue("@IngredientId", ingredientId);
+                    cmd.Parameters.AddWithValue("@Quantity", quantity);
 
                     cmd.ExecuteNonQuery();
+                }
 
+                return new ExportIngredientResult
+                {
+                    Success = true,
+                    SuccessMessage = "Xuất kho thành công"
+                };
+            }
+            catch (SqlException ex)
+            {
+                // 50001: không đủ hàng
+                if (ex.Number == 50001)
+                {
                     return new ExportIngredientResult
                     {
-                        Success = true,
-                        SuccessMessage = "Xuất kho thành công"
+                        Success = false,
+                        ErrorMessage = "Số lượng tồn kho không đủ"
                     };
                 }
-            }
-            catch (SqlException)
-            {
+
                 return new ExportIngredientResult
                 {
                     Success = false,
@@ -119,13 +222,14 @@ namespace SaleManagerApp.Services
         }
     }
 
-    // ===== RESULT CLASSES (GIỐNG MENU PAGE) =====
-
+    // =========================
+    // RESULT CLASSES
+    // =========================
     public class GetIngredientsResult
     {
         public bool Success { get; set; }
         public string ErrorMessage { get; set; }
-        public List<Ingredient> IngredientList { get; set; }
+        public List<IngredientItem> IngredientList { get; set; }
     }
 
     public class ImportIngredientResult
@@ -141,4 +245,12 @@ namespace SaleManagerApp.Services
         public string SuccessMessage { get; set; }
         public string ErrorMessage { get; set; }
     }
+
+    public class CreateIngredientResult
+    {
+        public bool Success { get; set; }
+        public string SuccessMessage { get; set; }
+        public string ErrorMessage { get; set; }
+    }
+
 }

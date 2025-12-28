@@ -5,9 +5,9 @@ using System.Windows.Input;
 
 namespace SaleManagerApp.Views
 {
-    public partial class ImportIngredientView : Window
+    public partial class ExportIngredientView : Window
     {
-        public ImportIngredientView(ImportIngredientViewModel viewModel)
+        public ExportIngredientView(ExportIngredientViewModel viewModel)
         {
             InitializeComponent();
             DataContext = viewModel;

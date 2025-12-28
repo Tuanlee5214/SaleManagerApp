@@ -82,6 +82,7 @@
     <Compile Include="Helpers\ToastService.cs" />
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\IngredientBatch.cs" />
     <Compile Include="Models\IngredientItem.cs" />
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="Models\Staff.cs" />
@@ -95,9 +96,10 @@
     <Compile Include="Services\UserSession.cs" />
     <Compile Include="Services\WarehouseService.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\CreateIngredientViewModel.cs" />
     <Compile Include="ViewModels\ExportIngredientViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
-    <Compile Include="ViewModels\ImportWarehouseViewModel.cs" />
+    <Compile Include="ViewModels\InsertIngredientViewModel.cs" />
     <Compile Include="ViewModels\InsertCustomerViewModel.cs" />
     <Compile Include="ViewModels\InsertMenuItemViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
@@ -109,6 +111,12 @@
     <Compile Include="ViewModels\SmallFormsModels\AddStaffWindowModel.cs" />
     <Compile Include="ViewModels\UserPageViewModel.cs" />
     <Compile Include="ViewModels\WareHousePageViewModel.cs" />
+    <Compile Include="Views\CreateIngredientView.xaml.cs">
+      <DependentUpon>CreateIngredientView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ExportIngredientView.xaml.cs">
+      <DependentUpon>ExportIngredientView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
@@ -163,6 +171,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\CreateIngredientView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ExportIngredientView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\HomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
