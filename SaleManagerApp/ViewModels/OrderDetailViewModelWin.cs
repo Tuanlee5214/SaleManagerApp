@@ -1,0 +1,23 @@
+﻿using SaleManagerApp.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SaleManagerApp.ViewModels
+{
+    public class OrderDetailViewModelWin :BaseViewModel
+    {
+        public string OrderId { get; set; }
+        public string CreatedAt { get; set; }
+        public List<MenuItem> Details { get; set; }
+
+        public OrderDetailViewModelWin(RecentOrderItem order, List<MenuItem> details)
+        {
+            OrderId = order.OrderId;
+            Details = details;
+            CreatedAt = details[0].createdAt;
+        }
+    }
+}

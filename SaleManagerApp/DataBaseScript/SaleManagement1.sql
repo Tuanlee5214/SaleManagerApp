@@ -64,6 +64,7 @@ CREATE TABLE TotalFood
 )
 
 
+
 CREATE TABLE TotalDrinkDetail
 (
 	ttDrinkDetailId char(7) primary key,
@@ -120,7 +121,6 @@ CREATE TABLE TableReservation
 	createdAt datetime default getdate(),
 	updatedAt datetime
 )
-
 
 CREATE TABLE [Order]
 (
@@ -250,6 +250,7 @@ CREATE TABLE Customer
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
+
 CREATE TABLE Invoice 
 (
 	invoiceId char(7) primary key,
