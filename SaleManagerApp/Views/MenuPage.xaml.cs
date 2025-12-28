@@ -1,6 +1,8 @@
-﻿using System;
+﻿using SaleManagerApp.ViewModels;
+using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SaleManagerApp.Views
 {
@@ -37,5 +39,31 @@ namespace SaleManagerApp.Views
 
         }
 
+        private void TableComboBox_DropDownOpened(object sender, EventArgs e)
+        {
+            if (DataContext is MenuPageViewModel vm)
+            {
+                // Chỉ load khi ăn tại bàn
+                if (!vm.IsTableSelectionEnabled)
+                    return;
+
+                vm.LoadTables();
+            }
+        }
+
+        private void OpenRecentOrders(object sender, MouseButtonEventArgs e)
+        {
+            var window = new OrderWindow();
+            window.DataContext = new RecentOrdersViewModel();
+            window.ShowDialog();
+        }
+
+        private void OpenPaymentHistory(object sender, MouseButtonEventArgs e)
+        {
+            var vm = new PayMentHistoryViewModel();
+            var historyWin = new PaymentHistoryWindow();
+            historyWin.DataContext = vm;
+            historyWin.ShowDialog();
+        }
     }
 }

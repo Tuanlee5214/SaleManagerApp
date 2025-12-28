@@ -24,15 +24,15 @@
         </Grid.ColumnDefinitions>
 
         <!-- HEADER -->
-        <Grid Height="60" Grid.Row="0" Background="White" Margin="-19,-25,-19,35" Grid.ColumnSpan="2">
+        <Grid Height="65" Grid.Row="0" Background="White" Margin="-19,-25,-19,35" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="30,0,20,0" Grid.Column="0">
-                <TextBlock Text="Staff Management" FontWeight="SemiBold" FontSize="22" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="30,5,30,0" Grid.Column="0">
+                <TextBlock Text="Staff" FontWeight="Bold" FontSize="24" VerticalAlignment="Center"/>
             </StackPanel>
 
             <!-- POSITION FILTER BUTTONS -->

@@ -64,6 +64,7 @@ CREATE TABLE TotalFood
 )
 
 
+
 CREATE TABLE TotalDrinkDetail
 (
 	ttDrinkDetailId char(7) primary key,
@@ -121,7 +122,6 @@ CREATE TABLE TableReservation
 	updatedAt datetime
 )
 
-
 CREATE TABLE [Order]
 (
 	orderId char(7) primary key,
@@ -135,6 +135,11 @@ CREATE TABLE [Order]
 	updatedAt datetime
 )
 
+--SỬA LẠI 2 THUỘC TÍNH CUSTOMERID với employeeId là null
+ALTER TABLE [Order] ALTER COLUMN customerId char(7) null
+ALTER TABLE [Order] ALTER COLUMN employeeId char(7) null
+
+
 CREATE TABLE OrderDetail 
 (
 	orderId char(7),
@@ -146,6 +151,10 @@ CREATE TABLE OrderDetail
 	primary key(orderId, menuItemId)
 )
 
+select * from Invoice
+select i.paymentMethod, i.invoiceId, i.createdAt, i.totalAmount, o.orderStatus
+from Invoice i join [Order] o on i.orderId = o.orderId where invoiceStatus = N'Đã thanh toán'
+
 CREATE TABLE Menu
 (
 	menuId char(7) primary key,
@@ -153,6 +162,7 @@ CREATE TABLE Menu
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
+
 
 CREATE TABLE MenuDetail 
 (
@@ -244,6 +254,7 @@ CREATE TABLE Customer
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
+
 CREATE TABLE Invoice 
 (
 	invoiceId char(7) primary key,
@@ -340,6 +351,8 @@ CREATE TABLE Feedback
   createdAt datetime default getdate(),
   updatedAt datetime
 )
+
+
 
 ALTER TABLE TotalDrink ADD CHECK([month] between 1 and 12)
 ALTER TABLE TotalDrink ADD CHECK([year] > 0)

@@ -1443,6 +1443,15 @@ GO
 
 -- BỔ SUNG 2 CỘT VÀO BẢNG EMPLOYEE
 ALTER TABLE Employee
+ADD phone varchar(20) not null;
+
+-------------------
+--Thêm vào nhập kho
+CREATE PROCEDURE sp_ImportIngredient
+(
+    @IngredientId CHAR(7),
+    @Quantity INT
+)
 ADD totalHoursOfMonth DECIMAL(10,2) DEFAULT 0,
     checkInTime TIME NULL;
 
@@ -1460,6 +1469,42 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    IF @Quantity <= 0
+    BEGIN
+        RAISERROR(N'Số lượng không hợp lệ',16,1);
+        RETURN;
+    END
+
+    UPDATE Ingredient
+    SET quantity = quantity + @Quantity,
+        updatedAt = GETDATE()
+    WHERE ingredientId = @IngredientId;
+END
+
+--Thêm vào xuất kho
+CREATE PROCEDURE sp_ExportIngredient
+(
+    @IngredientId CHAR(7),
+    @Quantity INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Current INT;
+    SELECT @Current = quantity FROM Ingredient WHERE ingredientId=@IngredientId;
+
+    IF @Quantity <= 0 OR @Quantity > @Current
+    BEGIN
+        RAISERROR(N'Số lượng xuất không hợp lệ',16,1);
+        RETURN;
+    END
+
+    UPDATE Ingredient
+    SET quantity = quantity - @Quantity,
+        updatedAt = GETDATE()
+    WHERE ingredientId = @IngredientId;
+END
     DECLARE @EmpId CHAR(7);
 
     EXEC sp_GenerateId 

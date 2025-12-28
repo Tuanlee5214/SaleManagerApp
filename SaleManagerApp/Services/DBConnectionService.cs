@@ -6,7 +6,7 @@ namespace SaleManagerApp.Services
     public class DBConnectionService
     {
         private readonly string _connectString =
-            "Server=HP\\SQLEXPRESS;Database=SaleManagement20251_12;Trusted_Connection=True;";
+            "Server=TUANLEE\\SQLEXPRESS;Database=SaleManagement20251_12;Trusted_Connection=True;";
 
         /// <summary>
         /// Lấy connection đã mở (giữ nguyên method cũ để tương thích)
