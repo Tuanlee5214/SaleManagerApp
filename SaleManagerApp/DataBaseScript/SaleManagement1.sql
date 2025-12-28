@@ -1596,3 +1596,326 @@ BEGIN
     SELECT @@ROWCOUNT AS RowsAffected;
 END;
 GO
+---------------------------------------
+--Thêm bảng và 1 số stored procedure phục vụ cho logic lịch làm và chấm công
+-- Thêm cột ca làm việc vào bảng Employee
+ALTER TABLE Employee 
+ADD workShift NVARCHAR(10) CHECK(workShift IN (N'Sáng', N'Chiều', N'Tối'));
+
+GO
+
+-- Bảng lưu lịch làm việc ngày mai
+CREATE TABLE ScheduleNextDay
+(
+    scheduleId CHAR(7) PRIMARY KEY,
+    employeeId CHAR(7) NOT NULL,
+    workDate DATE NOT NULL,
+    workShift NVARCHAR(10) NOT NULL CHECK(workShift IN (N'Sáng', N'Chiều', N'Tối')),
+    createdAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (employeeId) REFERENCES Employee(employeeId),
+    UNIQUE(employeeId, workDate)
+);
+
+GO
+
+-- Stored Procedure: Thêm ca làm cho ngày mai
+CREATE PROCEDURE sp_AddNextDaySchedule
+    @EmployeeId CHAR(7),
+    @WorkShift NVARCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @NextDay DATE = CAST(DATEADD(DAY, 1, GETDATE()) AS DATE);
+    DECLARE @CurrentHour INT = DATEPART(HOUR, GETDATE());
+    
+    -- Kiểm tra thời gian (22h - 24h)
+    IF @CurrentHour < 22
+    BEGIN
+        SELECT 0 AS Success, N'Chỉ được thêm ca làm từ 22:00 - 24:00' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra nhân viên tồn tại
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra đã có ca chưa
+    IF EXISTS (SELECT 1 FROM ScheduleNextDay WHERE employeeId = @EmployeeId AND workDate = @NextDay)
+    BEGIN
+        UPDATE ScheduleNextDay
+        SET workShift = @WorkShift
+        WHERE employeeId = @EmployeeId AND workDate = @NextDay;
+        
+        SELECT 1 AS Success, N'Cập nhật ca làm thành công' AS Message;
+        RETURN;
+    END
+    
+    DECLARE @ScheduleId CHAR(7);
+    EXEC sp_GenerateId 
+        @prefix = 'SC',
+        @tableName = 'ScheduleNextDay',
+        @idColumn = 'scheduleId',
+        @idLength = 7,
+        @newId = @ScheduleId OUTPUT;
+    
+    INSERT INTO ScheduleNextDay(scheduleId, employeeId, workDate, workShift, createdAt)
+    VALUES (@ScheduleId, @EmployeeId, @NextDay, @WorkShift, GETDATE());
+    
+    SELECT 1 AS Success, N'Thêm ca làm thành công' AS Message;
+END;
+
+GO
+
+-- Stored Procedure: Chấm công vào (logic mới)
+ALTER PROCEDURE sp_CheckIn
+    @EmployeeId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @CurrentTime TIME = CAST(GETDATE() AS TIME);
+    DECLARE @CurrentDate DATE = CAST(GETDATE() AS DATE);
+    DECLARE @CurrentHour INT = DATEPART(HOUR, GETDATE());
+    DECLARE @WorkShift NVARCHAR(10);
+    DECLARE @ShiftStartHour INT;
+    DECLARE @AllowedStartHour INT;
+    
+    -- Lấy ca làm từ lịch
+    SELECT @WorkShift = workShift
+    FROM ScheduleNextDay
+    WHERE employeeId = @EmployeeId AND workDate = @CurrentDate;
+    
+    IF @WorkShift IS NULL
+    BEGIN
+        SELECT 0 AS Success, N'Bạn không có ca làm hôm nay' AS Message;
+        RETURN;
+    END
+    
+    -- Xác định giờ vào ca
+    SET @ShiftStartHour = CASE @WorkShift
+        WHEN N'Sáng' THEN 7
+        WHEN N'Chiều' THEN 12
+        WHEN N'Tối' THEN 17
+    END;
+    
+    SET @AllowedStartHour = @ShiftStartHour - 1;
+    
+    -- Kiểm tra thời gian hợp lệ (1 tiếng trước ca)
+    IF @CurrentHour < @AllowedStartHour OR @CurrentHour >= @ShiftStartHour
+    BEGIN
+        SELECT 0 AS Success, 
+               N'Chỉ được chấm công từ ' + CAST(@AllowedStartHour AS NVARCHAR) + 
+               ':00 - ' + CAST(@ShiftStartHour AS NVARCHAR) + ':00' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra đã chấm công chưa
+    IF EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId AND checkInTime IS NOT NULL)
+    BEGIN
+        SELECT 0 AS Success, N'Bạn đã chấm công vào rồi' AS Message;
+        RETURN;
+    END
+    
+    UPDATE Employee
+    SET checkInTime = @CurrentTime,
+        workShift = @WorkShift,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    SELECT 1 AS Success, N'Chấm công vào thành công' AS Message, 
+           @CurrentTime AS CheckInTime, @WorkShift AS WorkShift;
+END;
+
+GO
+
+-- Stored Procedure: Chấm công ra (logic mới)
+ALTER PROCEDURE sp_CheckOut
+    @EmployeeId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @CurrentTime TIME = CAST(GETDATE() AS TIME);
+    DECLARE @CurrentHour INT = DATEPART(HOUR, GETDATE());
+    DECLARE @CheckInTime TIME;
+    DECLARE @WorkedHours DECIMAL(10,2);
+    
+    SELECT @CheckInTime = checkInTime 
+    FROM Employee 
+    WHERE employeeId = @EmployeeId;
+    
+    IF @CheckInTime IS NULL
+    BEGIN
+        SELECT 0 AS Success, N'Bạn chưa chấm công vào' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra giờ chấm công ra hợp lệ (phải > giờ vào và < 24h)
+    IF @CurrentHour >= 24 OR @CurrentTime <= @CheckInTime
+    BEGIN
+        SELECT 0 AS Success, N'Giờ chấm công ra không hợp lệ' AS Message;
+        RETURN;
+    END
+    
+    SET @WorkedHours = FLOOR(DATEDIFF(MINUTE, @CheckInTime, @CurrentTime) / 60.0);
+    
+    UPDATE Employee
+    SET totalHoursOfMonth = totalHoursOfMonth + @WorkedHours,
+        checkInTime = NULL,
+        workShift = NULL,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    -- Xóa lịch sau khi hoàn thành ca
+    DELETE FROM ScheduleNextDay 
+    WHERE employeeId = @EmployeeId AND workDate = CAST(GETDATE() AS DATE);
+    
+    SELECT 1 AS Success, N'Chấm công ra thành công' AS Message,
+           @CheckInTime AS CheckInTime,
+           @CurrentTime AS CheckOutTime,
+           @WorkedHours AS WorkedHours;
+END;
+
+GO
+
+-- Stored Procedure: Reset giờ làm tháng
+CREATE PROCEDURE sp_ResetEmployeeMonthlyHours
+    @EmployeeId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+        RETURN;
+    END
+    
+    UPDATE Employee
+    SET totalHoursOfMonth = 0,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    SELECT 1 AS Success, N'Đã reset giờ làm tháng về 0' AS Message;
+END;
+
+GO
+
+-- Stored Procedure: Cập nhật thông tin nhân viên
+CREATE PROCEDURE sp_UpdateEmployee
+    @EmployeeId CHAR(7),
+    @FullName NVARCHAR(30),
+    @DateOfBirth DATE,
+    @Position VARCHAR(20),
+    @Phone VARCHAR(25),
+    @Email VARCHAR(30),
+    @ImageUrl VARCHAR(200)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+        RETURN;
+    END
+    
+    UPDATE Employee
+    SET fullName = @FullName,
+        dateOfBirth = @DateOfBirth,
+        position = @Position,
+        phone = @Phone,
+        email = @Email,
+        imageUrl = @ImageUrl,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    SELECT 1 AS Success, N'Cập nhật thông tin thành công' AS Message;
+END;
+
+GO
+
+-- Stored Procedure: Lấy danh sách nhân viên theo chức vụ
+CREATE PROCEDURE sp_GetStaffByPosition
+    @Position VARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    IF @Position IS NULL OR @Position = ''
+    BEGIN
+        -- Lấy tất cả
+        SELECT * FROM Employee ORDER BY createdAt DESC;
+    END
+    ELSE
+    BEGIN
+        SELECT * FROM Employee 
+        WHERE position = @Position 
+        ORDER BY createdAt DESC;
+    END
+END;
+------------------------
+--Tăng kích thước chứa dữ liệu ảnh vì có thể đường dẫn quá dài: 
+-- Tăng kích thước cột imageUrl
+ALTER TABLE Employee 
+ALTER COLUMN imageUrl VARCHAR(200);
+------------------------Xóa stored procedure cũ (nếu có)
+IF EXISTS (SELECT * FROM sys.objects 
+           WHERE object_id = OBJECT_ID(N'[dbo].[sp_UpdateEmployee]') 
+           AND type in (N'P', N'PC'))
+BEGIN
+    DROP PROCEDURE [dbo].[sp_UpdateEmployee];
+END
+GO
+
+------------------ Tạo stored procedure mới
+CREATE PROCEDURE sp_UpdateEmployee
+    @EmployeeId CHAR(7),
+    @FullName NVARCHAR(30),
+    @DateOfBirth DATE,
+    @Position VARCHAR(20),
+    @Phone VARCHAR(25),
+    @Email VARCHAR(30),
+    @ImageUrl VARCHAR(200) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        -- Kiểm tra nhân viên tồn tại
+        IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+        BEGIN
+            SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+            RETURN;
+        END
+
+        -- Cập nhật thông tin
+        UPDATE Employee
+        SET fullName = @FullName,
+            dateOfBirth = @DateOfBirth,
+            position = @Position,
+            phone = @Phone,
+            email = @Email,
+            imageUrl = @ImageUrl,
+            updatedAt = GETDATE()
+        WHERE employeeId = @EmployeeId;
+
+        SELECT 1 AS Success, N'Cập nhật thông tin thành công' AS Message;
+    END TRY
+    BEGIN CATCH
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+    END CATCH
+END;
+GO
+-- Đổi VARCHAR sang NVARCHAR
+ALTER TABLE Employee
+ALTER COLUMN position NVARCHAR(20) NOT NULL;
+
+-- Fix dữ liệu bị lỗi
+UPDATE Employee SET position = N'Quản lý' WHERE position LIKE '%Qu%n%';
+UPDATE Employee SET position = N'Phục vụ' WHERE position LIKE '%Ph%c%';
+UPDATE Employee SET position = N'Phụ bếp' WHERE position LIKE '%Ph%b%';

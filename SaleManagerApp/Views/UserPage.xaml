@@ -12,7 +12,7 @@
         <helpers:NullableImageConverter x:Key="NullableImageConverter"/>
     </UserControl.Resources>
 
-    <Grid Margin="20">
+    <Grid x:Name="RootGrid" Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -35,15 +35,110 @@
                 <TextBlock Text="Staff Management" FontWeight="SemiBold" FontSize="22" VerticalAlignment="Center"/>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
-                <Border Background="Transparent" Padding="16,8" Margin="4,0" CornerRadius="8" Cursor="Hand">
-                    <TextBlock Text="Quản lý" FontSize="15" Foreground="#6B7280"/>
+            <!-- POSITION FILTER BUTTONS -->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Width="442">
+                <Border Background="Transparent" Padding="16,8" Margin="0,0,0,0" CornerRadius="8" Cursor="Hand" MouseLeftButtonDown="QuanLyButton_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedPosition}" Value="Quản lý">
+                                    <Setter Property="Background" Value="#EEF2FF"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock Text="Quản lý" FontSize="15">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#6B7280"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedPosition}" Value="Quản lý">
+                                        <Setter Property="Foreground" Value="#4A7BF7"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </Border>
-                <Border Background="#EEF2FF" Padding="16,8" Margin="4,0" CornerRadius="8" Cursor="Hand">
-                    <TextBlock Text="Phụ bếp" FontSize="15" Foreground="#5B7FFF" FontWeight="SemiBold"/>
+
+                <Border Background="Transparent" Padding="16,8" Margin="4,0" CornerRadius="8" Cursor="Hand" MouseLeftButtonDown="PhuBepButton_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedPosition}" Value="Phụ bếp">
+                                    <Setter Property="Background" Value="#EEF2FF"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock Text="Phụ bếp" FontSize="15">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#6B7280"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedPosition}" Value="Phụ bếp">
+                                        <Setter Property="Foreground" Value="#4A7BF7"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </Border>
-                <Border Background="Transparent" Padding="16,8" Margin="4,0" CornerRadius="8" Cursor="Hand">
-                    <TextBlock Text="Phục vụ" FontSize="15" Foreground="#6B7280"/>
+
+                <Border Background="Transparent" Padding="16,8" Margin="4,0" CornerRadius="8" Cursor="Hand" MouseLeftButtonDown="PhucVuButton_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedPosition}" Value="Phục vụ">
+                                    <Setter Property="Background" Value="#EEF2FF"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock Text="Phục vụ" FontSize="15">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#6B7280"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedPosition}" Value="Phục vụ">
+                                        <Setter Property="Foreground" Value="#4A7BF7"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Border>
+
+                <Border Background="Transparent" Padding="16,8" Margin="4,0" CornerRadius="8" Cursor="Hand" MouseLeftButtonDown="AllButton_Click">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedPosition}" Value="{x:Null}">
+                                    <Setter Property="Background" Value="#EEF2FF"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock Text="Tất cả" FontSize="15">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#6B7280"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedPosition}" Value="{x:Null}">
+                                        <Setter Property="Foreground" Value="#4A7BF7"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </Border>
             </StackPanel>
 
@@ -62,40 +157,31 @@
 
             <!-- BUTTON ROW -->
             <DockPanel Grid.Row="0" Margin="0,0,0,10">
-                <!-- SEARCH BOX -->
                 <Grid Width="220" Height="34" Margin="10" VerticalAlignment="Center">
                     <Border CornerRadius="15" BorderBrush="#D0D0D0" BorderThickness="1" 
-                            Background="White" VerticalAlignment="Center" Height="34">
-                        <TextBox x:Name="SearchBox" Padding="28,0,6,0" VerticalAlignment="Center"
-                                 VerticalContentAlignment="Center" Background="Transparent"
-                                 BorderThickness="0" TextChanged="SearchBox_TextChanged"/>
+            Background="White" VerticalAlignment="Center" Height="34">
+                        <TextBox x:Name="SearchBox" 
+                 Padding="28,0,6,0" 
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center" 
+                 Background="Transparent"
+                 BorderThickness="0" 
+                 TextChanged="SearchBox_TextChanged"
+                 GotFocus="SearchBox_GotFocus"
+                 LostFocus="SearchBox_LostFocus"/>
                     </Border>
 
-                    <StackPanel Orientation="Horizontal" Margin="8,0,0,0" VerticalAlignment="Center"
-                               IsHitTestVisible="False">
-                        <TextBlock Text="🔍" FontSize="14" Foreground="Gray" Margin="0,0,5,0"/>
-                        <TextBlock Text="Tìm kiếm nhân viên" Foreground="Gray">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Text.Length, ElementName=SearchBox, FallbackValue=0}">
-                                            <DataTrigger.Value>
-                                                <sys:Int32 xmlns:sys="clr-namespace:System;assembly=mscorlib">0</sys:Int32>
-                                            </DataTrigger.Value>
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                    <!-- Placeholder với icon -->
+                    <StackPanel x:Name="PlaceholderPanel"
+                Orientation="Horizontal" 
+                Margin="8,0,0,0" 
+                VerticalAlignment="Center"
+                IsHitTestVisible="False">
+                        <TextBlock Text="🔍" FontSize="14" Foreground="Gray" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Tìm kiếm nhân viên" Foreground="Gray" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Grid>
 
-                <!-- CHẤM CÔNG VÀO -->
                 <Button Content="Chấm công vào" Width="130" Height="36" Margin="10"
                         Background="#28A745" Foreground="White" Click="CheckInButton_Click">
                     <Button.Template>
@@ -107,7 +193,6 @@
                     </Button.Template>
                 </Button>
 
-                <!-- CHẤM CÔNG RA -->
                 <Button Content="Chấm công ra" Width="130" Height="36" Margin="10"
                         Background="#DC3545" Foreground="White" Click="CheckOutButton_Click">
                     <Button.Template>
@@ -119,7 +204,6 @@
                     </Button.Template>
                 </Button>
 
-                <!-- THÊM NHÂN VIÊN -->
                 <Button Content="+ Thêm nhân viên" Width="150" Height="36" Margin="10"
                         Background="#407BFF" Foreground="White" HorizontalAlignment="Right"
                         DockPanel.Dock="Right" Click="Button_Click">
@@ -161,29 +245,18 @@
                         </Style>
                     </DataGrid.ColumnHeaderStyle>
 
-                    <!-- ROW STYLE VỚI HOVER VÀ SELECTION -->
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
                             <Setter Property="Background" Value="White"/>
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="Cursor" Value="Hand"/>
                             <Style.Triggers>
-                                <!-- HOVER: Màu xám nhẹ -->
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="#F3F4F6"/>
                                 </Trigger>
-                                <!-- SELECTED: Màu xám đậm -->
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Background" Value="#E5E7EB"/>
                                 </Trigger>
-                                <!-- SELECTED + HOVER: Giữ màu xám đậm -->
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsSelected" Value="True"/>
-                                        <Condition Property="IsMouseOver" Value="True"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="Background" Value="#D1D5DB"/>
-                                </MultiTrigger>
                             </Style.Triggers>
                         </Style>
                     </DataGrid.RowStyle>
@@ -198,54 +271,32 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="DataGridCell">
-                                        <Border Background="{TemplateBinding Background}" 
-                                                BorderThickness="0" 
-                                                Padding="{TemplateBinding Padding}">
+                                        <Border Background="{TemplateBinding Background}" BorderThickness="0" Padding="{TemplateBinding Padding}">
                                             <ContentPresenter VerticalAlignment="Center"/>
                                         </Border>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
-                            <Style.Triggers>
-                                <!-- Loại bỏ màu xanh khi cell được focus -->
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="Foreground" Value="#111827"/>
-                                </Trigger>
-                            </Style.Triggers>
                         </Style>
                     </DataGrid.CellStyle>
 
                     <DataGrid.Columns>
-                        <!-- Tên nhân viên với ảnh -->
                         <DataGridTemplateColumn Header="Tên nhân viên" Width="2*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Border Width="48" Height="48" 
-                                                CornerRadius="24" 
-                                                Background="#E0E0E0"
-                                                Margin="0,0,12,0">
+                                        <Border Width="48" Height="48" CornerRadius="24" Background="#E0E0E0" Margin="0,0,12,0">
                                             <Grid>
-                                                <!-- Background circle luôn hiển thị -->
                                                 <Ellipse Fill="#E0E0E0" Width="48" Height="48"/>
-
-                                                <!-- Image với FallbackValue và TargetNullValue -->
-                                                <Image Stretch="UniformToFill" 
-                                                       Width="48" 
-                                                       Height="48"
-                                                       Source="{Binding ImageFullPath,
-                        TargetNullValue={x:Null}}">
+                                                <Image Stretch="UniformToFill" Width="48" Height="48"
+                                                       Source="{Binding ImageFullPath, TargetNullValue={x:Null}}">
                                                     <Image.Clip>
                                                         <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24"/>
                                                     </Image.Clip>
                                                 </Image>
                                             </Grid>
                                         </Border>
-                                        <TextBlock Text="{Binding fullName}" 
-                                                   VerticalAlignment="Center" 
-                                                   FontSize="14"
-                                                   FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding fullName}" VerticalAlignment="Center" FontSize="14" FontWeight="Medium"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
