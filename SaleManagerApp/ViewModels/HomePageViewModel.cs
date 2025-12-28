@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using SaleManagerApp.Services;
 
 namespace SaleManagerApp.ViewModels
 {
-    public class HomePageViewModel : INotifyPropertyChanged
+    public class HomePageViewModel : BaseViewModel, INotifyPropertyChanged
     {
         // Services
         private readonly ComboService _comboService;
@@ -385,28 +386,36 @@ namespace SaleManagerApp.ViewModels
         /// <summary>
         /// Kiểm tra và trả về đường dẫn ảnh hợp lệ
         /// </summary>
+        // Trong file SaleManagerApp.ViewModels.HomePageViewModel.cs
+
         private string GetValidImagePath(string imagePath)
         {
-            // Nếu null hoặc rỗng -> dùng ảnh mặc định
+            // Nếu dữ liệu từ DB trống, trả về ảnh mặc định ngay lập tức
             if (string.IsNullOrWhiteSpace(imagePath))
             {
                 return "pack://application:,,,/Assets/Images/default-combo.png";
             }
 
-            // Nếu đường dẫn bắt đầu với /Assets -> format đúng
-            if (imagePath.StartsWith("/Assets/", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                return $"pack://application:,,,{imagePath}";
-            }
+                // Nếu là ảnh do người dùng upload (nằm trong thư mục thực thi bin/Debug)
+                if (imagePath.Contains("Images/MenuItems"))
+                {
+                    string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                    // Thay thế dấu / thành \ để tránh lỗi đường dẫn trên Windows
+                    string cleanPath = imagePath.Replace("/", "\\");
+                    string fullPath = Path.Combine(baseDir, cleanPath);
 
-            // Nếu đã là pack:// URI -> giữ nguyên
-            if (imagePath.StartsWith("pack://", StringComparison.OrdinalIgnoreCase))
+                    return File.Exists(fullPath) ? fullPath : "pack://application:,,,/Assets/Images/default-combo.png";
+                }
+
+                // Nếu là ảnh tài nguyên mẫu trong project
+                return $"pack://application:,,,/Assets/Images/{imagePath}";
+            }
+            catch
             {
-                return imagePath;
+                return "pack://application:,,,/Assets/Images/default-combo.png";
             }
-
-            // Trường hợp khác -> thêm pack:// prefix
-            return $"pack://application:,,,/Assets/Images/{imagePath}";
         }
 
         /// <summary>
