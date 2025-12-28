@@ -100,13 +100,12 @@
                 <!-- Ở GIỮA: Menu -->
                 <StackPanel Orientation="Horizontal"
             VerticalAlignment="Center"
-            Margin="250,0,40,0">
-                    <TextBlock Text="Menu" Margin="0,0,30,0"
-               FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
+            Margin="280,0,40,0">
+                    
                     <TextBlock Text="Đơn hàng" Margin="0,0,30,0"
-               FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
+               FontSize="15" Foreground="#6B7280" FontWeight="SemiBold" Cursor="Hand" MouseLeftButtonUp="OpenRecentOrders"/>
                     <TextBlock Text="Lịch sử thanh toán"
-               FontSize="15" Foreground="#6B7280" Cursor="Hand"/>
+               FontSize="15" Foreground="#6B7280" FontWeight="SemiBold" Cursor="Hand" MouseLeftButtonUp="OpenPaymentHistory"/>
                 </StackPanel>
 
             </DockPanel>
@@ -118,53 +117,32 @@
             </StackPanel>
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,40,0,20">
-                <!-- Card 1 - Available -->
-                <Border CornerRadius="20" Background="White" Padding="20" HorizontalAlignment="Left" Margin="0,0,20,0" Width="235">
-                    <StackPanel>
-                        <DockPanel Margin="0,0,0,10">
-                            <TextBlock Text="🛒 # Mã đơn" FontSize="14" Foreground="#666"/>
-                            <TextBlock Text="0 giờ 0 phút" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
-                        </DockPanel>
-                        <Border CornerRadius="20" Background="#4CAF50" Padding="12,6" HorizontalAlignment="Left">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Sẵn sàng" FontSize="13" Foreground="White" FontWeight="SemiBold"/>
-                                <TextBlock Text=" ✓" FontSize="14" Foreground="White" Margin="5,0,0,0"/>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Border>
+                <ItemsControl ItemsSource="{Binding RecentOrders}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
 
-                <!-- Card 2 - Pending -->
-                <Border CornerRadius="20" Background="White" Padding="20" Margin="0,0,20,0" Width="235">
-                    <StackPanel>
-                        <DockPanel Margin="0,0,0,10">
-                            <TextBlock Text="🚗 # Mã đơn" FontSize="14" Foreground="#666"/>
-                            <TextBlock Text="0 giờ 0 phút" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
-                        </DockPanel>
-                        <Border CornerRadius="20" Background="#FF9800" Padding="12,6" HorizontalAlignment="Left">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Đang chế biến" FontSize="13" Foreground="White" FontWeight="SemiBold"/>
-                                <TextBlock Text=" ⟳" FontSize="14" Foreground="White" Margin="5,0,0,0"/>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Border>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="15" Background="White" Padding="20" Width="235" Margin="0,0,20,0">
+                                <StackPanel>
+                                    <DockPanel Margin="0,0,0,10">
+                                        <TextBlock Text="🛒" FontSize="14" Foreground="#666"/>
+                                        <TextBlock Text="{Binding OrderId}" FontSize="14" FontWeight="SemiBold" Foreground="#666" Margin="5,0,0,0"/>
+                                        <TextBlock Text="{Binding ItemCount, StringFormat={}{0:N0} món}" FontWeight="SemiBold" FontSize="13" Foreground="#666" HorizontalAlignment="Right"/>
 
-                <!-- Card 3 - Pending -->
-                <Border CornerRadius="20" Background="White" Padding="20" Width="235">
-                    <StackPanel>
-                        <DockPanel Margin="0,0,0,10">
-                            <TextBlock Text="🛒 # Mã đơn" FontSize="14" Foreground="#666"/>
-                            <TextBlock Text="0 giờ 0 phút" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
-                        </DockPanel>
-                        <Border CornerRadius="20" Background="#FF9800" Padding="12,6" HorizontalAlignment="Left">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Đang chế biến" FontSize="13" Foreground="White" FontWeight="SemiBold"/>
-                                <TextBlock Text=" ⟳" FontSize="14" Foreground="White" Margin="5,0,0,0"/>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Border>
+                                    </DockPanel>
+                                    <Border CornerRadius="15" Width="196" Padding="12,6" HorizontalAlignment="Center" Background="{Binding StatusColor}">
+                                        <TextBlock Text="{Binding StatusText}" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" FontWeight="SemiBold"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
 
 
             </StackPanel>

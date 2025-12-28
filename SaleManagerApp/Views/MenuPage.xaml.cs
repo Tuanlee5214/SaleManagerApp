@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SaleManagerApp.Views
 {
@@ -50,5 +51,19 @@ namespace SaleManagerApp.Views
             }
         }
 
+        private void OpenRecentOrders(object sender, MouseButtonEventArgs e)
+        {
+            var window = new OrderWindow();
+            window.DataContext = new RecentOrdersViewModel();
+            window.ShowDialog();
+        }
+
+        private void OpenPaymentHistory(object sender, MouseButtonEventArgs e)
+        {
+            var vm = new PayMentHistoryViewModel();
+            var historyWin = new PaymentHistoryWindow();
+            historyWin.DataContext = vm;
+            historyWin.ShowDialog();
+        }
     }
 }

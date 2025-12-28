@@ -12,6 +12,8 @@ using SaleManagerApp.Models;
 using MenuItem = SaleManagerApp.Models.MenuItem;
 using System.Data;
 using System.Windows.Controls;
+using SaleManagerApp.ViewModels;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SaleManagerApp.Services
 {
@@ -334,6 +336,42 @@ namespace SaleManagerApp.Services
 
             }
         }
+        public List<MenuItem> GetOrderDetailById(string orderId)
+        {
+            
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+
+                cmd.CommandText =
+                    "select o.currentPrice, o.quantity, m.menuItemName, o.createdAt " +
+                    "from OrderDetail o JOIN MenuItem m ON m.menuItemId = o.menuItemId where " +
+                    "orderId = @id";
+
+                var list = new List<MenuItem>();
+                    cmd.Parameters.Add("@id", SqlDbType.Char, 7).Value = orderId;
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                        list.Add(new MenuItem
+                        {
+                            menuItemName = reader["menuItemName"].ToString(),
+                            quantity = Convert.ToInt32(reader["quantity"]),
+                            unitPrice = Convert.ToDecimal(reader["currentPrice"]),
+                            createdAt = reader["createdAt"].ToString()
+                        }
+                        );
+
+                        }
+                    
+                    }
+
+                    return list;
+                }
+            
+            
+        }
 
         public GetMenuItemsResult GetMenuItems(string type, string searchText)
         {
@@ -457,6 +495,41 @@ namespace SaleManagerApp.Services
             }
         }
 
+        public List<Invoice> GetInvoices()
+        {
+            using (var conn = _db.GetConnection())
+            using (var cmd = conn.CreateCommand())
+            {
+
+                cmd.CommandText =
+                    "select i.paymentMethod, i.invoiceId, i.createdAt, i.totalAmount, o.orderStatus " +
+                    "from Invoice i join [Order] o on i.orderId = o.orderId where invoiceStatus = N'Đã thanh toán'";
+
+
+                var list = new List<Invoice>();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+
+                        list.Add(new Invoice
+                        {
+                            invoiceId = reader["invoiceId"].ToString(),
+                            paymentMethod = reader["paymentMethod"].ToString(),
+                            createdAt = reader["createdAt"].ToString(),
+                            totalAmount = Convert.ToDecimal(reader["totalAmount"]),
+                            orderStatus = reader["orderStatus"].ToString()
+
+
+                        });
+                    }
+                }
+
+                return list;
+            }
+        }
+
         public GetTableResult GetAvailabeTable()
         {
             try
@@ -510,6 +583,160 @@ namespace SaleManagerApp.Services
             }
         }
 
+        public GetRecentOrderResult GetTop3Order()
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+
+                    cmd.CommandText =
+                        "select TOP 4 o.orderId, o.serveStatus, count(d.menuItemId) as itemCount " +
+                        "from [Order] o join OrderDetail d on d.orderId = o.orderId " +
+                        "GROUP BY o.orderId, o.serveStatus, o.createdAt " +
+                        "ORDER BY o.createdAt DESC";
+
+                    var list = new List<RecentOrderItem>();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new RecentOrderItem
+                            {
+                                OrderId = reader["orderId"].ToString(),
+                                ServeStatus = reader["serveStatus"].ToString(),
+                                ItemCount = Convert.ToInt32(reader["itemCount"])
+                            });
+                        }
+                    }
+
+                    if (list.Count == 0)
+                    {
+                        return new GetRecentOrderResult
+                        {
+                            Success = true,
+                            listorder = list
+                        };
+                    }
+
+                    return new GetRecentOrderResult
+                    {
+                        Success = true,
+                        listorder = list
+                    };
+                }
+            }
+            catch (SqlException)
+            {
+                return new GetRecentOrderResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới server"
+                };
+            }
+        }
+
+        public GetRecentOrderResult GetAllOrder()
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+
+                    cmd.CommandText =
+                        "select TOP 100 o.orderId, o.serveStatus, count(d.menuItemId) as itemCount " +
+                        "from [Order] o join OrderDetail d on d.orderId = o.orderId " +
+                        "GROUP BY o.orderId, o.serveStatus, o.createdAt " +
+                        "ORDER BY o.createdAt DESC";
+
+                    var list = new List<RecentOrderItem>();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new RecentOrderItem
+                            {
+                                OrderId = reader["orderId"].ToString(),
+                                ServeStatus = reader["serveStatus"].ToString(),
+                                ItemCount = Convert.ToInt32(reader["itemCount"])
+                            });
+                        }
+                    }
+
+                    if (list.Count == 0)
+                    {
+                        return new GetRecentOrderResult
+                        {
+                            Success = true,
+                            listorder = list
+                        };
+                    }
+
+                    return new GetRecentOrderResult
+                    {
+                        Success = true,
+                        listorder = list
+                    };
+                }
+            }
+            catch (SqlException)
+            {
+                return new GetRecentOrderResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới server"
+                };
+            }
+        }
+
+        public InsertOrUpdateResult UpdateServeStatus(string orderId, string serveStatus)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "UPDATE [Order] SET serveStatus = @status WHERE orderId = @id";
+
+
+                    cmd.Parameters.Add("@status", SqlDbType.NVarChar, 25).Value = serveStatus;
+                    cmd.Parameters.Add("@id", SqlDbType.Char, 7).Value = orderId;
+
+                    int row = cmd.ExecuteNonQuery();
+
+                    if (row != 0)
+                    {
+                        return new InsertOrUpdateResult
+                        {
+                            Success = true,
+                            SuccessMessage = "Sửa trạng thái đơn hàng thành công"
+                        };
+                    }
+                    else
+                    {
+                        return new InsertOrUpdateResult
+                        {
+                            Success = false,
+                            ErrorMessage = "Sửa trạng thái đơn hàng thất bại"
+                        };
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new InsertOrUpdateResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới server",
+                };
+
+            }
+        }
 
     }
 }
@@ -520,6 +747,15 @@ public class InsertItemResult
     public bool Success { get; set; }
     public string ErrorMessage { get; set; }
     public string SuccessMessage { get; set; }
+}
+
+public class GetRecentOrderResult
+{
+    public bool Success { get; set; }
+    public string ErrorMessage { get; set; }
+    public string SuccessMessage { get; set; }
+
+    public List<RecentOrderItem> listorder;
 }
 
 public class GetMenuItemsResult

@@ -5,6 +5,7 @@ using SaleManagerApp.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 
@@ -76,9 +77,7 @@ namespace SaleManagerApp.ViewModels
                 OnPropertyChanged();
             }
         }
-
-
-
+        public ObservableCollection<RecentOrderItem> RecentOrders { get; set; } = new ObservableCollection<RecentOrderItem>();
 
 
         /* ===================== MENU ===================== */
@@ -214,9 +213,24 @@ namespace SaleManagerApp.ViewModels
                 Console.WriteLine("Selected = " + SelectedType);
             });
 
+            OrderBroadcaster.OnOrdersUpdated += () => {
+                System.Windows.Application.Current.Dispatcher.Invoke(() => {
+                    LoadTop3Orders();
+                });
+            };
             LoadMenuItems();
+            LoadTop3Orders();
+            
         }
 
+
+        private void LoadTop3Orders()
+        {
+            RecentOrders.Clear();
+            var orders = _service.GetTop3Order();
+            foreach (var o in orders.listorder)
+                RecentOrders.Add(o);
+        }
         /* ===================== CART LOGIC ===================== */
 
         private void AddToCart(MenuItem item)
@@ -349,7 +363,7 @@ namespace SaleManagerApp.ViewModels
 
         public void SaveOrders(object o)
         {
-            bool a = false;
+            bool aa = false;
             orderIdForInvoice = CurrentOrderId;
             totalAmountForInvoice = TotalAmount;
 
@@ -373,23 +387,23 @@ namespace SaleManagerApp.ViewModels
             if (result1.Success)
             {
                 ToastService.Show(result1.SuccessMessage);
-                a = true;
+                aa = true;
             }
             else
             {
                 ToastService.ShowError(result1.ErrorMessage);
-                a = true;
+                aa = true;
             }
 
             // 2. Insert OrderDetails
             var details = BuildOrderDetails();
             var result = _service.InsertOrderDetail(details);
 
-            if (result.Success && !a)
+            if (result.Success && !aa)
             {
                 ToastService.Show(result.SuccessMessage);
             }
-            else if (!result.Success && !a)
+            else if (!result.Success && !aa)
                 ToastService.ShowError(result.ErrorMessage);
 
 
@@ -409,9 +423,68 @@ namespace SaleManagerApp.ViewModels
             var invoiceWindow = new InvoiceWindow { DataContext = invoiceVM };
             invoiceWindow.ShowDialog();
 
-
+            RecentOrders.Clear();
+            var orders = _service.GetTop3Order(); // trả về List<RecentOrderItem>
+            foreach (var c in orders.listorder)
+                RecentOrders.Add(c);
         }
 
 
+    }
+
+    public static class OrderBroadcaster
+    {
+        public static event Action OnOrdersUpdated;
+        public static void NotifyUpdate() => OnOrdersUpdated?.Invoke();
+    }
+    public class RecentOrderItem : INotifyPropertyChanged
+    {
+        public string OrderId { get; set; }
+
+        private string _serveStatus;
+        public string ServeStatus
+        {
+            get => _serveStatus;
+            set
+            {
+                if (_serveStatus != value)
+                {
+                    _serveStatus = value;
+                    // Thông báo ServeStatus thay đổi
+                    OnPropertyChanged(nameof(ServeStatus));
+                    // Thông báo các thuộc tính phụ thuộc thay đổi để UI vẽ lại màu/chữ
+                    OnPropertyChanged(nameof(StatusColor));
+                    OnPropertyChanged(nameof(StatusText));
+                }
+            }
+        }
+
+        public int ItemCount { get; set; }
+
+        public string StatusColor
+        {
+            get
+            {
+                if (ServeStatus == "Sẵn sàng") return "#4CAF50";
+                if (ServeStatus == "Đang chế biến") return "#FF9800";
+                if (ServeStatus == "Đã phục vụ") return "#2196F3";
+                return "#999";
+            }
+        }
+
+        public string StatusText
+        {
+            get
+            {
+                if (ServeStatus == "Sẵn sàng") return "Sẵn sàng ✓";
+                if (ServeStatus == "Đang chế biến") return "Đang chế biến ⟳";
+                if (ServeStatus == "Đã phục vụ") return "Đã phục vụ ✔";
+                return ServeStatus;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

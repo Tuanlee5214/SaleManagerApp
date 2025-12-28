@@ -10,9 +10,13 @@ namespace SaleManagerApp.Models
     {
         public string menuItemId { get; set; }
         public string menuItemName { get; set; }
+        public int quantity { get; set; }
         public decimal unitPrice { get; set; }
         public string imageUrl { get; set; }
         public string size { get; set; }
+
+        public string createdAt { get; set; }
+        public decimal total => unitPrice * quantity;
         public string specialInfo { get; set; }
         public string description { get; set; }
         public string type { get; set; }

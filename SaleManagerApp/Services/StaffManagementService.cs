@@ -9,7 +9,6 @@ namespace SaleManagerApp.Services
     {
         private readonly DBConnectionService _db = new DBConnectionService();
 
-        // LẤY THÔNG TIN EMPLOYEE THEO USER ID
         public Staff GetEmployeeByUserId(string userId)
         {
             try
@@ -18,7 +17,7 @@ namespace SaleManagerApp.Services
                 using (SqlCommand cmd = new SqlCommand(@"
                     SELECT e.employeeId, e.fullName, e.dateOfBirth, e.position, 
                            e.phone, e.email, e.imageUrl, e.totalHoursOfMonth, 
-                           e.checkInTime, e.createdAt
+                           e.checkInTime, e.workShift, e.createdAt
                     FROM Employee e
                     INNER JOIN [User] u ON e.employeeId = u.employeeId
                     WHERE u.userId = @UserId", conn))
@@ -42,12 +41,12 @@ namespace SaleManagerApp.Services
                                     ? Convert.ToDecimal(reader["totalHoursOfMonth"]) : 0,
                                 CheckInTime = reader["checkInTime"] != DBNull.Value
                                     ? (TimeSpan?)((TimeSpan)reader["checkInTime"]) : null,
+                                WorkShift = reader["workShift"] != DBNull.Value ? reader["workShift"].ToString() : null,
                                 DateStart = Convert.ToDateTime(reader["createdAt"]).ToString("dd/MM/yyyy")
                             };
                         }
                     }
                 }
-
                 return null;
             }
             catch (Exception ex)
@@ -81,7 +80,6 @@ namespace SaleManagerApp.Services
                         if (reader.Read())
                         {
                             string newEmployeeId = reader["employeeId"].ToString();
-
                             return new InsertStaffResult
                             {
                                 Success = true,
@@ -118,7 +116,7 @@ namespace SaleManagerApp.Services
                 using (var conn = _db.GetConnection())
                 using (SqlCommand cmd = new SqlCommand(@"
                     SELECT employeeId, fullName, dateOfBirth, position, phone, email, 
-                           imageUrl, totalHoursOfMonth, checkInTime, createdAt 
+                           imageUrl, totalHoursOfMonth, checkInTime, workShift, createdAt 
                     FROM Employee 
                     ORDER BY createdAt DESC", conn))
                 {
@@ -126,21 +124,6 @@ namespace SaleManagerApp.Services
                     {
                         while (reader.Read())
                         {
-                            string imageUrl = reader["imageUrl"] != DBNull.Value ? reader["imageUrl"].ToString() : null;
-
-                            System.Diagnostics.Debug.WriteLine("========================================");
-                            System.Diagnostics.Debug.WriteLine($"[LoadStaff] Employee: {reader["fullName"]}");
-                            System.Diagnostics.Debug.WriteLine($"[LoadStaff] Image URL from DB: '{imageUrl}'");
-
-                            string absolutePath = ConvertToAbsolutePath(imageUrl);
-                            System.Diagnostics.Debug.WriteLine($"[LoadStaff] Final absolute path: '{absolutePath}'");
-
-                            if (!string.IsNullOrEmpty(absolutePath))
-                            {
-                                System.Diagnostics.Debug.WriteLine($"[LoadStaff] File exists check: {File.Exists(absolutePath)}");
-                            }
-                            System.Diagnostics.Debug.WriteLine("========================================");
-
                             staffList.Add(new Staff
                             {
                                 StaffId = reader["employeeId"].ToString(),
@@ -149,11 +132,65 @@ namespace SaleManagerApp.Services
                                 position = reader["position"].ToString(),
                                 phone = reader["phone"] != DBNull.Value ? reader["phone"].ToString() : "",
                                 email = reader["email"] != DBNull.Value ? reader["email"].ToString() : "",
-                                ImagePath = absolutePath,
+                                ImagePath = reader["imageUrl"] != DBNull.Value ? ConvertToAbsolutePath(reader["imageUrl"].ToString()) : null,
                                 TotalHoursOfMonth = reader["totalHoursOfMonth"] != DBNull.Value
                                     ? Convert.ToDecimal(reader["totalHoursOfMonth"]) : 0,
                                 CheckInTime = reader["checkInTime"] != DBNull.Value
                                     ? (TimeSpan?)((TimeSpan)reader["checkInTime"]) : null,
+                                WorkShift = reader["workShift"] != DBNull.Value ? reader["workShift"].ToString() : null,
+                                DateStart = Convert.ToDateTime(reader["createdAt"]).ToString("dd/MM/yyyy")
+                            });
+                        }
+                    }
+                }
+
+                return new GetStaffResult
+                {
+                    Success = true,
+                    StaffList = staffList
+                };
+            }
+            catch (Exception ex)
+            {
+                return new GetStaffResult
+                {
+                    Success = false,
+                    ErrorMessage = $"Lỗi: {ex.Message}"
+                };
+            }
+        }
+
+        public GetStaffResult GetStaffByPosition(string position)
+        {
+            try
+            {
+                var staffList = new System.Collections.Generic.List<Staff>();
+
+                using (var conn = _db.GetConnection())
+                using (SqlCommand cmd = new SqlCommand("sp_GetStaffByPosition", conn))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@Position", System.Data.SqlDbType.VarChar, 20).Value =
+                        string.IsNullOrWhiteSpace(position) ? (object)DBNull.Value : position;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            staffList.Add(new Staff
+                            {
+                                StaffId = reader["employeeId"].ToString(),
+                                fullName = reader["fullName"].ToString(),
+                                dateofBirth = Convert.ToDateTime(reader["dateOfBirth"]).ToString("dd/MM/yyyy"),
+                                position = reader["position"].ToString(),
+                                phone = reader["phone"] != DBNull.Value ? reader["phone"].ToString() : "",
+                                email = reader["email"] != DBNull.Value ? reader["email"].ToString() : "",
+                                ImagePath = reader["imageUrl"] != DBNull.Value ? ConvertToAbsolutePath(reader["imageUrl"].ToString()) : null,
+                                TotalHoursOfMonth = reader["totalHoursOfMonth"] != DBNull.Value
+                                    ? Convert.ToDecimal(reader["totalHoursOfMonth"]) : 0,
+                                CheckInTime = reader["checkInTime"] != DBNull.Value
+                                    ? (TimeSpan?)((TimeSpan)reader["checkInTime"]) : null,
+                                WorkShift = reader["workShift"] != DBNull.Value ? reader["workShift"].ToString() : null,
                                 DateStart = Convert.ToDateTime(reader["createdAt"]).ToString("dd/MM/yyyy")
                             });
                         }
@@ -179,68 +216,76 @@ namespace SaleManagerApp.Services
         private string ConvertToAbsolutePath(string relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath))
-            {
-                System.Diagnostics.Debug.WriteLine("[ConvertPath] Input is null or empty");
                 return null;
-            }
 
             try
             {
-                if (Path.IsPathRooted(relativePath))
-                {
-                    if (File.Exists(relativePath))
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[ConvertPath] ✓ Absolute path exists: {relativePath}");
-                        return relativePath;
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[ConvertPath] ✗ Absolute path NOT exists: {relativePath}");
-                        return null;
-                    }
-                }
-
+                // Chuẩn hóa path: thay / thành \
                 string normalizedPath = relativePath.Replace("/", "\\");
-                System.Diagnostics.Debug.WriteLine($"[ConvertPath] Normalized: {normalizedPath}");
 
-                string[] possiblePaths = new[]
+                // Nếu đã có đuôi file, dùng luôn
+                if (Path.HasExtension(normalizedPath))
                 {
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, normalizedPath),
-                    Path.Combine(Environment.CurrentDirectory, normalizedPath),
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", normalizedPath),
-                    normalizedPath
-                };
-
-                for (int i = 0; i < possiblePaths.Length; i++)
-                {
-                    try
-                    {
-                        string fullPath = Path.GetFullPath(possiblePaths[i]);
-                        System.Diagnostics.Debug.WriteLine($"[ConvertPath] Try #{i + 1}: {fullPath}");
-
-                        if (File.Exists(fullPath))
-                        {
-                            System.Diagnostics.Debug.WriteLine($"[ConvertPath] ✓✓✓ FOUND at #{i + 1}: {fullPath}");
-                            return fullPath;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[ConvertPath] Error at #{i + 1}: {ex.Message}");
-                    }
+                    return TryFindFile(normalizedPath);
                 }
 
-                System.Diagnostics.Debug.WriteLine($"[ConvertPath] ✗✗✗ NOT FOUND anywhere for: {relativePath}");
+                // Nếu chưa có đuôi, thử các extension phổ biến
+                string[] extensions = { ".jpg", ".jpeg", ".png", ".bmp", ".gif" };
+
+                foreach (string ext in extensions)
+                {
+                    string pathWithExt = normalizedPath + ext;
+                    string foundPath = TryFindFile(pathWithExt);
+
+                    if (foundPath != null)
+                        return foundPath;
+                }
+
                 return null;
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"[ConvertPath] EXCEPTION: {ex.Message}");
                 return null;
             }
         }
 
-        // CHẤM CÔNG VÀO
+        private string TryFindFile(string path)
+        {
+            try
+            {
+                // Nếu là absolute path, check trực tiếp
+                if (Path.IsPathRooted(path))
+                {
+                    return File.Exists(path) ? path : null;
+                }
+
+                // Thử các thư mục có thể có
+                string[] possiblePaths = new[]
+                {
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path),
+                    Path.Combine(Environment.CurrentDirectory, path),
+                    path
+                };
+
+                foreach (var testPath in possiblePaths)
+                {
+                    try
+                    {
+                        string fullPath = Path.GetFullPath(testPath);
+                        if (File.Exists(fullPath))
+                            return fullPath;
+                    }
+                    catch { }
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public AttendanceResult CheckIn(string employeeId)
         {
             try
@@ -261,11 +306,13 @@ namespace SaleManagerApp.Services
                             if (success == 1)
                             {
                                 TimeSpan checkInTime = (TimeSpan)reader["CheckInTime"];
+                                string workShift = reader["WorkShift"].ToString();
                                 return new AttendanceResult
                                 {
                                     Success = true,
                                     Message = message,
-                                    CheckInTime = checkInTime
+                                    CheckInTime = checkInTime,
+                                    WorkShift = workShift
                                 };
                             }
                             else
@@ -296,7 +343,6 @@ namespace SaleManagerApp.Services
             }
         }
 
-        // CHẤM CÔNG RA
         public AttendanceResult CheckOut(string employeeId)
         {
             try
@@ -400,6 +446,117 @@ namespace SaleManagerApp.Services
                 };
             }
         }
+
+        public BasicResult UpdateEmployee(Staff staff)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (SqlCommand cmd = new SqlCommand("sp_UpdateEmployee", conn))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Char, 7).Value = staff.StaffId;
+                    cmd.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 30).Value = staff.fullName;
+                    cmd.Parameters.Add("@DateOfBirth", System.Data.SqlDbType.Date).Value = DateTime.Parse(staff.dateofBirth);
+                    cmd.Parameters.Add("@Position", System.Data.SqlDbType.VarChar, 20).Value = staff.position;
+                    cmd.Parameters.Add("@Phone", System.Data.SqlDbType.VarChar, 25).Value = staff.phone;
+                    cmd.Parameters.Add("@Email", System.Data.SqlDbType.VarChar, 30).Value = staff.email;
+                    cmd.Parameters.Add("@ImageUrl", System.Data.SqlDbType.VarChar, 200).Value =
+                        string.IsNullOrWhiteSpace(staff.ImagePath) ? (object)DBNull.Value : staff.ImagePath;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int success = Convert.ToInt32(reader["Success"]);
+                            string message = reader["Message"].ToString();
+
+                            return new BasicResult
+                            {
+                                Success = success == 1,
+                                Message = message
+                            };
+                        }
+                    }
+                }
+
+                return new BasicResult { Success = false, Message = "Không có phản hồi từ server" };
+            }
+            catch (Exception ex)
+            {
+                return new BasicResult { Success = false, Message = $"Lỗi: {ex.Message}" };
+            }
+        }
+
+        public BasicResult ResetMonthlyHours(string employeeId)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (SqlCommand cmd = new SqlCommand("sp_ResetEmployeeMonthlyHours", conn))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Char, 7).Value = employeeId;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int success = Convert.ToInt32(reader["Success"]);
+                            string message = reader["Message"].ToString();
+
+                            return new BasicResult
+                            {
+                                Success = success == 1,
+                                Message = message
+                            };
+                        }
+                    }
+                }
+
+                return new BasicResult { Success = false, Message = "Không có phản hồi từ server" };
+            }
+            catch (Exception ex)
+            {
+                return new BasicResult { Success = false, Message = $"Lỗi: {ex.Message}" };
+            }
+        }
+
+        public BasicResult AddNextDaySchedule(string employeeId, string workShift)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (SqlCommand cmd = new SqlCommand("sp_AddNextDaySchedule", conn))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Char, 7).Value = employeeId;
+                    cmd.Parameters.Add("@WorkShift", System.Data.SqlDbType.NVarChar, 10).Value = workShift;
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int success = Convert.ToInt32(reader["Success"]);
+                            string message = reader["Message"].ToString();
+
+                            return new BasicResult
+                            {
+                                Success = success == 1,
+                                Message = message
+                            };
+                        }
+                    }
+                }
+
+                return new BasicResult { Success = false, Message = "Không có phản hồi từ server" };
+            }
+            catch (Exception ex)
+            {
+                return new BasicResult { Success = false, Message = $"Lỗi: {ex.Message}" };
+            }
+        }
     }
 
     public class InsertStaffResult
@@ -430,5 +587,12 @@ namespace SaleManagerApp.Services
         public TimeSpan? CheckInTime { get; set; }
         public TimeSpan? CheckOutTime { get; set; }
         public decimal WorkedHours { get; set; }
+        public string WorkShift { get; set; }
+    }
+
+    public class BasicResult
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
     }
 }

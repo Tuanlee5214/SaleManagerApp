@@ -3,25 +3,23 @@ using SaleManagerApp.Helpers;
 using SaleManagerApp.Model;
 using SaleManagerApp.Services;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
 namespace SaleManagerApp.ViewModels
 {
-    public class AddStaffViewModel : BaseViewModel
+    public class EditStaffViewModel : BaseViewModel
     {
         private readonly StaffManagementService _service = new StaffManagementService();
+        private readonly Staff _originalStaff;
 
-        // Danh sách chức vụ hợp lệ
-        private static readonly List<string> VALID_POSITIONS = new List<string>
+        private string _staffId;
+        public string StaffId
         {
-            "Phục vụ",
-            "Quản lý",
-            "Phụ bếp"
-        };
+            get => _staffId;
+            set { _staffId = value; OnPropertyChanged(); }
+        }
 
         private string _fullName;
         public string FullName
@@ -43,20 +41,6 @@ namespace SaleManagerApp.ViewModels
             get => _position;
             set { _position = value; OnPropertyChanged(); }
         }
-
-        private bool _isPositionEditable;
-        public bool IsPositionEditable
-        {
-            get => _isPositionEditable;
-            private set
-            {
-                _isPositionEditable = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(IsPositionLocked));
-            }
-        }
-
-        public bool IsPositionLocked => !IsPositionEditable;
 
         private string _phone;
         public string Phone
@@ -93,44 +77,75 @@ namespace SaleManagerApp.ViewModels
             set { _imageUrl = value; OnPropertyChanged(); }
         }
 
+        private bool _isImageChanged = false;
+
         public ICommand PickImageCommand { get; }
-        public ICommand ConfirmCommand { get; }
+        public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
         public Action CloseAction { get; set; }
+        public Action SaveSuccessAction { get; set; }
 
-        public AddStaffViewModel(string defaultPosition = null)
+        public EditStaffViewModel(Staff staff)
         {
-            if (!string.IsNullOrEmpty(defaultPosition))
+            _originalStaff = staff;
+
+            StaffId = staff.StaffId;
+            FullName = staff.fullName;
+
+            if (DateTime.TryParseExact(staff.dateofBirth, "dd/MM/yyyy",
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out DateTime dob))
             {
-                Position = defaultPosition;
-                IsPositionEditable = false;
+                DateOfBirth = dob;
             }
-            else
+
+            Position = staff.position;
+            Phone = staff.phone;
+            Email = staff.email;
+
+            // Hiển thị ảnh hiện tại (nếu có)
+            if (!string.IsNullOrEmpty(staff.ImagePath))
             {
-                IsPositionEditable = true;
+                PreviewPath = staff.ImagePath; // Absolute path để hiển thị
+
+                // Lấy relative path từ absolute path để lưu vào DB
+                try
+                {
+                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                    if (staff.ImagePath.StartsWith(basePath))
+                    {
+                        ImageUrl = staff.ImagePath.Substring(basePath.Length).Replace("\\", "/");
+                    }
+                    else
+                    {
+                        ImageUrl = staff.ImagePath;
+                    }
+                }
+                catch
+                {
+                    ImageUrl = staff.ImagePath;
+                }
             }
 
             PickImageCommand = new RelayCommand(SelectImage);
-            ConfirmCommand = new RelayCommand(SaveStaff);
-            CancelCommand = new RelayCommand(CancelForm);
+            SaveCommand = new RelayCommand(SaveChanges);
+            CancelCommand = new RelayCommand(Cancel);
         }
 
-        public void CancelForm(object obj)
+        private void SelectImage(object obj)
         {
-            CloseAction?.Invoke();
-        }
-
-        public void SelectImage(object obj)
-        {
-            var dialog = new OpenFileDialog();
-            dialog.Filter = "Image files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp";
-            dialog.Title = "Chọn ảnh đại diện";
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Image files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp",
+                Title = "Chọn ảnh đại diện"
+            };
 
             if (dialog.ShowDialog() != true)
                 return;
 
             string originalPath = dialog.FileName;
+
             if (!File.Exists(originalPath))
             {
                 ToastService.ShowError("File không tồn tại!");
@@ -139,8 +154,10 @@ namespace SaleManagerApp.ViewModels
 
             try
             {
+                // Hiển thị preview ngay lập tức
                 PreviewPath = originalPath;
 
+                // Copy file vào thư mục Images/Staffs
                 string appFolder = AppDomain.CurrentDomain.BaseDirectory;
                 string targetFolder = Path.Combine(appFolder, "Images", "Staffs");
 
@@ -152,17 +169,21 @@ namespace SaleManagerApp.ViewModels
 
                 File.Copy(originalPath, targetPath, true);
 
+                // LƯU RELATIVE PATH (ngắn gọn) thay vì absolute path
                 ImageUrl = $"Images/Staffs/{fileName}";
+                _isImageChanged = true;
+
+                ToastService.Show("Đã chọn ảnh mới!");
             }
             catch (Exception ex)
             {
                 ToastService.ShowError($"Lỗi khi lưu ảnh: {ex.Message}");
-                PreviewPath = null;
-                ImageUrl = null;
+                PreviewPath = _originalStaff.ImagePath; // Khôi phục ảnh cũ
+                _isImageChanged = false;
             }
         }
 
-        public void SaveStaff(object obj)
+        private void SaveChanges(object obj)
         {
             if (string.IsNullOrWhiteSpace(FullName))
             {
@@ -189,17 +210,6 @@ namespace SaleManagerApp.ViewModels
                 return;
             }
 
-            // Validation chức vụ hợp lệ
-            string trimmedPosition = Position.Trim();
-            bool isValidPosition = VALID_POSITIONS.Any(p =>
-                string.Equals(p, trimmedPosition, StringComparison.OrdinalIgnoreCase));
-
-            if (!isValidPosition)
-            {
-                ToastService.ShowError($"Chức vụ không hợp lệ! Vui lòng chọn: {string.Join(", ", VALID_POSITIONS)}");
-                return;
-            }
-
             if (string.IsNullOrWhiteSpace(Phone))
             {
                 ToastService.ShowError("Vui lòng nhập số điện thoại!");
@@ -219,32 +229,49 @@ namespace SaleManagerApp.ViewModels
             }
 
             if (!System.Text.RegularExpressions.Regex.IsMatch(Email,
-                @"^[a-zA-Z0-9.*%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
+                @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
             {
                 ToastService.ShowError("Email không hợp lệ!");
                 return;
             }
 
-            Staff staff = new Staff
+            // Kiểm tra độ dài ImageUrl
+            if (!string.IsNullOrEmpty(ImageUrl) && ImageUrl.Length > 200)
             {
+                ToastService.ShowError($"Đường dẫn ảnh quá dài ({ImageUrl.Length} ký tự). Vui lòng chọn ảnh khác!");
+                return;
+            }
+
+            Staff updatedStaff = new Staff
+            {
+                StaffId = this.StaffId,
                 fullName = this.FullName.Trim(),
                 dateofBirth = this.DateOfBirth.Value.ToString("yyyy-MM-dd"),
-                position = trimmedPosition,
+                position = this.Position.Trim(),
                 phone = this.Phone.Trim(),
                 email = this.Email.Trim(),
-                ImagePath = this.ImageUrl
+                ImagePath = this.ImageUrl // Lưu RELATIVE PATH
             };
 
-            var result = _service.InsertStaffÌnormation(staff);
+            var result = _service.UpdateEmployee(updatedStaff);
+
             if (result.Success)
             {
-                ToastService.Show(result.SuccessMessage);
-                CloseAction?.Invoke();
+                ToastService.Show(result.Message);
+
+                // GỌI SaveSuccessAction TRƯỚC (set DialogResult = true)
+                // Action này sẽ tự động đóng window
+                SaveSuccessAction?.Invoke();  // ✅ ĐÚNG - Chỉ gọi cái này thôi
             }
             else
             {
-                ToastService.ShowError(result.ErrorMessage);
+                ToastService.ShowError(result.Message);
             }
+        }
+
+        private void Cancel(object obj)
+        {
+            CloseAction?.Invoke();
         }
     }
 }
