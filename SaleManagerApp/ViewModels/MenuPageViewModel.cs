@@ -1,7 +1,9 @@
-﻿using SaleManagerApp.Models;
+﻿using SaleManagerApp.Helpers;
+using SaleManagerApp.Models;
 using SaleManagerApp.Services;
 using SaleManagerApp.Views;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -11,6 +13,73 @@ namespace SaleManagerApp.ViewModels
     public class MenuPageViewModel : BaseViewModel
     {
         private readonly MenuPageService _service = new MenuPageService();
+        /* ===================== Order ===================== */
+        public enum OrderType
+        {
+            TakeAway = 0,   // Mang đi
+            DineIn = 1      // Ăn tại bàn
+        }
+        string orderIdForInvoice = "";
+        decimal totalAmountForInvoice = 0;
+        public class OrderTypeItem
+        {
+            public OrderType Value { get; set; }   // dùng lưu DB
+            public string Display { get; set; }    // hiển thị tiếng Việt
+        }
+        public ObservableCollection<OrderTypeItem> OrderTypes { get; }
+            = new ObservableCollection<OrderTypeItem>
+            {
+        new OrderTypeItem
+        {
+            Value = OrderType.DineIn,
+            Display = "Ăn tại bàn"
+        },
+        new OrderTypeItem
+        {
+            Value = OrderType.TakeAway,
+            Display = "Mang đi"
+        }
+            };
+
+        private OrderTypeItem _selectedOrderType;
+        public OrderTypeItem SelectedOrderType
+        {
+            get => _selectedOrderType;
+            set
+            {
+                _selectedOrderType = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsTableSelectionEnabled));
+
+                // Không ăn tại bàn thì bỏ chọn bàn
+                if (_selectedOrderType?.Value != OrderType.DineIn)
+                    SelectedTableId = null;
+            }
+        }
+
+        public bool IsTableSelectionEnabled
+        {
+            get => SelectedOrderType?.Value == OrderType.DineIn;
+        }
+
+
+        public ObservableCollection<Table> Tables { get; }
+    = new ObservableCollection<Table>();
+
+        private string _selectedTableId;
+        public string SelectedTableId
+        {
+            get => _selectedTableId;
+            set
+            {
+                _selectedTableId = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
+
 
         /* ===================== MENU ===================== */
         private string _selectedType;
@@ -22,7 +91,13 @@ namespace SaleManagerApp.ViewModels
         public ObservableCollection<MenuItem> MenuItems { get; }
             = new ObservableCollection<MenuItem>();
 
-        
+        private string _currentOrderId;
+        public string CurrentOrderId
+        {
+            get => _currentOrderId;
+            set { _currentOrderId = value; OnPropertyChanged(); }
+        }
+
 
         private string _type;
         public string Type
@@ -78,6 +153,7 @@ namespace SaleManagerApp.ViewModels
         public ICommand SelectChickenCommand { get; }
         public ICommand SelectAnotherCommand { get; }
         public ICommand SelectDrinkCommand { get; }
+        public ICommand SaveOrder { get; }
 
         /* ===================== CONSTRUCTOR ===================== */
 
@@ -92,6 +168,9 @@ namespace SaleManagerApp.ViewModels
             IncreaseCommand = new RelayCommand(o => Increase(o as MenuItem));
             DecreaseCommand = new RelayCommand(o => Decrease(o as MenuItem));
             RemoveItemCommand = new RelayCommand(RemoveCartItem);
+            SaveOrder = new RelayCommand(SaveOrders);
+            CurrentOrderId = _service.GetOrderId();
+            LoadTables();
 
             SelectAllCommand = new RelayCommand(o =>
             {
@@ -184,12 +263,12 @@ namespace SaleManagerApp.ViewModels
 
         private void RemoveCartItem(object o)
         {
-            if (o is  CartItem cartItem)
+            if (o is CartItem cartItem)
             {
                 CartItems.Remove(cartItem);
                 SyncMenuDisplayQuantity();
                 RaiseCartChanged();
-            } 
+            }
         }
 
         private void RaiseCartChanged()
@@ -245,6 +324,94 @@ namespace SaleManagerApp.ViewModels
 
             SyncMenuDisplayQuantity();
         }
+
+        //Table
+        public void LoadTables()
+        {
+            var result = _service.GetAvailabeTable();
+
+            Tables.Clear();
+            foreach (var table in result.TableList)
+                Tables.Add(table);
+        }
+
+        private List<OrderDetail> BuildOrderDetails()
+        {
+            return CartItems.Select(c => new OrderDetail
+            {
+                orderId = CurrentOrderId,
+                menuItemId = c.MenuItemId,
+                quantity = c.Quantity,
+                currentPrice = c.UnitPrice,
+                createdAt = DateTime.Now
+            }).ToList();
+        }
+
+        public void SaveOrders(object o)
+        {
+            bool a = false;
+            orderIdForInvoice = CurrentOrderId;
+            totalAmountForInvoice = TotalAmount;
+
+            string orderStatusString;
+            if (SelectedOrderType.Value == OrderType.DineIn)
+            {
+                orderStatusString = "Ăn tại bàn";
+            }
+            else
+                orderStatusString = "Mang đi";
+
+            // 1. Insert Order
+            var result1 = _service.InsertOrder(new Order
+            {
+                orderId = CurrentOrderId,
+                orderStatus = orderStatusString,
+                serveStatus = "Đang chế biến",
+                tableId = SelectedTableId,
+                createdAt = DateTime.Now
+            });
+            if (result1.Success)
+            {
+                ToastService.Show(result1.SuccessMessage);
+                a = true;
+            }
+            else
+            {
+                ToastService.ShowError(result1.ErrorMessage);
+                a = true;
+            }
+
+            // 2. Insert OrderDetails
+            var details = BuildOrderDetails();
+            var result = _service.InsertOrderDetail(details);
+
+            if (result.Success && !a)
+            {
+                ToastService.Show(result.SuccessMessage);
+            }
+            else if (!result.Success && !a)
+                ToastService.ShowError(result.ErrorMessage);
+
+
+            // 3. Clear cart
+            CartItems.Clear();
+            RaiseCartChanged();
+            foreach (var menu in MenuItems)
+            {
+                menu.DisplayQuantity = 0;
+            }
+            foreach (var menu in MenuItems)
+                OnPropertyChanged(nameof(menu.DisplayQuantity));
+            CurrentOrderId = _service.GetOrderId();
+            
+
+            var invoiceVM = new InvoiceViewModel(orderIdForInvoice, totalAmountForInvoice);
+            var invoiceWindow = new InvoiceWindow { DataContext = invoiceVM };
+            invoiceWindow.ShowDialog();
+
+
+        }
+
 
     }
 }

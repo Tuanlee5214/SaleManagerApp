@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SaleManagerApp.ViewModels;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -35,6 +36,18 @@ namespace SaleManagerApp.Views
                 MessageBox.Show("Đã hủy lưu đơn hàng", "Thông báo");
             }
 
+        }
+
+        private void TableComboBox_DropDownOpened(object sender, EventArgs e)
+        {
+            if (DataContext is MenuPageViewModel vm)
+            {
+                // Chỉ load khi ăn tại bàn
+                if (!vm.IsTableSelectionEnabled)
+                    return;
+
+                vm.LoadTables();
+            }
         }
 
     }

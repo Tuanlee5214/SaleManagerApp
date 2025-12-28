@@ -135,6 +135,11 @@ CREATE TABLE [Order]
 	updatedAt datetime
 )
 
+--SỬA LẠI 2 THUỘC TÍNH CUSTOMERID với employeeId là null
+ALTER TABLE [Order] ALTER COLUMN customerId char(7) null
+ALTER TABLE [Order] ALTER COLUMN employeeId char(7) null
+
+
 CREATE TABLE OrderDetail 
 (
 	orderId char(7),
@@ -153,6 +158,7 @@ CREATE TABLE Menu
 	createdAt datetime default getdate(), 
 	updatedAt datetime
 )
+
 
 CREATE TABLE MenuDetail 
 (
@@ -340,6 +346,8 @@ CREATE TABLE Feedback
   createdAt datetime default getdate(),
   updatedAt datetime
 )
+
+
 
 ALTER TABLE TotalDrink ADD CHECK([month] between 1 and 12)
 ALTER TABLE TotalDrink ADD CHECK([year] > 0)

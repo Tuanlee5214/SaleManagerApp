@@ -11,12 +11,58 @@ using System.Windows.Shapes;
 using SaleManagerApp.Models;
 using MenuItem = SaleManagerApp.Models.MenuItem;
 using System.Data;
+using System.Windows.Controls;
 
 namespace SaleManagerApp.Services
 {
     public class MenuPageService
     {
         private readonly DBConnectionService _db = new DBConnectionService();
+
+
+        public string GetOrderId()
+        {
+            using (var conn = _db.GetConnection())
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT MAX(orderId) FROM [Order]";
+
+                object result = cmd.ExecuteScalar();
+
+                int nextNumber = 1;
+
+                if (result != null && result != DBNull.Value)
+                {
+                    string lastCode = result.ToString();
+                    int number = int.Parse(lastCode.Substring(2));
+                    nextNumber = number + 1;
+                }
+
+                return "OR" + nextNumber.ToString("D5");
+            }
+        }
+
+        public string GetInvoiceId()
+        {
+            using (var conn = _db.GetConnection())
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT MAX(invoiceId) FROM Invoice";
+
+                object result = cmd.ExecuteScalar();
+
+                int nextNumber = 1;
+
+                if (result != null && result != DBNull.Value)
+                {
+                    string lastCode = result.ToString();
+                    int number = int.Parse(lastCode.Substring(2));
+                    nextNumber = number + 1;
+                }
+
+                return "IV" + nextNumber.ToString("D5");
+            }
+        }
 
         public InsertItemResult InsertMenuItem(MenuItem item)
         {
@@ -34,7 +80,7 @@ namespace SaleManagerApp.Services
                     cmd.Parameters.Add("@Type", System.Data.SqlDbType.NVarChar, 30).Value = item.type ?? "";
 
                     int row = cmd.ExecuteNonQuery();
-                    if(row != 0)
+                    if (row != 0)
                     {
                         return new InsertItemResult
                         {
@@ -51,8 +97,8 @@ namespace SaleManagerApp.Services
                         };
                     }
                 }
-            } 
-            catch(SqlException ex)
+            }
+            catch (SqlException ex)
             {
                 return new InsertItemResult
                 {
@@ -61,6 +107,141 @@ namespace SaleManagerApp.Services
                 };
             }
         }
+
+        public InsertOrUpdateResult InsertOrder(Order item)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText =
+                        "INSERT INTO [Order] " +
+                        "(orderId, orderStatus, serveStatus, tableId, createdAt) " +
+                        "VALUES (@id, @sts1, @sts2, @tableId, @createdAt)";
+
+                    cmd.Parameters.Add("@id", SqlDbType.Char, 7).Value = item.orderId;
+                    cmd.Parameters.Add("@sts1", SqlDbType.NVarChar, 25).Value = item.orderStatus;
+                    cmd.Parameters.Add("@sts2", SqlDbType.NVarChar, 25).Value = item.serveStatus;
+                    cmd.Parameters.Add("@tableId", SqlDbType.Char, 7)
+                                  .Value = (object)item.tableId ?? DBNull.Value;
+                    cmd.Parameters.Add("@createdAt", SqlDbType.DateTime).Value = DateTime.Now;
+
+                    cmd.ExecuteNonQuery();
+
+                    return new InsertOrUpdateResult
+                    {
+                        Success = true,
+                        SuccessMessage = "Thêm đơn hàng thành công"
+                    };
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Loi" + ex.Message);
+                return new InsertOrUpdateResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối server"
+                };
+            }
+        }
+
+        public InsertOrUpdateResult InsertInvoice(Invoice item)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText =
+                        "INSERT INTO Invoice " +
+                        "(invoiceId, orderId, paymentMethod, totalAmount, invoiceStatus, createdAt) " +
+                        "VALUES (@id, @id2, @pm, @tt, @sts, @createdAt)";
+
+                    cmd.Parameters.Add("@id", SqlDbType.Char, 7).Value = item.invoiceId;
+                    cmd.Parameters.Add("@id2", SqlDbType.Char, 7).Value = item.orderId;
+                    cmd.Parameters.Add("@pm", SqlDbType.NVarChar, 20).Value = item.paymentMethod;
+                    cmd.Parameters.Add("@tt", SqlDbType.Money).Value = item.totalAmount;
+                    cmd.Parameters.Add("@sts", SqlDbType.NVarChar, 30).Value = item.invoiceStatus;
+                    cmd.Parameters.Add("@createdAt", SqlDbType.DateTime).Value = DateTime.Now;
+
+                    cmd.ExecuteNonQuery();
+
+                    return new InsertOrUpdateResult
+                    {
+                        Success = true,
+                        SuccessMessage = "Thêm hoá đơn thành công"
+                    };
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Loi" + ex.Message);
+                return new InsertOrUpdateResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối server"
+                };
+            }
+        }
+
+
+        public InsertOrUpdateResult InsertOrderDetail(List<OrderDetail> items)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText =
+                        "INSERT INTO OrderDetail " +
+                        "(orderId, menuItemId, quantity, currentPrice, createdAt) " +
+                        "VALUES (@orderId, @menuItemId, @quantity, @price, @createdAt)";
+                    int affected = 0;
+
+                    foreach (var d in items)
+                    {
+                        cmd.Parameters.Clear();
+
+                        cmd.Parameters.Add("@orderId", SqlDbType.Char, 7).Value = d.orderId;
+                        cmd.Parameters.Add("@menuItemId", SqlDbType.Char, 7).Value = d.menuItemId;
+                        cmd.Parameters.Add("@quantity", SqlDbType.Int).Value = d.quantity;
+                        cmd.Parameters.Add("@price", SqlDbType.Money).Value = d.currentPrice;
+                        cmd.Parameters.Add("@createdAt", SqlDbType.DateTime).Value = DateTime.Now;
+
+                        affected += cmd.ExecuteNonQuery();
+                    }
+                    if (affected != 0)
+                    {
+                        return new InsertOrUpdateResult
+                        {
+                            Success = true,
+                            SuccessMessage = "Thêm chi tiết đơn hàng thành công"
+                        };
+                    }
+                    else
+                    {
+                        return new InsertOrUpdateResult
+                        {
+                            Success = false,
+                            SuccessMessage = "Thêm chi tiết đơn hàng thất bại"
+                        };
+                    }
+
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Loi" + ex.Message);
+                return new InsertOrUpdateResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi khi lưu chi tiết đơn hàng"
+                };
+            }
+        }
+
 
         //  Insert khách hàng
         public InsertCustomerResult InsertCustomer(Customer item)
@@ -276,9 +457,62 @@ namespace SaleManagerApp.Services
             }
         }
 
+        public GetTableResult GetAvailabeTable()
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+
+                    cmd.CommandText =
+                        "SELECT tableId, tableName " +
+                        "FROM [Table] WHERE tableStatus = N'Còn trống'";
+
+                    var list = new List<Table>();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new Table
+                            {
+                                tableId = reader["tableId"].ToString(),
+                                tableName = reader["tableName"].ToString(),
+
+                            });
+                        }
+                    }
+
+                    if (list.Count == 0)
+                    {
+                        return new GetTableResult
+                        {
+                            Success = true,
+                            TableList = list
+                        };
+                    }
+
+                    return new GetTableResult
+                    {
+                        Success = true,
+                        TableList = list
+                    };
+                }
+            }
+            catch (SqlException)
+            {
+                return new GetTableResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối tới server"
+                };
+            }
+        }
+
 
     }
-}   
+}
 
 
 public class InsertItemResult
@@ -303,10 +537,17 @@ public class GetTableResult
     public string ErrorMessage { get; set; }
     public string SuccessMessage { get; set; }
 
-    public  List<Table> TableList;
+    public List<Table> TableList;
 }
 
 public class InsertCustomerResult
+{
+    public bool Success { get; set; }
+    public string SuccessMessage { get; set; }
+    public string ErrorMessage { get; set; }
+}
+
+public class InsertOrUpdateResult
 {
     public bool Success { get; set; }
     public string SuccessMessage { get; set; }
@@ -318,4 +559,5 @@ public class UpdateTableStatus
     public string SuccessMessage { get; set; }
     public string ErrorMessage { get; set; }
 }
+
 
