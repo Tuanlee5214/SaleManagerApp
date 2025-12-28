@@ -12,6 +12,8 @@ namespace SaleManagerApp.Models
         public string orderId { get; set; }      
         public string paymentMethod { get; set; } 
         public decimal totalAmount { get; set; } 
+        public string orderStatus { get; set; }
+        public string createdAt { get; set; }
         public string invoiceStatus { get; set; }
     }
 }

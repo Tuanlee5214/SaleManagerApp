@@ -15,13 +15,14 @@ using System.Windows.Shapes;
 namespace SaleManagerApp.Views
 {
     /// <summary>
-    /// Interaction logic for OrderDetailWindow.xaml
+    /// Interaction logic for PaymentHistoryWindow.xaml
     /// </summary>
-    public partial class OrderDetailWindow : Window
+    public partial class PaymentHistoryWindow : Window
     {
-        public OrderDetailWindow()
+        public PaymentHistoryWindow()
         {
             InitializeComponent();
+            this.DataContext = new SaleManagerApp.ViewModels.PayMentHistoryViewModel();
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)

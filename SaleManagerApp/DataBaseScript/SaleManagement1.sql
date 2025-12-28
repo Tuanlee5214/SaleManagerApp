@@ -151,6 +151,10 @@ CREATE TABLE OrderDetail
 	primary key(orderId, menuItemId)
 )
 
+select * from Invoice
+select i.paymentMethod, i.invoiceId, i.createdAt, i.totalAmount, o.orderStatus
+from Invoice i join [Order] o on i.orderId = o.orderId where invoiceStatus = N'Đã thanh toán'
+
 CREATE TABLE Menu
 (
 	menuId char(7) primary key,

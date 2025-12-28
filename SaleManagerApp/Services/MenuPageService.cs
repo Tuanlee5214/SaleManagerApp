@@ -495,6 +495,41 @@ namespace SaleManagerApp.Services
             }
         }
 
+        public List<Invoice> GetInvoices()
+        {
+            using (var conn = _db.GetConnection())
+            using (var cmd = conn.CreateCommand())
+            {
+
+                cmd.CommandText =
+                    "select i.paymentMethod, i.invoiceId, i.createdAt, i.totalAmount, o.orderStatus " +
+                    "from Invoice i join [Order] o on i.orderId = o.orderId where invoiceStatus = N'Đã thanh toán'";
+
+
+                var list = new List<Invoice>();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+
+                        list.Add(new Invoice
+                        {
+                            invoiceId = reader["invoiceId"].ToString(),
+                            paymentMethod = reader["paymentMethod"].ToString(),
+                            createdAt = reader["createdAt"].ToString(),
+                            totalAmount = Convert.ToDecimal(reader["totalAmount"]),
+                            orderStatus = reader["orderStatus"].ToString()
+
+
+                        });
+                    }
+                }
+
+                return list;
+            }
+        }
+
         public GetTableResult GetAvailabeTable()
         {
             try

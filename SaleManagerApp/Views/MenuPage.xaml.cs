@@ -57,5 +57,13 @@ namespace SaleManagerApp.Views
             window.DataContext = new RecentOrdersViewModel();
             window.ShowDialog();
         }
+
+        private void OpenPaymentHistory(object sender, MouseButtonEventArgs e)
+        {
+            var vm = new PayMentHistoryViewModel();
+            var historyWin = new PaymentHistoryWindow();
+            historyWin.DataContext = vm;
+            historyWin.ShowDialog();
+        }
     }
 }
