@@ -19,7 +19,8 @@ namespace SaleManagerApp.ViewModels
             TakeAway = 0,   // Mang đi
             DineIn = 1      // Ăn tại bàn
         }
-
+        string orderIdForInvoice = "";
+        decimal totalAmountForInvoice = 0;
         public class OrderTypeItem
         {
             public OrderType Value { get; set; }   // dùng lưu DB
@@ -349,6 +350,8 @@ namespace SaleManagerApp.ViewModels
         public void SaveOrders(object o)
         {
             bool a = false;
+            orderIdForInvoice = CurrentOrderId;
+            totalAmountForInvoice = TotalAmount;
 
             string orderStatusString;
             if (SelectedOrderType.Value == OrderType.DineIn)
@@ -400,6 +403,13 @@ namespace SaleManagerApp.ViewModels
             foreach (var menu in MenuItems)
                 OnPropertyChanged(nameof(menu.DisplayQuantity));
             CurrentOrderId = _service.GetOrderId();
+            
+
+            var invoiceVM = new InvoiceViewModel(orderIdForInvoice, totalAmountForInvoice);
+            var invoiceWindow = new InvoiceWindow { DataContext = invoiceVM };
+            invoiceWindow.ShowDialog();
+
+
         }
 
 

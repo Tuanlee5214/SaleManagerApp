@@ -41,6 +41,29 @@ namespace SaleManagerApp.Services
                 return "OR" + nextNumber.ToString("D5");
             }
         }
+
+        public string GetInvoiceId()
+        {
+            using (var conn = _db.GetConnection())
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT MAX(invoiceId) FROM Invoice";
+
+                object result = cmd.ExecuteScalar();
+
+                int nextNumber = 1;
+
+                if (result != null && result != DBNull.Value)
+                {
+                    string lastCode = result.ToString();
+                    int number = int.Parse(lastCode.Substring(2));
+                    nextNumber = number + 1;
+                }
+
+                return "IV" + nextNumber.ToString("D5");
+            }
+        }
+
         public InsertItemResult InsertMenuItem(MenuItem item)
         {
             try
@@ -110,6 +133,45 @@ namespace SaleManagerApp.Services
                     {
                         Success = true,
                         SuccessMessage = "Thêm đơn hàng thành công"
+                    };
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Loi" + ex.Message);
+                return new InsertOrUpdateResult
+                {
+                    Success = false,
+                    ErrorMessage = "Lỗi kết nối server"
+                };
+            }
+        }
+
+        public InsertOrUpdateResult InsertInvoice(Invoice item)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText =
+                        "INSERT INTO Invoice " +
+                        "(invoiceId, orderId, paymentMethod, totalAmount, invoiceStatus, createdAt) " +
+                        "VALUES (@id, @id2, @pm, @tt, @sts, @createdAt)";
+
+                    cmd.Parameters.Add("@id", SqlDbType.Char, 7).Value = item.invoiceId;
+                    cmd.Parameters.Add("@id2", SqlDbType.Char, 7).Value = item.orderId;
+                    cmd.Parameters.Add("@pm", SqlDbType.NVarChar, 20).Value = item.paymentMethod;
+                    cmd.Parameters.Add("@tt", SqlDbType.Money).Value = item.totalAmount;
+                    cmd.Parameters.Add("@sts", SqlDbType.NVarChar, 30).Value = item.invoiceStatus;
+                    cmd.Parameters.Add("@createdAt", SqlDbType.DateTime).Value = DateTime.Now;
+
+                    cmd.ExecuteNonQuery();
+
+                    return new InsertOrUpdateResult
+                    {
+                        Success = true,
+                        SuccessMessage = "Thêm hoá đơn thành công"
                     };
                 }
             }
