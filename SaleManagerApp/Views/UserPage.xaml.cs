@@ -1,9 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using SaleManagerApp.ViewModels;
 using SaleManagerApp.Model;
-using SaleManagerApp.Services;
+using SaleManagerApp.Helpers;
 
 namespace SaleManagerApp.Views
 {
@@ -16,79 +17,67 @@ namespace SaleManagerApp.Views
             InitializeComponent();
             _viewModel = new UserPageViewModel();
             this.DataContext = _viewModel;
+
+            // Hiển thị placeholder ban đầu
+            UpdatePlaceholderVisibility();
         }
 
         private void CheckInButton_Click(object sender, RoutedEventArgs e)
         {
-            // KIỂM TRA QUYỀN TRƯỚC TIÊN
-            if (!UserSession.CanManageAttendance())
-            {
-                MessageBox.Show(
-                    "Tài khoản của bạn không có quyền chấm công!\n\n" +
-                    "Chỉ Admin hoặc Quản lý mới được phép thực hiện chức năng này.",
-                    "Không có quyền",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning
-                );
-                return;
-            }
-
-            // Kiểm tra đã chọn nhân viên chưa
             var selectedStaff = StaffDataGrid.SelectedItem as Staff;
             if (selectedStaff == null)
             {
-                MessageBox.Show("Vui lòng chọn một nhân viên để chấm công!", "Thông báo",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                ToastService.ShowError("Vui lòng chọn một nhân viên để chấm công!");
                 return;
             }
 
-            // Thực hiện chấm công vào
             _viewModel.CheckIn(selectedStaff.StaffId);
         }
 
         private void CheckOutButton_Click(object sender, RoutedEventArgs e)
         {
-            // KIỂM TRA QUYỀN TRƯỚC TIÊN
-            if (!UserSession.CanManageAttendance())
-            {
-                MessageBox.Show(
-                    "Tài khoản của bạn không có quyền chấm công!\n\n" +
-                    "Chỉ Admin hoặc Quản lý mới được phép thực hiện chức năng này.",
-                    "Không có quyền",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning
-                );
-                return;
-            }
-
-            // Kiểm tra đã chọn nhân viên chưa
             var selectedStaff = StaffDataGrid.SelectedItem as Staff;
             if (selectedStaff == null)
             {
-                MessageBox.Show("Vui lòng chọn một nhân viên để chấm công!", "Thông báo",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                ToastService.ShowError("Vui lòng chọn một nhân viên để chấm công!");
                 return;
             }
 
-            // KIỂM TRA: Phải chấm công vào trước
             if (!selectedStaff.CheckInTime.HasValue)
             {
-                MessageBox.Show(
-                    "Nhân viên chưa chấm công vào!\n\nVui lòng chấm công vào trước khi chấm công ra.",
-                    "Không thể chấm công ra",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning
-                );
+                ToastService.ShowError("Nhân viên chưa chấm công vào!");
                 return;
             }
 
-            // Thực hiện chấm công ra
             _viewModel.CheckOut(selectedStaff.StaffId);
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             _viewModel.SearchStaff(SearchBox.Text);
+            UpdatePlaceholderVisibility();
+        }
+
+        private void SearchBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            // Ẩn placeholder khi focus
+            PlaceholderPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Hiển thị lại placeholder nếu text trống
+            UpdatePlaceholderVisibility();
+        }
+
+        private void UpdatePlaceholderVisibility()
+        {
+            if (PlaceholderPanel != null)
+            {
+                PlaceholderPanel.Visibility = string.IsNullOrEmpty(SearchBox.Text)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -98,7 +87,6 @@ namespace SaleManagerApp.Views
 
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Logic khi chọn row
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -112,17 +100,37 @@ namespace SaleManagerApp.Views
             ContextMenu contextMenu = new ContextMenu
             {
                 FontSize = 14,
-                MinWidth = 150
+                MinWidth = 180
             };
 
             MenuItem editItem = new MenuItem
             {
-                Header = "✏️ Sửa thông tin",
+                Header = "✏️ Chỉnh sửa thông tin",
                 Padding = new Thickness(10, 8, 10, 8)
             };
             editItem.Click += (s, args) =>
             {
                 _viewModel.EditStaff(employeeId);
+            };
+
+            MenuItem resetHoursItem = new MenuItem
+            {
+                Header = "🔄 Reset giờ làm tháng",
+                Padding = new Thickness(10, 8, 10, 8)
+            };
+            resetHoursItem.Click += (s, args) =>
+            {
+                _viewModel.ResetMonthlyHours(employeeId);
+            };
+
+            MenuItem addScheduleItem = new MenuItem
+            {
+                Header = "📅 Thêm ca làm ngày mai",
+                Padding = new Thickness(10, 8, 10, 8)
+            };
+            addScheduleItem.Click += (s, args) =>
+            {
+                _viewModel.AddNextDaySchedule(employeeId);
             };
 
             MenuItem deleteItem = new MenuItem
@@ -138,11 +146,34 @@ namespace SaleManagerApp.Views
 
             contextMenu.Items.Add(editItem);
             contextMenu.Items.Add(new Separator());
+            contextMenu.Items.Add(resetHoursItem);
+            contextMenu.Items.Add(addScheduleItem);
+            contextMenu.Items.Add(new Separator());
             contextMenu.Items.Add(deleteItem);
 
             contextMenu.PlacementTarget = btn;
             contextMenu.Placement = PlacementMode.Bottom;
             contextMenu.IsOpen = true;
+        }
+
+        private void QuanLyButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            _viewModel.SelectedPosition = "Quản lý";
+        }
+
+        private void PhuBepButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            _viewModel.SelectedPosition = "Phụ bếp";
+        }
+
+        private void PhucVuButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            _viewModel.SelectedPosition = "Phục vụ";
+        }
+
+        private void AllButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            _viewModel.SelectedPosition = null;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace SaleManagerApp.Model
         public string ImagePath { get; set; }
         public decimal TotalHoursOfMonth { get; set; }
         public TimeSpan? CheckInTime { get; set; }
+        public string WorkShift { get; set; }
 
         public string ImageFullPath
         {
@@ -25,9 +26,8 @@ namespace SaleManagerApp.Model
                     return null;
 
                 string path = ImagePath;
-
                 if (!Path.HasExtension(path))
-                    path += ".jpg"; // hoặc logic kiểm tra png/jpg
+                    path += ".jpg";
 
                 return Path.Combine(
                     AppDomain.CurrentDomain.BaseDirectory,
@@ -36,14 +36,12 @@ namespace SaleManagerApp.Model
             }
         }
 
-
-        // Thêm property để hiển thị trạng thái
         public string AttendanceStatus
         {
             get
             {
-                if (CheckInTime.HasValue)
-                    return "Đã chấm công vào";
+                if (CheckInTime.HasValue && !string.IsNullOrEmpty(WorkShift))
+                    return $"Đã chấm công vào - Ca {WorkShift}";
                 return "Chưa chấm công";
             }
         }
