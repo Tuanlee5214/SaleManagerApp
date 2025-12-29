@@ -1,0 +1,72 @@
+﻿<Window x:Class="SaleManagerApp.Views.UpdateBatchView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Cập nhật Batch" 
+        Height="450" 
+        Width="500"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Cập nhật Batch" FontSize="24" FontWeight="Bold" Foreground="#2C3E50"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <TextBlock Text="Batch ID: " FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding BatchId}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Thêm lần thứ: " FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding NextUpdateNumber}" FontWeight="Bold" Foreground="#2196F3" FontSize="16"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- FORM -->
+        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="20">
+            <StackPanel>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Số lượng thêm:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" Padding="8"/>
+                </Grid>
+
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Ngày nhập:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <DatePicker Grid.Column="1" SelectedDate="{Binding ImportDate}" Padding="8"/>
+                </Grid>
+
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Hạn sử dụng:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <DatePicker Grid.Column="1" SelectedDate="{Binding ExpiryDate}" Padding="8"/>
+                </Grid>
+
+                <TextBlock Text="* Để trống HSD nếu không có" FontStyle="Italic" Foreground="#999" FontSize="12" Margin="150,0,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- BUTTONS -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Lưu" Command="{Binding SaveCommand}" Background="#4CAF50" Foreground="White" Padding="20,10" Margin="5"/>
+            <Button Content="Hủy" Command="{Binding CancelCommand}" Background="#757575" Foreground="White" Padding="20,10" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using SaleManagerApp.ViewModels;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
@@ -6,15 +7,16 @@ namespace SaleManagerApp.Views
 {
     public partial class ExportIngredientView : Window
     {
-        public ExportIngredientView()
+        public ExportIngredientView(ExportIngredientViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
+        // Chỉ cho nhập số
         private void NumberOnly(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
+            e.Handled = !Regex.IsMatch(e.Text, "^[0-9]+$");
         }
     }
 }

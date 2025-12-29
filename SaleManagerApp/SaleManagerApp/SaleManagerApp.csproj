@@ -75,19 +75,24 @@
     <Compile Include="Command\RelayCommand.cs" />
     <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\CornerRadiusHelper.cs" />
+    <Compile Include="Helpers\FilterConverter.cs" />
     <Compile Include="Helpers\NullableImageConverter.cs" />
+    <Compile Include="Helpers\NullToVisibilityConverter.cs" />
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Helpers\QuantityToVisibilityConverter.cs" />
     <Compile Include="Helpers\TableStatusToColorConverter.cs" />
     <Compile Include="Helpers\ToastService.cs" />
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\IngredientBatch.cs" />
+    <Compile Include="Models\Ingredient.cs" />
+    <Compile Include="Models\IngredientBatchHistory.cs" />
     <Compile Include="Models\IngredientItem.cs" />
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="Models\Staff.cs" />
     <Compile Include="Models\Table.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\WarehouseExport.cs" />
+    <Compile Include="Models\WarehouseLog.cs" />
     <Compile Include="Services\MenuPageService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\DBConnectionService.cs" />
@@ -96,6 +101,7 @@
     <Compile Include="Services\UserSession.cs" />
     <Compile Include="Services\WarehouseService.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\BatchDetailViewModel.cs" />
     <Compile Include="ViewModels\CreateIngredientViewModel.cs" />
     <Compile Include="ViewModels\ExportIngredientViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
@@ -110,7 +116,11 @@
     <Compile Include="ViewModels\TableViewModel.cs" />
     <Compile Include="ViewModels\SmallFormsModels\AddStaffWindowModel.cs" />
     <Compile Include="ViewModels\UserPageViewModel.cs" />
+    <Compile Include="ViewModels\WarehouseLogViewModel.cs" />
     <Compile Include="ViewModels\WareHousePageViewModel.cs" />
+    <Compile Include="Views\BatchDetailView.xaml.cs">
+      <DependentUpon>BatchDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CreateIngredientView.xaml.cs">
       <DependentUpon>CreateIngredientView.xaml</DependentUpon>
     </Compile>
@@ -156,6 +166,9 @@
     <Compile Include="Views\UserPage.xaml.cs">
       <DependentUpon>UserPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\WarehouseLogView.xaml.cs">
+      <DependentUpon>WarehouseLogView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\WarehousePage.xaml.cs">
       <DependentUpon>WarehousePage.xaml</DependentUpon>
     </Compile>
@@ -171,6 +184,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\BatchDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CreateIngredientView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -228,6 +245,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WarehouseLogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

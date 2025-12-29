@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Thêm nguyên liệu"
         Width="520"
-        Height="720"
+        Height="640"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         Background="#F5F5F5">
@@ -30,38 +30,29 @@
             <StackPanel>
 
                 <!-- NAME -->
-                <TextBlock Text="Tên nguyên liệu *"/>
-                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                <TextBlock Text="Tên nguyên liệu"/>
+                <TextBox Text="{Binding IngredientName}"
                          Height="40"
                          Margin="0,6,0,16"/>
 
                 <!-- UNIT -->
-                <TextBlock Text="Đơn vị *"/>
-                <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}"
+                <TextBlock Text="Đơn vị"/>
+                <TextBox Text="{Binding Unit}"
                          Height="40"
-                         Margin="0,6,0,16"
-                         ToolTip="Ví dụ: kg, g, lít, chai, hộp"/>
+                         Margin="0,6,0,16"/>
 
-                <!-- FILTER/GROUP -->
-                <TextBlock Text="Nhóm nguyên liệu *"/>
-                <ComboBox ItemsSource="{Binding Filters}"
-                          SelectedItem="{Binding Filter}"
+                <!-- GROUP -->
+                <TextBlock Text="Nhóm nguyên liệu"/>
+                <ComboBox ItemsSource="{Binding Groups}"
+                          SelectedItem="{Binding SelectedGroup}"
                           Height="40"
                           Margin="0,6,0,16"/>
 
                 <!-- MIN QUANTITY -->
                 <TextBlock Text="Ngưỡng cảnh báo tồn kho"/>
-                <TextBox Text="{Binding MinQuantity, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding MinQuantity}"
                          Height="40"
-                         Margin="0,6,0,16"
-                         ToolTip="Hệ thống sẽ cảnh báo khi số lượng dưới ngưỡng này"/>
-
-                <!-- MAX STORAGE DAYS -->
-                <TextBlock Text="Số ngày lưu trữ tối đa *"/>
-                <TextBox Text="{Binding MaxStorageDays, UpdateSourceTrigger=PropertyChanged}"
-                         Height="40"
-                         Margin="0,6,0,16"
-                         ToolTip="Số ngày từ khi nhập đến khi hết hạn"/>
+                         Margin="0,6,0,16"/>
 
                 <!-- IMAGE -->
                 <TextBlock Text="Ảnh nguyên liệu"/>

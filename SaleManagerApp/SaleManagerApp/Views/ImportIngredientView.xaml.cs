@@ -1,22 +1,18 @@
-﻿using SaleManagerApp.ViewModels;
-using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
+using SaleManagerApp.ViewModels;
 
 namespace SaleManagerApp.Views
 {
     public partial class ImportIngredientView : Window
     {
-        public ImportIngredientView(ImportIngredientViewModel viewModel)
+        public ImportIngredientView()
         {
             InitializeComponent();
-            DataContext = viewModel;
         }
 
-        // Chỉ cho nhập số
-        private void NumberOnly(object sender, TextCompositionEventArgs e)
+        public ImportIngredientView(ImportIngredientViewModel vm) : this()
         {
-            e.Handled = !Regex.IsMatch(e.Text, "^[0-9]+$");
+            DataContext = vm;
         }
     }
 }
