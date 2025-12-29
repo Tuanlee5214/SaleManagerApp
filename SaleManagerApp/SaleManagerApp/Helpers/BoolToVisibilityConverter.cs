@@ -9,6 +9,7 @@ using System.Windows;
 
 namespace SaleManagerApp.Helpers
 {
+    // ✅ ĐÃ CÓ - GIỮ NGUYÊN
     public class BoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -16,7 +17,6 @@ namespace SaleManagerApp.Helpers
             bool flag = (bool)value;
             return flag ? Visibility.Visible : Visibility.Collapsed;
         }
-
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (Visibility)value == Visibility.Visible;
