@@ -2,32 +2,28 @@
 using SaleManagerApp.Models;
 using SaleManagerApp.Services;
 using System;
+using System.Linq;
 using System.Windows.Input;
 
 namespace SaleManagerApp.ViewModels
 {
     public class ExportIngredientViewModel : BaseViewModel
     {
+        // ❌ new()  →  ✅ new WarehouseService()
         private readonly WarehouseService _service = new WarehouseService();
         private readonly string _exportOrderId = $"EX{DateTime.Now:yyyyMMddHHmmss}";
 
         // =========================
-        // INGREDIENT
+        // DATA
         // =========================
-        private IngredientItem _ingredient;
-        public IngredientItem Ingredient
-        {
-            get => _ingredient;
-            private set
-            {
-                _ingredient = value;
-                OnPropertyChanged();
-            }
-        }
+        public string IngredientId { get; set; }
 
-        public string IngredientId => Ingredient?.IngredientId;
-        public int CurrentQuantity => Ingredient?.TotalQuantity ?? 0;
-        public bool HasExpiredBatch => Ingredient?.HasExpiredBatch ?? false;
+        private int _currentQuantity;
+        public int CurrentQuantity
+        {
+            get => _currentQuantity;
+            set { _currentQuantity = value; OnPropertyChanged(); }
+        }
 
         // =========================
         // INPUT
@@ -36,11 +32,7 @@ namespace SaleManagerApp.ViewModels
         public int Quantity
         {
             get => _quantity;
-            set
-            {
-                _quantity = value;
-                OnPropertyChanged();
-            }
+            set { _quantity = value; OnPropertyChanged(); }
         }
 
         // =========================
@@ -57,65 +49,43 @@ namespace SaleManagerApp.ViewModels
 
         public ExportIngredientViewModel()
         {
-            ConfirmCommand = new RelayCommand(Export);
+            ConfirmCommand = new RelayCommand(_ => Export());
             CancelCommand = new RelayCommand(_ => CloseAction?.Invoke());
         }
 
         // =========================
-        // SET INGREDIENT
+        // EXPORT
         // =========================
-        public void SetIngredient(IngredientItem item)
+        private void Export()
         {
-            Ingredient = item;
-            OnPropertyChanged(nameof(IngredientId));
-            OnPropertyChanged(nameof(CurrentQuantity));
-            OnPropertyChanged(nameof(HasExpiredBatch));
-        }
-
-        // =========================
-        // EXPORT LOGIC
-        // =========================
-        private void Export(object obj)
-        {
-            if (Ingredient == null)
-            {
-                ToastService.ShowError("Chưa chọn nguyên liệu");
-                return;
-            }
-
-            if (HasExpiredBatch)
-            {
-                ToastService.ShowError("Nguyên liệu có batch đã hết hạn, cần xử lý trước");
-                return;
-            }
-
             if (Quantity <= 0)
             {
-                ToastService.ShowError("Số lượng xuất phải lớn hơn 0");
+                ToastService.ShowError("Số lượng xuất không hợp lệ");
                 return;
             }
 
             if (Quantity > CurrentQuantity)
             {
-                ToastService.ShowError("Số lượng tồn kho không đủ");
+                ToastService.ShowError("Không đủ tồn kho");
                 return;
             }
 
-            var result = _service.ExportIngredient(
-                _exportOrderId,
-                Ingredient.IngredientId,
-                Quantity
-            );
-
-            if (result.Success)
+            try
             {
+                _service.ExportIngredient(
+                    IngredientId,
+                    Quantity,
+                    "EMP001",          // TODO: lấy từ user đăng nhập
+                    "Xuất kho"
+                );
+
                 ReloadAction?.Invoke();
-                ToastService.Show(result.SuccessMessage);
+                ToastService.Show("Xuất kho thành công");
                 CloseAction?.Invoke();
             }
-            else
+            catch
             {
-                ToastService.ShowError(result.ErrorMessage);
+                ToastService.ShowError("Xuất kho không thành công");
             }
         }
     }

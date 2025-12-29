@@ -2,6 +2,7 @@
 using SaleManagerApp.Models;
 using SaleManagerApp.Services;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -10,30 +11,40 @@ namespace SaleManagerApp.ViewModels
 {
     public class ImportIngredientViewModel : BaseViewModel
     {
+        // ❌ new() → ✅ new WarehouseService()
         private readonly WarehouseService _service = new WarehouseService();
-        private readonly string _importOrderId = $"IM{DateTime.Now:yyyyMMddHHmmss}";
 
         // =========================
-        // DATA SOURCE
+        // DATA
         // =========================
+        // ❌ new() → ✅ new ObservableCollection<IngredientItem>()
         public ObservableCollection<IngredientItem> AllIngredients { get; }
             = new ObservableCollection<IngredientItem>();
 
+        // ❌ new() → ✅ new ObservableCollection<IngredientItem>()
         public ObservableCollection<IngredientItem> FilteredIngredients { get; }
             = new ObservableCollection<IngredientItem>();
 
-        public Array IngredientGroups => Enum.GetValues(typeof(IngredientGroup));
+        // Danh sách filter
+        public List<string> Filters { get; } = new List<string>
+        {
+            "Meat",
+            "Seafood",
+            "Vegetable",
+            "Spice",
+            "Others"
+        };
 
         // =========================
         // FILTER
         // =========================
-        private IngredientGroup _selectedGroup;
-        public IngredientGroup SelectedGroup
+        private string _selectedFilter;
+        public string SelectedFilter
         {
-            get => _selectedGroup;
+            get => _selectedFilter;
             set
             {
-                _selectedGroup = value;
+                _selectedFilter = value;
                 OnPropertyChanged();
                 ApplyFilter();
             }
@@ -50,16 +61,17 @@ namespace SaleManagerApp.ViewModels
             {
                 _selectedIngredient = value;
                 OnPropertyChanged();
-                LoadIngredientInfo();
+                OnPropertyChanged(nameof(IngredientId));
+                OnPropertyChanged(nameof(IngredientName));
+                OnPropertyChanged(nameof(Unit));
+                OnPropertyChanged(nameof(MaxStorageDays));
             }
         }
 
-        // =========================
-        // DISPLAY INFO
-        // =========================
         public string IngredientId => SelectedIngredient?.IngredientId;
         public string IngredientName => SelectedIngredient?.IngredientName;
         public string Unit => SelectedIngredient?.Unit;
+        public int MaxStorageDays => SelectedIngredient?.MaxStorageDays ?? 7;
 
         // =========================
         // INPUT
@@ -68,33 +80,21 @@ namespace SaleManagerApp.ViewModels
         public int Quantity
         {
             get => _quantity;
-            set
-            {
-                _quantity = value;
-                OnPropertyChanged();
-            }
+            set { _quantity = value; OnPropertyChanged(); }
         }
 
-        private decimal _unitPrice;
-        public decimal UnitPrice
+        private DateTime _importDate = DateTime.Today;
+        public DateTime ImportDate
         {
-            get => _unitPrice;
-            set
-            {
-                _unitPrice = value;
-                OnPropertyChanged();
-            }
+            get => _importDate;
+            set { _importDate = value; OnPropertyChanged(); UpdateExpiryDate(); }
         }
 
-        private DateTime? _expiryDate;
-        public DateTime? ExpiryDate
+        private DateTime _expiryDate;
+        public DateTime ExpiryDate
         {
             get => _expiryDate;
-            set
-            {
-                _expiryDate = value;
-                OnPropertyChanged();
-            }
+            set { _expiryDate = value; OnPropertyChanged(); }
         }
 
         // =========================
@@ -111,49 +111,67 @@ namespace SaleManagerApp.ViewModels
 
         public ImportIngredientViewModel()
         {
-            ConfirmCommand = new RelayCommand(Import);
+            ConfirmCommand = new RelayCommand(_ => Import());
             CancelCommand = new RelayCommand(_ => CloseAction?.Invoke());
+
             LoadIngredients();
         }
 
         // =========================
-        // LOAD DATA
+        // LOAD
         // =========================
         private void LoadIngredients()
         {
-            var result = _service.GetAllIngredients();
-            if (!result.Success)
+            try
             {
-                ToastService.ShowError(result.ErrorMessage);
-                return;
+                var data = _service.GetAllIngredients();
+
+                AllIngredients.Clear();
+                foreach (var item in data)
+                    AllIngredients.Add(item);
+
+                if (Filters.Any())
+                {
+                    SelectedFilter = Filters.First();
+                }
             }
-
-            AllIngredients.Clear();
-            foreach (var item in result.IngredientList)
-                AllIngredients.Add(item);
-
-            SelectedGroup = IngredientGroups.Cast<IngredientGroup>().First();
+            catch (Exception ex)
+            {
+                ToastService.ShowError($"Không thể tải danh sách nguyên liệu: {ex.Message}");
+            }
         }
 
         private void ApplyFilter()
         {
             FilteredIngredients.Clear();
 
-            foreach (var item in AllIngredients.Where(i => i.Group == SelectedGroup))
-                FilteredIngredients.Add(item);
+            if (string.IsNullOrEmpty(SelectedFilter))
+            {
+                foreach (var item in AllIngredients)
+                    FilteredIngredients.Add(item);
+            }
+            else
+            {
+                foreach (var item in AllIngredients.Where(i => i.Filter == SelectedFilter))
+                    FilteredIngredients.Add(item);
+            }
         }
 
-        private void LoadIngredientInfo()
+        // =========================
+        // AUTO UPDATE EXPIRY DATE
+        // =========================
+        private void UpdateExpiryDate()
         {
-            OnPropertyChanged(nameof(IngredientId));
-            OnPropertyChanged(nameof(IngredientName));
-            OnPropertyChanged(nameof(Unit));
+            if (SelectedIngredient != null)
+            {
+                ExpiryDate = ImportDate.AddDays(SelectedIngredient.MaxStorageDays);
+            }
         }
 
         // =========================
-        // IMPORT LOGIC
+        // IMPORT
         // =========================
-        private void Import(object obj)
+        private void Import()
         {
             if (SelectedIngredient == null)
             {
@@ -163,33 +181,33 @@ namespace SaleManagerApp.ViewModels
 
             if (Quantity <= 0)
             {
-                ToastService.ShowError("Số lượng nhập phải lớn hơn 0");
+                ToastService.ShowError("Số lượng phải > 0");
                 return;
             }
 
-            if (UnitPrice <= 0)
+            if (ExpiryDate <= ImportDate)
             {
-                ToastService.ShowError("Đơn giá không hợp lệ");
+                ToastService.ShowError("Ngày hết hạn phải sau ngày nhập");
                 return;
             }
 
-            var result = _service.ImportIngredient(
-                _importOrderId,
-                SelectedIngredient.IngredientId,
-                Quantity,
-                UnitPrice,
-                ExpiryDate
-            );
-
-            if (result.Success)
+            try
             {
+                _service.ImportIngredient(
+                    SelectedIngredient.IngredientId,
+                    Quantity,
+                    ImportDate,
+                    ExpiryDate,
+                    $"Nhập {Quantity} {Unit}"
+                );
+
                 ReloadAction?.Invoke();
-                ToastService.Show(result.SuccessMessage);
+                ToastService.Show("Nhập kho thành công");
                 CloseAction?.Invoke();
             }
-            else
+            catch (Exception ex)
             {
-                ToastService.ShowError(result.ErrorMessage);
+                ToastService.ShowError($"Nhập kho thất bại: {ex.Message}");
             }
         }
     }
