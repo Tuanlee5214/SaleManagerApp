@@ -1,0 +1,164 @@
+﻿<Window x:Class="SaleManagerApp.Views.ImportIngredientView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=viewmodels:ImportIngredientViewModel}"
+        Title="Nhập kho"
+        Width="400" Height="600"
+        MinWidth="400" MinHeight="600"
+        MaxWidth="400" MaxHeight="600"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Background="White" CornerRadius="18" Padding="20" Margin="20">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="15"/>
+
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="30"/>
+
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- TITLE -->
+                <TextBlock Grid.Row="0"
+                           Text="THÔNG TIN NHẬP KHO"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"/>
+
+                <!-- LOẠI NGUYÊN LIỆU -->
+                <StackPanel Grid.Row="2">
+                    <TextBlock Text="Loại nguyên vật liệu:" FontWeight="SemiBold"/>
+                    <Border CornerRadius="12" Background="#E5E5E5" Margin="0 5 0 0">
+                        <ComboBox Height="34"
+                                  IsEnabled="False"
+                                  Background="Transparent"
+                                  BorderThickness="0"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- TÊN NGUYÊN LIỆU -->
+                <StackPanel Grid.Row="4">
+                    <TextBlock Text="Tên nguyên vật liệu:" FontWeight="SemiBold"/>
+                    <Border CornerRadius="12" Background="#E5E5E5" Margin="0 5 0 0">
+                        <TextBox Height="34"
+                                 IsReadOnly="True"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="8 0"
+                                 VerticalContentAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- ĐƠN VỊ -->
+                <StackPanel Grid.Row="6">
+                    <TextBlock Text="Đơn vị:" FontWeight="SemiBold"/>
+                    <Border CornerRadius="12" Background="#E5E5E5" Margin="0 5 0 0">
+                        <TextBox Height="34"
+                                 IsReadOnly="True"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="8 0"
+                                 VerticalContentAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- HẠN SỬ DỤNG -->
+                <StackPanel Grid.Row="8">
+                    <TextBlock Text="Hạn sử dụng: (DD/MM/YYYY)" FontWeight="SemiBold"/>
+                    <Border CornerRadius="12" Background="#E5E5E5" Margin="0 5 0 0">
+                        <TextBox Height="34"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="8 0"
+                                 VerticalContentAlignment="Center"/>
+                    </Border>
+
+                    <TextBlock Text="Không cần điền đối với vật liệu (thêm ràng buộc)"
+                               FontSize="11"
+                               Foreground="Gray"
+                               Margin="5 5 0 0"/>
+                </StackPanel>
+
+                <!-- SỐ LƯỢNG -->
+                <StackPanel Grid.Row="10">
+                    <TextBlock Text="Số lượng nhập kho: (theo đơn vị trên)" FontWeight="SemiBold"/>
+                    <Border CornerRadius="12" Background="#E5E5E5" Margin="0 5 0 0">
+                        <TextBox Height="34"
+                                 Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="8 0"
+                                 VerticalContentAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- BUTTON -->
+                <StackPanel Grid.Row="12"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+
+                    <!-- HỦY -->
+                    <Button Content="Hủy"
+                            Width="120" Height="34"
+                            Background="#111"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Command="{Binding CancelCommand}"
+                            Margin="0 0 25 0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="16">
+                                    <ContentPresenter
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- XÁC NHẬN -->
+                    <Button Content="Xác nhận"
+                            Width="120" Height="34"
+                            Background="#3B5AFE"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Command="{Binding ConfirmCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        CornerRadius="16">
+                                    <ContentPresenter
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                </StackPanel>
+
+            </Grid>
+        </Border>
+    </ScrollViewer>
+</Window>

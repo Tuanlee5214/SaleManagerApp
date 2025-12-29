@@ -1,0 +1,75 @@
+﻿<Window x:Class="SaleManagerApp.Views.ExportIngredientView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Xuất kho nguyên liệu"
+        Width="420"
+        Height="320"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- TIÊU ĐỀ -->
+        <TextBlock
+            Text="XUẤT KHO NGUYÊN LIỆU"
+            FontSize="20"
+            FontWeight="Bold"
+            HorizontalAlignment="Center"
+            Margin="0,0,0,20"/>
+
+        <!-- THÔNG TIN NGUYÊN LIỆU -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,15">
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Mã nguyên liệu:" Width="150"/>
+                <TextBlock Text="{Binding IngredientId}" FontWeight="SemiBold"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Tồn kho hiện tại:" Width="150"/>
+                <TextBlock Text="{Binding CurrentQuantity}" FontWeight="SemiBold"/>
+            </StackPanel>
+
+        </StackPanel>
+
+        <!-- NHẬP SỐ LƯỢNG -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,20">
+            <TextBlock Text="Số lượng xuất:"/>
+
+            <TextBox
+                Height="32"
+                Margin="0,5,0,0"
+                Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
+                PreviewTextInput="NumberOnly"/>
+        </StackPanel>
+
+        <!-- NÚT -->
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,20,0,0">
+
+            <Button
+                Content="Hủy"
+                Width="90"
+                Height="32"
+                Margin="0,0,10,0"
+                Command="{Binding CancelCommand}"/>
+
+            <Button
+                Content="Xác nhận"
+                Width="100"
+                Height="32"
+                Background="#2E86DE"
+                Foreground="White"
+                Command="{Binding ConfirmCommand}"/>
+
+        </StackPanel>
+    </Grid>
+</Window>

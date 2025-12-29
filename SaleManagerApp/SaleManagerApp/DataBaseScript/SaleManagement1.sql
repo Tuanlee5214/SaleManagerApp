@@ -1443,15 +1443,6 @@ GO
 
 -- BỔ SUNG 2 CỘT VÀO BẢNG EMPLOYEE
 ALTER TABLE Employee
-ADD phone varchar(20) not null;
-
--------------------
---Thêm vào nhập kho
-CREATE PROCEDURE sp_ImportIngredient
-(
-    @IngredientId CHAR(7),
-    @Quantity INT
-)
 ADD totalHoursOfMonth DECIMAL(10,2) DEFAULT 0,
     checkInTime TIME NULL;
 
@@ -1469,42 +1460,6 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    IF @Quantity <= 0
-    BEGIN
-        RAISERROR(N'Số lượng không hợp lệ',16,1);
-        RETURN;
-    END
-
-    UPDATE Ingredient
-    SET quantity = quantity + @Quantity,
-        updatedAt = GETDATE()
-    WHERE ingredientId = @IngredientId;
-END
-
---Thêm vào xuất kho
-CREATE PROCEDURE sp_ExportIngredient
-(
-    @IngredientId CHAR(7),
-    @Quantity INT
-)
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    DECLARE @Current INT;
-    SELECT @Current = quantity FROM Ingredient WHERE ingredientId=@IngredientId;
-
-    IF @Quantity <= 0 OR @Quantity > @Current
-    BEGIN
-        RAISERROR(N'Số lượng xuất không hợp lệ',16,1);
-        RETURN;
-    END
-
-    UPDATE Ingredient
-    SET quantity = quantity - @Quantity,
-        updatedAt = GETDATE()
-    WHERE ingredientId = @IngredientId;
-END
     DECLARE @EmpId CHAR(7);
 
     EXEC sp_GenerateId 
@@ -1641,3 +1596,864 @@ BEGIN
     SELECT @@ROWCOUNT AS RowsAffected;
 END;
 GO
+---------------------------------------
+--Thêm bảng và 1 số stored procedure phục vụ cho logic lịch làm và chấm công
+-- Thêm cột ca làm việc vào bảng Employee
+ALTER TABLE Employee 
+ADD workShift NVARCHAR(10) CHECK(workShift IN (N'Sáng', N'Chiều', N'Tối'));
+
+GO
+
+-- Bảng lưu lịch làm việc ngày mai
+CREATE TABLE ScheduleNextDay
+(
+    scheduleId CHAR(7) PRIMARY KEY,
+    employeeId CHAR(7) NOT NULL,
+    workDate DATE NOT NULL,
+    workShift NVARCHAR(10) NOT NULL CHECK(workShift IN (N'Sáng', N'Chiều', N'Tối')),
+    createdAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (employeeId) REFERENCES Employee(employeeId),
+    UNIQUE(employeeId, workDate)
+);
+
+GO
+
+-- Stored Procedure: Thêm ca làm cho ngày mai
+CREATE PROCEDURE sp_AddNextDaySchedule
+    @EmployeeId CHAR(7),
+    @WorkShift NVARCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @NextDay DATE = CAST(DATEADD(DAY, 1, GETDATE()) AS DATE);
+    DECLARE @CurrentHour INT = DATEPART(HOUR, GETDATE());
+    
+    -- Kiểm tra thời gian (22h - 24h)
+    IF @CurrentHour < 22
+    BEGIN
+        SELECT 0 AS Success, N'Chỉ được thêm ca làm từ 22:00 - 24:00' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra nhân viên tồn tại
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra đã có ca chưa
+    IF EXISTS (SELECT 1 FROM ScheduleNextDay WHERE employeeId = @EmployeeId AND workDate = @NextDay)
+    BEGIN
+        UPDATE ScheduleNextDay
+        SET workShift = @WorkShift
+        WHERE employeeId = @EmployeeId AND workDate = @NextDay;
+        
+        SELECT 1 AS Success, N'Cập nhật ca làm thành công' AS Message;
+        RETURN;
+    END
+    
+    DECLARE @ScheduleId CHAR(7);
+    EXEC sp_GenerateId 
+        @prefix = 'SC',
+        @tableName = 'ScheduleNextDay',
+        @idColumn = 'scheduleId',
+        @idLength = 7,
+        @newId = @ScheduleId OUTPUT;
+    
+    INSERT INTO ScheduleNextDay(scheduleId, employeeId, workDate, workShift, createdAt)
+    VALUES (@ScheduleId, @EmployeeId, @NextDay, @WorkShift, GETDATE());
+    
+    SELECT 1 AS Success, N'Thêm ca làm thành công' AS Message;
+END;
+
+GO
+
+-- Stored Procedure: Chấm công vào (logic mới)
+ALTER PROCEDURE sp_CheckIn
+    @EmployeeId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @CurrentTime TIME = CAST(GETDATE() AS TIME);
+    DECLARE @CurrentDate DATE = CAST(GETDATE() AS DATE);
+    DECLARE @CurrentHour INT = DATEPART(HOUR, GETDATE());
+    DECLARE @WorkShift NVARCHAR(10);
+    DECLARE @ShiftStartHour INT;
+    DECLARE @AllowedStartHour INT;
+    
+    -- Lấy ca làm từ lịch
+    SELECT @WorkShift = workShift
+    FROM ScheduleNextDay
+    WHERE employeeId = @EmployeeId AND workDate = @CurrentDate;
+    
+    IF @WorkShift IS NULL
+    BEGIN
+        SELECT 0 AS Success, N'Bạn không có ca làm hôm nay' AS Message;
+        RETURN;
+    END
+    
+    -- Xác định giờ vào ca
+    SET @ShiftStartHour = CASE @WorkShift
+        WHEN N'Sáng' THEN 7
+        WHEN N'Chiều' THEN 12
+        WHEN N'Tối' THEN 17
+    END;
+    
+    SET @AllowedStartHour = @ShiftStartHour - 1;
+    
+    -- Kiểm tra thời gian hợp lệ (1 tiếng trước ca)
+    IF @CurrentHour < @AllowedStartHour OR @CurrentHour >= @ShiftStartHour
+    BEGIN
+        SELECT 0 AS Success, 
+               N'Chỉ được chấm công từ ' + CAST(@AllowedStartHour AS NVARCHAR) + 
+               ':00 - ' + CAST(@ShiftStartHour AS NVARCHAR) + ':00' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra đã chấm công chưa
+    IF EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId AND checkInTime IS NOT NULL)
+    BEGIN
+        SELECT 0 AS Success, N'Bạn đã chấm công vào rồi' AS Message;
+        RETURN;
+    END
+    
+    UPDATE Employee
+    SET checkInTime = @CurrentTime,
+        workShift = @WorkShift,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    SELECT 1 AS Success, N'Chấm công vào thành công' AS Message, 
+           @CurrentTime AS CheckInTime, @WorkShift AS WorkShift;
+END;
+
+GO
+
+-- Stored Procedure: Chấm công ra (logic mới)
+ALTER PROCEDURE sp_CheckOut
+    @EmployeeId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @CurrentTime TIME = CAST(GETDATE() AS TIME);
+    DECLARE @CurrentHour INT = DATEPART(HOUR, GETDATE());
+    DECLARE @CheckInTime TIME;
+    DECLARE @WorkedHours DECIMAL(10,2);
+    
+    SELECT @CheckInTime = checkInTime 
+    FROM Employee 
+    WHERE employeeId = @EmployeeId;
+    
+    IF @CheckInTime IS NULL
+    BEGIN
+        SELECT 0 AS Success, N'Bạn chưa chấm công vào' AS Message;
+        RETURN;
+    END
+    
+    -- Kiểm tra giờ chấm công ra hợp lệ (phải > giờ vào và < 24h)
+    IF @CurrentHour >= 24 OR @CurrentTime <= @CheckInTime
+    BEGIN
+        SELECT 0 AS Success, N'Giờ chấm công ra không hợp lệ' AS Message;
+        RETURN;
+    END
+    
+    SET @WorkedHours = FLOOR(DATEDIFF(MINUTE, @CheckInTime, @CurrentTime) / 60.0);
+    
+    UPDATE Employee
+    SET totalHoursOfMonth = totalHoursOfMonth + @WorkedHours,
+        checkInTime = NULL,
+        workShift = NULL,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    -- Xóa lịch sau khi hoàn thành ca
+    DELETE FROM ScheduleNextDay 
+    WHERE employeeId = @EmployeeId AND workDate = CAST(GETDATE() AS DATE);
+    
+    SELECT 1 AS Success, N'Chấm công ra thành công' AS Message,
+           @CheckInTime AS CheckInTime,
+           @CurrentTime AS CheckOutTime,
+           @WorkedHours AS WorkedHours;
+END;
+
+GO
+
+-- Stored Procedure: Reset giờ làm tháng
+CREATE PROCEDURE sp_ResetEmployeeMonthlyHours
+    @EmployeeId CHAR(7)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+        RETURN;
+    END
+    
+    UPDATE Employee
+    SET totalHoursOfMonth = 0,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    SELECT 1 AS Success, N'Đã reset giờ làm tháng về 0' AS Message;
+END;
+
+GO
+
+-- Stored Procedure: Cập nhật thông tin nhân viên
+CREATE PROCEDURE sp_UpdateEmployee
+    @EmployeeId CHAR(7),
+    @FullName NVARCHAR(30),
+    @DateOfBirth DATE,
+    @Position VARCHAR(20),
+    @Phone VARCHAR(25),
+    @Email VARCHAR(30),
+    @ImageUrl VARCHAR(200)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+    BEGIN
+        SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+        RETURN;
+    END
+    
+    UPDATE Employee
+    SET fullName = @FullName,
+        dateOfBirth = @DateOfBirth,
+        position = @Position,
+        phone = @Phone,
+        email = @Email,
+        imageUrl = @ImageUrl,
+        updatedAt = GETDATE()
+    WHERE employeeId = @EmployeeId;
+    
+    SELECT 1 AS Success, N'Cập nhật thông tin thành công' AS Message;
+END;
+
+GO
+
+-- Stored Procedure: Lấy danh sách nhân viên theo chức vụ
+CREATE PROCEDURE sp_GetStaffByPosition
+    @Position VARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    IF @Position IS NULL OR @Position = ''
+    BEGIN
+        -- Lấy tất cả
+        SELECT * FROM Employee ORDER BY createdAt DESC;
+    END
+    ELSE
+    BEGIN
+        SELECT * FROM Employee 
+        WHERE position = @Position 
+        ORDER BY createdAt DESC;
+    END
+END;
+------------------------
+--Tăng kích thước chứa dữ liệu ảnh vì có thể đường dẫn quá dài: 
+-- Tăng kích thước cột imageUrl
+ALTER TABLE Employee 
+ALTER COLUMN imageUrl VARCHAR(200);
+------------------------Xóa stored procedure cũ (nếu có)
+IF EXISTS (SELECT * FROM sys.objects 
+           WHERE object_id = OBJECT_ID(N'[dbo].[sp_UpdateEmployee]') 
+           AND type in (N'P', N'PC'))
+BEGIN
+    DROP PROCEDURE [dbo].[sp_UpdateEmployee];
+END
+GO
+
+------------------ Tạo stored procedure mới
+CREATE PROCEDURE sp_UpdateEmployee
+    @EmployeeId CHAR(7),
+    @FullName NVARCHAR(30),
+    @DateOfBirth DATE,
+    @Position VARCHAR(20),
+    @Phone VARCHAR(25),
+    @Email VARCHAR(30),
+    @ImageUrl VARCHAR(200) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        -- Kiểm tra nhân viên tồn tại
+        IF NOT EXISTS (SELECT 1 FROM Employee WHERE employeeId = @EmployeeId)
+        BEGIN
+            SELECT 0 AS Success, N'Nhân viên không tồn tại' AS Message;
+            RETURN;
+        END
+
+        -- Cập nhật thông tin
+        UPDATE Employee
+        SET fullName = @FullName,
+            dateOfBirth = @DateOfBirth,
+            position = @Position,
+            phone = @Phone,
+            email = @Email,
+            imageUrl = @ImageUrl,
+            updatedAt = GETDATE()
+        WHERE employeeId = @EmployeeId;
+
+        SELECT 1 AS Success, N'Cập nhật thông tin thành công' AS Message;
+    END TRY
+    BEGIN CATCH
+        SELECT 0 AS Success, ERROR_MESSAGE() AS Message;
+    END CATCH
+END;
+GO
+-- Đổi VARCHAR sang NVARCHAR
+ALTER TABLE Employee
+ALTER COLUMN position NVARCHAR(20) NOT NULL;
+
+-- Fix dữ liệu bị lỗi
+UPDATE Employee SET position = N'Quản lý' WHERE position LIKE '%Qu%n%';
+UPDATE Employee SET position = N'Phục vụ' WHERE position LIKE '%Ph%c%';
+UPDATE Employee SET position = N'Phụ bếp' WHERE position LIKE '%Ph%b%';
+
+----------------------------------------------------------------------------
+
+ALTER TABLE Ingredient ADD [filter] NVARCHAR(20) CHECK([filter] IN (N'Meat', N'Seafood', N'Vegetable', N'Spice', N'Others'));
+ALTER TABLE Ingredient ADD maxStorageDays INT CHECK(maxStorageDays > 0);
+ALTER TABLE Ingredient ADD imageUrl VARCHAR(200);
+
+CREATE TABLE IngredientBatchHistory
+(
+    historyId CHAR(7) PRIMARY KEY,
+    ingredientId CHAR(7) NOT NULL,
+    quantity INT NOT NULL,
+    importDate DATE NOT NULL,
+    expiryDate DATE NOT NULL,
+    createdAt DATETIME DEFAULT GETDATE(),
+    isDeleted BIT DEFAULT 0
+);
+
+ALTER TABLE IngredientBatchHistory
+ADD CONSTRAINT FK_IBH_Ingredient
+FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
+
+ALTER TABLE IngredientBatchHistory ADD CHECK (quantity > 0);
+ALTER TABLE IngredientBatchHistory ADD CHECK (expiryDate >= importDate);
+
+CREATE TABLE WarehouseLog
+(
+    logId CHAR(7) PRIMARY KEY,
+    ingredientId CHAR(7) NOT NULL,
+    historyId CHAR(7) NULL,
+    actionType NVARCHAR(20) NOT NULL, -- IMPORT / UPDATE / EXPORT / DELETE
+    quantity INT NOT NULL,
+    note NVARCHAR(100),
+    createdAt DATETIME DEFAULT GETDATE()
+);
+
+ALTER TABLE WarehouseLog
+ADD CONSTRAINT FK_WarehouseLog_Ingredient
+FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
+
+ALTER TABLE WarehouseLog
+ADD CONSTRAINT FK_WarehouseLog_History
+FOREIGN KEY (historyId) REFERENCES IngredientBatchHistory(historyId);
+
+ALTER TABLE WarehouseLog ADD CHECK (quantity >= 0);
+
+CREATE TABLE WarehouseExport
+(
+    exportId CHAR(7) PRIMARY KEY,
+    ingredientId CHAR(7) NOT NULL,
+    historyId CHAR(7) NOT NULL,  -- ⚠️ QUAN TRỌNG: Track batch nào bị xuất
+    quantityExported INT NOT NULL,
+    exportDate DATETIME DEFAULT GETDATE(),
+    employeeId CHAR(7) NULL,
+    note NVARCHAR(100),
+    
+    CONSTRAINT FK_WE_Ingredient FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId),
+    CONSTRAINT FK_WE_History FOREIGN KEY (historyId) REFERENCES IngredientBatchHistory(historyId),
+    CONSTRAINT FK_WE_Employee FOREIGN KEY (employeeId) REFERENCES Employee(employeeId),
+    CONSTRAINT CHK_WE_Quantity CHECK (quantityExported > 0)
+);
+
+CREATE OR ALTER VIEW vw_IngredientStock_Correct AS
+SELECT 
+    I.ingredientId,
+    I.ingredientName,
+    I.unit,
+    ISNULL(SUM(H.quantity), 0) - ISNULL(SUM(WE.quantityExported), 0) AS totalQuantity,
+    COUNT(DISTINCT H.historyId) AS batchCount
+FROM Ingredient I
+LEFT JOIN IngredientBatchHistory H 
+    ON I.ingredientId = H.ingredientId
+   AND H.isDeleted = 0
+   AND H.expiryDate >= CAST(GETDATE() AS DATE)
+LEFT JOIN WarehouseExport WE
+    ON H.historyId = WE.historyId
+GROUP BY I.ingredientId, I.ingredientName, I.unit;
+
+CREATE OR ALTER PROCEDURE sp_ImportIngredientHistory
+(
+    @historyId CHAR(7),
+    @ingredientId CHAR(7),
+    @quantity INT,
+    @importDate DATE,
+    @expiryDate DATE,
+    @note NVARCHAR(100) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @quantity <= 0
+    BEGIN
+        RAISERROR (N'Số lượng phải > 0', 16, 1);
+        RETURN;
+    END
+
+    IF @expiryDate < @importDate
+    BEGIN
+        RAISERROR (N'Ngày hết hạn không hợp lệ', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        INSERT INTO IngredientBatchHistory
+        (
+            historyId,
+            ingredientId,
+            quantity,
+            importDate,
+            expiryDate
+        )
+        VALUES
+        (
+            @historyId,
+            @ingredientId,
+            @quantity,
+            @importDate,
+            @expiryDate
+        );
+
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        INSERT INTO WarehouseLog
+        (
+            logId,
+            ingredientId,
+            historyId,
+            actionType,
+            quantity,
+            note
+        )
+        VALUES (
+            @LogId,
+            @ingredientId,
+            @historyId,
+            N'IMPORT',
+            @quantity,
+            @note
+        );
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE sp_CheckExpiredHistory
+(
+    @ingredientId CHAR(7)
+)
+AS
+BEGIN
+    IF EXISTS
+    (
+        SELECT 1
+        FROM IngredientBatchHistory
+        WHERE ingredientId = @ingredientId
+          AND expiryDate < CAST(GETDATE() AS DATE)
+          AND isDeleted = 0
+    )
+    BEGIN
+        RAISERROR (N'Tồn tại batch hết hạn, cần xử lý trước khi xuất kho', 16, 1);
+    END
+END;
+GO
+
+CREATE OR ALTER PROCEDURE sp_ExportIngredient_FEFO
+    @ingredientId CHAR(7),
+    @exportQuantity INT,
+    @employeeId CHAR(7),
+    @note NVARCHAR(100) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- 1. Kiểm tra batch hết hạn
+    IF EXISTS (
+        SELECT 1 FROM IngredientBatchHistory
+        WHERE ingredientId = @ingredientId 
+          AND expiryDate < CAST(GETDATE() AS DATE)
+          AND isDeleted = 0
+    )
+    BEGIN
+        RAISERROR(N'Tồn tại batch hết hạn, phải xử lý trước', 16, 1);
+        RETURN;
+    END
+
+    -- 2. Kiểm tra tồn kho
+    DECLARE @totalStock INT;
+    SELECT @totalStock = ISNULL(SUM(quantity), 0)
+    FROM IngredientBatchHistory
+    WHERE ingredientId = @ingredientId 
+      AND expiryDate >= CAST(GETDATE() AS DATE)
+      AND isDeleted = 0;
+
+    IF @exportQuantity > @totalStock
+    BEGIN
+        RAISERROR(N'Không đủ hàng trong kho', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        DECLARE @remaining INT = @exportQuantity;
+        DECLARE @batchId CHAR(7);
+        DECLARE @batchQty INT;
+        DECLARE @exportId CHAR(7);
+
+        -- 3. Duyệt các batch theo FEFO (gần hết hạn nhất trước)
+        DECLARE batch_cursor CURSOR FOR
+        SELECT historyId, quantity
+        FROM IngredientBatchHistory
+        WHERE ingredientId = @ingredientId
+          AND expiryDate >= CAST(GETDATE() AS DATE)
+          AND isDeleted = 0
+        ORDER BY expiryDate ASC, importDate ASC;
+
+        OPEN batch_cursor;
+        FETCH NEXT FROM batch_cursor INTO @batchId, @batchQty;
+
+        WHILE @@FETCH_STATUS = 0 AND @remaining > 0
+        BEGIN
+            DECLARE @toExport INT = CASE 
+                WHEN @batchQty >= @remaining THEN @remaining 
+                ELSE @batchQty 
+            END;
+
+            -- Tạo exportId mới cho mỗi batch
+            EXEC sp_GenerateId 
+                @prefix = 'WE',
+                @tableName = 'WarehouseExport',
+                @idColumn = 'exportId',
+                @idLength = 7,
+                @newId = @exportId OUTPUT;
+
+            -- Ghi lại batch nào bị xuất
+            INSERT INTO WarehouseExport (
+                exportId, ingredientId, historyId, quantityExported, 
+                exportDate, employeeId, note
+            )
+            VALUES (
+                @exportId, @ingredientId, @batchId, @toExport,
+                GETDATE(), 'ADMIN', @note
+            );
+
+            -- Trừ số lượng batch
+            UPDATE IngredientBatchHistory
+            SET quantity = quantity - @toExport
+            WHERE historyId = @batchId;
+
+            -- Nếu batch hết hàng → soft delete
+            IF (SELECT quantity FROM IngredientBatchHistory WHERE historyId = @batchId) = 0
+            BEGIN
+                UPDATE IngredientBatchHistory
+                SET isDeleted = 1
+                WHERE historyId = @batchId;
+            END
+
+            SET @remaining = @remaining - @toExport;
+            FETCH NEXT FROM batch_cursor INTO @batchId, @batchQty;
+        END
+
+        CLOSE batch_cursor;
+        DEALLOCATE batch_cursor;
+
+        -- Ghi log tổng
+
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        INSERT INTO WarehouseLog (
+            logId, ingredientId, actionType, quantity, note
+        )
+        VALUES (
+            @LogId, @ingredientId, N'EXPORT', @exportQuantity, @note
+        );
+
+        COMMIT;
+        SELECT 1 AS Success, N'Xuất kho thành công' AS Message;
+    END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0
+        ROLLBACK;
+
+    IF CURSOR_STATUS('local', 'batch_cursor') >= 0
+    BEGIN
+        CLOSE batch_cursor;
+        DEALLOCATE batch_cursor;
+    END
+
+    DECLARE @ErrMsg NVARCHAR(4000),
+            @ErrSeverity INT,
+            @ErrState INT;
+
+    SELECT 
+        @ErrMsg = ERROR_MESSAGE(),
+        @ErrSeverity = ERROR_SEVERITY(),
+        @ErrState = ERROR_STATE();
+
+    RAISERROR(@ErrMsg, @ErrSeverity, @ErrState);
+END CATCH
+
+END;
+
+CREATE OR ALTER PROCEDURE sp_DeleteExpiredHistory
+(
+    @ingredientId CHAR(7)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        UPDATE IngredientBatchHistory
+        SET isDeleted = 1
+        WHERE ingredientId = @ingredientId
+          AND expiryDate < CAST(GETDATE() AS DATE)
+          AND isDeleted = 0;
+        
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        INSERT INTO WarehouseLog
+        (
+            logId,
+            ingredientId,
+            actionType,
+            quantity,
+            note
+        )
+        VALUES
+        (
+            @LogId,
+            @ingredientId,
+            N'DELETE',
+            0,
+            N'Xóa batch hết hạn'
+        );
+
+        COMMIT;
+
+        -- ✅ TRẢ KẾT QUẢ
+        SELECT
+            historyId,
+            quantity,
+            importDate,
+            expiryDate,
+            CASE
+                WHEN expiryDate < CAST(GETDATE() AS DATE) THEN N'Hết hạn'
+                ELSE N'Còn hạn'
+            END AS status
+        FROM IngredientBatchHistory
+        WHERE ingredientId = @ingredientId
+          AND isDeleted = 0
+        ORDER BY importDate;
+
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE PROCEDURE sp_UpdateIngredientBatch
+    @historyId CHAR(7),
+    @addQuantity INT,
+    @newExpiryDate DATE,
+    @note NVARCHAR(100) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM IngredientBatchHistory WHERE historyId = @historyId)
+    BEGIN
+        RAISERROR(N'Batch không tồn tại', 16, 1);
+        RETURN;
+    END
+
+    IF @addQuantity <= 0
+    BEGIN
+        RAISERROR(N'Số lượng thêm phải > 0', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        DECLARE @ingredientId CHAR(7);
+        SELECT @ingredientId = ingredientId FROM IngredientBatchHistory WHERE historyId = @historyId;
+
+        -- Cập nhật batch
+        UPDATE IngredientBatchHistory
+        SET quantity = quantity + @addQuantity,
+            expiryDate = @newExpiryDate
+        WHERE historyId = @historyId;
+
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        -- Ghi log
+
+        INSERT INTO WarehouseLog (
+            logId, ingredientId, historyId, actionType, quantity, note
+        )
+        VALUES (
+            @LogId, @ingredientId, @historyId, N'UPDATE', @addQuantity, @note
+        );
+
+        COMMIT;
+        SELECT 1 AS Success, N'Cập nhật batch thành công' AS Message;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+
+CREATE OR ALTER PROCEDURE sp_DeleteIngredientBatch
+(
+    @historyId CHAR(7),
+    @note NVARCHAR(100) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- 1. Kiểm tra batch tồn tại & chưa bị xóa
+    IF NOT EXISTS (
+        SELECT 1 FROM IngredientBatchHistory
+        WHERE historyId = @historyId AND isDeleted = 0
+    )
+    BEGIN
+        RAISERROR(N'Batch không tồn tại hoặc đã bị xóa', 16, 1);
+        RETURN;
+    END
+
+    -- 2. Không cho xóa batch đã từng xuất kho
+    IF EXISTS (
+        SELECT 1 FROM WarehouseExport
+        WHERE historyId = @historyId
+    )
+    BEGIN
+        RAISERROR(N'Không thể xóa batch đã từng xuất kho', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        DECLARE @ingredientId CHAR(7);
+        DECLARE @qty INT;
+
+        SELECT 
+            @ingredientId = ingredientId,
+            @qty = quantity
+        FROM IngredientBatchHistory
+        WHERE historyId = @historyId;
+
+        -- 3. Soft delete batch
+        UPDATE IngredientBatchHistory
+        SET isDeleted = 1
+        WHERE historyId = @historyId;
+
+        -- 4. Ghi log
+
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        INSERT INTO WarehouseLog
+        (
+            logId,
+            ingredientId,
+            historyId,
+            actionType,
+            quantity,
+            note
+        )
+        VALUES
+        (
+            @LogId,
+            @ingredientId,
+            @historyId,
+            N'DELETE',
+            @qty,
+            @note
+        );
+
+        COMMIT;
+        SELECT 1 AS Success, N'Xóa batch thành công' AS Message;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+INSERT INTO Employee (employeeId, fullname, dateOfBirth, position)
+VALUES ('ADMIN', 'Ho Nhat Thanh', '8/11/2003', 'admin');
+

@@ -8,13 +8,12 @@
              Background="#F5F5F5">
 
     <UserControl.Resources>
-        <!-- Nút tag chung -->
+        <!-- Tag button -->
         <Style x:Key="TagButton" TargetType="Button">
             <Setter Property="Padding" Value="12,8"/>
             <Setter Property="Margin" Value="6,0"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="#666"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Height" Value="40"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -22,27 +21,14 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border CornerRadius="20"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12,0">
-                                <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            </StackPanel>
+                        <Border CornerRadius="20" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <!-- Nút tag đang chọn -->
-        <Style x:Key="TagButtonSelected" TargetType="Button" BasedOn="{StaticResource TagButton}">
-            <Setter Property="Background" Value="#5B7FFF"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-        </Style>
-
-        <!-- Style cho nút Nhập kho -->
         <Style x:Key="AddButton" TargetType="Button">
             <Setter Property="Background" Value="#5B7FFF"/>
             <Setter Property="Foreground" Value="White"/>
@@ -55,11 +41,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border CornerRadius="20"
-                                Background="{TemplateBinding Background}">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16,0">
-                                <TextBlock Text="+" FontSize="18" FontWeight="Bold" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <ContentPresenter VerticalAlignment="Center"/>
+                        <Border CornerRadius="20" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="+" FontSize="18" FontWeight="Bold" Margin="0,0,6,0"/>
+                                <ContentPresenter/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>
@@ -67,23 +52,24 @@
             </Setter>
         </Style>
 
-        <!-- Template cho container card hover -->
+        <!-- Card with hover effect -->
         <Style x:Key="CardStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="16"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="Padding" Value="20"/>
             <Setter Property="Margin" Value="12"/>
             <Setter Property="Width" Value="300"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect Color="#000000" BlurRadius="10" Opacity="0.08" ShadowDepth="2"/>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.1"/>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Effect">
                         <Setter.Value>
-                            <DropShadowEffect Color="#000000" BlurRadius="16" Opacity="0.15" ShadowDepth="4"/>
+                            <DropShadowEffect BlurRadius="15" Opacity="0.2" Color="#5B7FFF"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>
@@ -91,196 +77,234 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Margin="0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- HEADER / NAV -->
-        <Grid Grid.Row="0" Background="White" Height="80">
+        <!-- ================= HEADER ================= -->
+        <Grid Grid.Row="0" Height="80" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Top navigation và title -->
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="30,0,0,0">
-                <!-- Logo text -->
-                <TextBlock Text="WMS" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Margin="0,0,40,0"/>
+            <TextBlock Grid.Column="0"
+                       Text="Warehouse Management"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"
+                       Margin="30,0"/>
 
-                <!-- Top nav links -->
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <StackPanel Margin="20,0" VerticalAlignment="Center">
-                        <TextBlock Text="Dụng cụ bếp" Foreground="#888" FontSize="14" HorizontalAlignment="Center"/>
-                    </StackPanel>
-
-                    <StackPanel Margin="20,0" VerticalAlignment="Center">
-                        <TextBlock Text="Nguyên liệu" Foreground="#5B7FFF" FontWeight="SemiBold" FontSize="14" HorizontalAlignment="Center"/>
-                        <Border Height="3" Background="#5B7FFF" CornerRadius="2" Margin="0,4,0,0"/>
-                    </StackPanel>
-
-                    <StackPanel Margin="20,0" VerticalAlignment="Center">
-                        <TextBlock Text="Lịch sử xuất/nhập kho" Foreground="#888" FontSize="14" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </StackPanel>
-            </StackPanel>
-
-            <!-- User info -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,30,0">
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,12,0">
-                    <TextBlock Text="Tên admin/user" FontWeight="SemiBold" HorizontalAlignment="Right" FontSize="14"/>
-                    <TextBlock Text="Mã NV/ADMIN" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
-                </StackPanel>
-            </StackPanel>
+            <!-- BUTTON XEM LOG -->
+            <Button Grid.Column="1"
+                    Content="📋 Xem Lịch sử"
+                    Width="140"
+                    Height="40"
+                    Background="#34495E"
+                    Foreground="White"
+                    BorderThickness="0"
+                    FontWeight="SemiBold"
+                    Margin="0,0,30,0"
+                    Cursor="Hand"
+                    Command="{Binding OpenWarehouseLogCommand}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="20" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </Grid>
 
-        <!-- MAIN CONTENT -->
-        <Grid Grid.Row="1" Margin="20,20,20,20">
+        <!-- ================= CONTENT ================= -->
+        <Grid Grid.Row="1" Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- FILTER + SEARCH ROW -->
-            <DockPanel Grid.Row="0" LastChildFill="False" Margin="10,10,10,20">
-                <!-- Button Nhập kho - bên phải cùng -->
-                <Button Content="Nhập kho" 
-                        Style="{StaticResource AddButton}"
-                        DockPanel.Dock="Right"
-                        Margin="0,0,0,0"/>
+            <!-- ===== FILTER + ACTIONS ===== -->
+            <DockPanel Grid.Row="0" Margin="10,10,10,20">
 
-                <!-- Tag buttons bên trái -->
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
-                    <Button Style="{StaticResource TagButtonSelected}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Ellipse Width="16" Height="16" Fill="White" Margin="0,0,8,0"/>
-                            <TextBlock Text="Tất cả" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                <!-- RIGHT ACTIONS -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <Button Content="Thêm nguyên liệu"
+                            Style="{StaticResource AddButton}"
+                            Padding="18,8"
+                            MinWidth="150"
+                            Margin="0,0,12,0"
+                            Command="{Binding OpenCreateIngredientCommand}"/>
 
-                    <Button Style="{StaticResource TagButton}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
-                            <TextBlock Text="Thịt" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                    <Button Content="Nhập kho"
+                            Style="{StaticResource AddButton}"
+                            Padding="18,8"
+                            MinWidth="120"
+                            Command="{Binding OpenImportCommand}"/>
+                </StackPanel>
 
-                    <Button Style="{StaticResource TagButton}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
-                            <TextBlock Text="Hải sản" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                <!-- LEFT FILTERS -->
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Content="Tất cả"
+                                 GroupName="Filter"
+                                 IsChecked="True"
+                                 Checked="FilterButton_Checked"
+                                 Tag=""
+                                 Margin="6,0"
+                                 VerticalAlignment="Center"/>
 
-                    <Button Style="{StaticResource TagButton}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
-                            <TextBlock Text="Rau củ" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                    <RadioButton Content="Meat"
+                                 GroupName="Filter"
+                                 Checked="FilterButton_Checked"
+                                 Tag="Meat"
+                                 Margin="6,0"
+                                 VerticalAlignment="Center"/>
 
-                    <Button Style="{StaticResource TagButton}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
-                            <TextBlock Text="Gia vị" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                    <RadioButton Content="Seafood"
+                                 GroupName="Filter"
+                                 Checked="FilterButton_Checked"
+                                 Tag="Seafood"
+                                 Margin="6,0"
+                                 VerticalAlignment="Center"/>
 
-                    <Button Style="{StaticResource TagButton}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Ellipse Width="16" Height="16" Fill="#DDD" Margin="0,0,8,0"/>
-                            <TextBlock Text="Pha chế" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                    <RadioButton Content="Vegetable"
+                                 GroupName="Filter"
+                                 Checked="FilterButton_Checked"
+                                 Tag="Vegetable"
+                                 Margin="6,0"
+                                 VerticalAlignment="Center"/>
 
-                    <!-- Search icon button -->
-                    <Button Style="{StaticResource TagButton}" Width="40" Padding="0" Margin="12,0,0,0">
-                        <Canvas Width="16" Height="16">
-                            <Ellipse Canvas.Left="0" Canvas.Top="0" Width="12" Height="12" Stroke="#666" StrokeThickness="2"/>
-                            <Line X1="10" Y1="10" X2="15" Y2="15" Stroke="#666" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                        </Canvas>
-                    </Button>
+                    <RadioButton Content="Spice"
+                                 GroupName="Filter"
+                                 Checked="FilterButton_Checked"
+                                 Tag="Spice"
+                                 Margin="6,0"
+                                 VerticalAlignment="Center"/>
+
+                    <RadioButton Content="Others"
+                                 GroupName="Filter"
+                                 Checked="FilterButton_Checked"
+                                 Tag="Others"
+                                 Margin="6,0"
+                                 VerticalAlignment="Center"/>
                 </StackPanel>
             </DockPanel>
 
-            <!-- ITEMS CARDS -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{Binding ToolList}">
+            <!-- ===== INGREDIENT LIST ===== -->
+            <ScrollViewer Grid.Row="1">
+                <ItemsControl ItemsSource="{Binding Ingredients}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal"/>
+                            <WrapPanel/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Style="{StaticResource CardStyle}">
+                            <!-- CLICK VÀO CARD = MỞ BATCH DETAIL -->
+                            <Border Style="{StaticResource CardStyle}"
+                                    MouseLeftButtonUp="IngredientCard_Click"
+                                    Tag="{Binding IngredientId, Mode=OneWay}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
 
-                                    <!-- Avatar -->
-                                    <Ellipse Width="64" Height="64" Fill="#E5D5D5" HorizontalAlignment="Left"/>
+                                    <!-- ✅ IMAGE - XÓA CONVERTER, dùng code-behind -->
+                                    <Border x:Name="ImageBorder"
+                                            Grid.Row="0"
+                                            Width="260"
+                                            Height="160"
+                                            CornerRadius="12"
+                                            Background="#F0F0F0"
+                                            Margin="0,0,0,12"
+                                            Visibility="Collapsed">
+                                        <Image Source="{Binding ImageUrl}"
+                                               Stretch="UniformToFill"/>
+                                    </Border>
 
-                                    <!-- Card content -->
-                                    <StackPanel Grid.Row="1" Margin="0,16,0,0">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                            <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="SemiBold"/>
-                                            <TextBlock Text=" (KG)" Foreground="#999" Margin="4,4,0,0" VerticalAlignment="Top" FontSize="13"/>
+                                    <!-- INFO -->
+                                    <StackPanel Grid.Row="1">
+                                        <!-- NAME -->
+                                        <TextBlock Text="{Binding IngredientName}"
+                                                   FontSize="20"
+                                                   FontWeight="SemiBold"/>
+
+                                        <!-- FILTER -->
+                                        <Border Background="#ECF0F1"
+                                                CornerRadius="8"
+                                                Padding="8,4"
+                                                HorizontalAlignment="Left"
+                                                Margin="0,8,0,0">
+                                            <TextBlock Text="{Binding Filter}"
+                                                       FontSize="11"
+                                                       Foreground="#7F8C8D"/>
+                                        </Border>
+
+                                        <!-- UNIT -->
+                                        <TextBlock Text="{Binding Unit, StringFormat=Đơn vị: {0}}"
+                                                   Foreground="#888"
+                                                   Margin="0,8,0,0"/>
+
+                                        <!-- QUANTITY -->
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <TextBlock Text="Tồn kho: " Foreground="#666"/>
+                                            <TextBlock Text="{Binding TotalQuantity, Mode=OneWay}"
+                                                          FontWeight="Bold"
+                                                          Foreground="#27AE60"/>
+                                            <TextBlock Text="{Binding Unit}" Margin="4,0,0,0"/>
                                         </StackPanel>
 
-                                        <TextBlock Text="{Binding Code}" Foreground="#333" FontWeight="SemiBold" Margin="0,8,0,0" FontSize="14"/>
-
-                                        <TextBlock Text="Ngày nhập: DD/MM/YYYY" Foreground="#999" Margin="0,12,0,4" FontSize="13"/>
-                                        <TextBlock Text="Hạn sử dụng: DD/MM/YYYY" Foreground="#999" Margin="0,0,0,16" FontSize="13"/>
-
-                                        <!-- Status pill -->
-                                        <Border x:Name="StatusPill" CornerRadius="20" Padding="14,8" HorizontalAlignment="Left" Background="#5B7FFF">
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <Ellipse x:Name="StatusIcon" Width="16" Height="16" Fill="White" Margin="0,0,8,0">
-                                                    <Ellipse.OpacityMask>
-                                                        <VisualBrush>
-                                                            <VisualBrush.Visual>
-                                                                <Canvas Width="16" Height="16">
-                                                                    <Path Data="M6,11 L3,8 L4.5,6.5 L6,8 L11.5,2.5 L13,4 Z" Fill="Black" StrokeThickness="0"/>
-                                                                </Canvas>
-                                                            </VisualBrush.Visual>
-                                                        </VisualBrush>
-                                                    </Ellipse.OpacityMask>
-                                                </Ellipse>
-                                                <TextBlock x:Name="StatusText" Text="{Binding StatusLabel}" Foreground="White" FontWeight="SemiBold" FontSize="13"/>
-                                            </StackPanel>
+                                        <!-- ✅ WARNINGS - XÓA CONVERTER -->
+                                        <Border x:Name="ExpiredWarning"
+                                                Background="#FFF3CD"
+                                                CornerRadius="8"
+                                                Padding="8,6"
+                                                Margin="0,12,0,0"
+                                                Visibility="Collapsed">
+                                            <TextBlock Text="⚠️ Có batch hết hạn"
+                                                       FontSize="12"
+                                                       Foreground="#856404"
+                                                       FontWeight="SemiBold"/>
                                         </Border>
+
+                                        <Border x:Name="NearExpiryWarning"
+                                                Background="#E3F2FD"
+                                                CornerRadius="8"
+                                                Padding="8,6"
+                                                Margin="0,8,0,0"
+                                                Visibility="Collapsed">
+                                            <TextBlock Text="🕐 Sắp hết hạn"
+                                                       FontSize="12"
+                                                       Foreground="#1565C0"
+                                                       FontWeight="SemiBold"/>
+                                        </Border>
+
+                                        <!-- BATCH COUNT -->
+                                        <TextBlock Margin="0,12,0,0"
+                                                   Foreground="#999"
+                                                   FontSize="12">
+                                            <Run Text="Số batch: "/>
+                                            <Run Text="{Binding ActiveBatchCount, Mode=OneWay}"
+                                                        FontWeight="SemiBold"/>
+                                        </TextBlock>
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!-- Triggers -->
+                            <!-- ✅ TRIGGER: Show/Hide dựa vào data -->
                             <DataTemplate.Triggers>
-                                <!-- Available (Còn) -->
-                                <DataTrigger Binding="{Binding Status}" Value="Available">
-                                    <Setter TargetName="StatusPill" Property="Background" Value="#5B7FFF"/>
-                                    <Setter TargetName="StatusText" Property="Foreground" Value="White"/>
+                                <DataTrigger Binding="{Binding ImageUrl}" Value="{x:Null}">
+                                    <Setter TargetName="ImageBorder" Property="Visibility" Value="Collapsed"/>
                                 </DataTrigger>
-
-                                <!-- Empty (Đã hết) -->
-                                <DataTrigger Binding="{Binding Status}" Value="Empty">
-                                    <Setter TargetName="StatusPill" Property="Background" Value="#E8E8E8"/>
-                                    <Setter TargetName="StatusText" Property="Foreground" Value="#999"/>
-                                    <Setter TargetName="StatusIcon" Property="Fill" Value="#999"/>
+                                <DataTrigger Binding="{Binding HasExpiredBatch}" Value="True">
+                                    <Setter TargetName="ExpiredWarning" Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
-
-                                <!-- Expired (Hết HSD) -->
-                                <DataTrigger Binding="{Binding Status}" Value="Expired">
-                                    <Setter TargetName="StatusPill" Property="Background" Value="#FF4444"/>
-                                    <Setter TargetName="StatusText" Property="Foreground" Value="White"/>
-                                    <Setter TargetName="StatusIcon" Property="Fill" Value="White"/>
+                                <DataTrigger Binding="{Binding HasNearExpiryBatch}" Value="True">
+                                    <Setter TargetName="NearExpiryWarning" Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </DataTemplate.Triggers>
                         </DataTemplate>

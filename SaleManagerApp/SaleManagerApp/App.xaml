@@ -7,37 +7,30 @@
              xmlns:local="clr-namespace:SaleManagerApp"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        
-       
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <conv:FilterConverter x:Key="FilterConverter"/>
 
         <DataTemplate DataType="{x:Type vm:LoginViewModel}">
             <v:LoginScreen />
         </DataTemplate>
-
         <DataTemplate DataType="{x:Type vm:HomePageViewModel}">
             <v:HomePage />
         </DataTemplate>
-
         <DataTemplate DataType="{x:Type vm:MainLayoutViewModel}">
             <v:MainLayout />
         </DataTemplate>
-
         <DataTemplate DataType="{x:Type vm:MenuPageViewModel}">
             <v:MenuPage />
         </DataTemplate>
-
         <DataTemplate DataType="{x:Type vm:UserPageViewModel}">
-                <v:UserPage />
+            <v:UserPage />
         </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vm:WareHousePageViewModel}">
+        <DataTemplate DataType="{x:Type vm:WarehousePageViewModel}">
             <v:WarehousePage />
         </DataTemplate>
-
         <DataTemplate DataType="{x:Type vm:SideBarViewModel}">
             <v:SideBar />
         </DataTemplate>
-        
-
     </Application.Resources>
 </Application>

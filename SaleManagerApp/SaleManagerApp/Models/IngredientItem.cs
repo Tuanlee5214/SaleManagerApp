@@ -1,33 +1,68 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace SaleManagerApp.Models
 {
-    public class Ingredient : INotifyPropertyChanged
+    public class IngredientItem : INotifyPropertyChanged
     {
-        public string ingredientId { get; set; }
-        public string ingredientName { get; set; }
+        // Master Data
+        public string IngredientId { get; set; }
+        public string IngredientName { get; set; }
+        public string Unit { get; set; }
+        public string Filter { get; set; }
+        public int MinQuantity { get; set; }
+        public string ImageUrl { get; set; }
+        public int MaxStorageDays { get; set; }
 
-        public int quantity { get; set; }      // tồn kho hiện tại
-        public int minQuantity { get; set; }   // mức cảnh báo
+        // Batch History
+        public ObservableCollection<IngredientBatchHistory> Histories { get; }
+            = new ObservableCollection<IngredientBatchHistory>();
 
-        public string unit { get; set; }       // kg, g, chai...
+        // Computed Properties
+        public int TotalQuantity =>
+            Histories
+                .Where(h => !h.IsDeleted && !h.IsExpired)
+                .Sum(h => h.RemainingQuantity);
 
-        // Hiển thị trạng thái kho
-        public bool IsLowStock => quantity <= minQuantity;
+        public bool IsLowStock => TotalQuantity <= MinQuantity;
 
+        public bool HasExpiredBatch =>
+            Histories.Any(h => h.IsExpired && !h.IsDeleted);
+
+        public bool HasNearExpiryBatch =>
+            Histories.Any(h => !h.IsDeleted && h.IsNearExpiry);
+
+        public int ActiveBatchCount =>
+            Histories.Count(h => !h.IsDeleted && !h.IsExpired && h.RemainingQuantity > 0);
+
+        public IngredientBatchHistory NearestExpiryBatch =>
+            Histories
+                .Where(h => !h.IsDeleted && !h.IsExpired && h.RemainingQuantity > 0)
+                .OrderBy(h => h.ExpiryDate)
+                .FirstOrDefault();
+
+        public DateTime? EarliestExpiryDate => NearestExpiryBatch?.ExpiryDate;
+
+        // INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(
-            [CallerMemberName] string name = null)
+
+        public void Refresh()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            OnPropertyChanged(nameof(TotalQuantity));
+            OnPropertyChanged(nameof(IsLowStock));
+            OnPropertyChanged(nameof(HasExpiredBatch));
+            OnPropertyChanged(nameof(HasNearExpiryBatch));
+            OnPropertyChanged(nameof(ActiveBatchCount));
+            OnPropertyChanged(nameof(NearestExpiryBatch));
+            OnPropertyChanged(nameof(EarliestExpiryDate));
+        }
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
-
