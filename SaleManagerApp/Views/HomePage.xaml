@@ -1,170 +1,117 @@
 ﻿<UserControl x:Class="SaleManagerApp.Views.HomePage"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:HomePageViewModel}"
-             mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="1200"
-             Background="#E5E5E5">
-    <Grid Margin="0, 20, 20, 20">
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                 xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+                 xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels"  
+                mc:Ignorable="d" 
+                 d:DesignHeight="800" d:DesignWidth="1200"
+                 Background="#F0F2F5">
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Header -->
             <RowDefinition Height="Auto"/>
-            <!-- Combo Banner -->
             <RowDefinition Height="Auto"/>
-            <!-- Combo Items -->
             <RowDefinition Height="*"/>
-            <!-- Main content (Charts + Notifications) -->
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <DockPanel Grid.Row="0" Grid.Column="1" Background="White" LastChildFill="True" Margin="0,-20,-18,12" Grid.ColumnSpan="2">
-            <TextBlock Text="Dashboard" FontSize="22" FontWeight="Bold" DockPanel.Dock="Left" Width="200" Margin="30, 16, 16, 16" RenderTransformOrigin="0.872,0.545"/>
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Margin="16">
-                <TextBlock Text="Tên admin/user" FontWeight="Bold" HorizontalAlignment="Right"/>
-                <TextBlock Text="Mã NV/ADMIN" FontSize="12" HorizontalAlignment="Right"/>
-            </StackPanel>
-        </DockPanel>
-
-        <!-- Combo Banner -->
-        <Border Grid.Row="1" Background="#4D7AA4" CornerRadius="10" Padding="20" Margin="0,0,0,20">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <!--<Image Source="/Assets/Images/discount-icon.png" Width="40" Height="40" Margin="0,0,15,0" VerticalAlignment="Center"/>-->
-                <TextBlock Text="{Binding BannerText}" 
-                           FontSize="28" 
-                           FontWeight="Bold" 
-                           Foreground="White" 
-                           VerticalAlignment="Center"/>
-            </StackPanel>
+        <Border Grid.Row="0" Background="White" CornerRadius="10" Margin="-12,-16,-18,15" Padding="15">
+            <DockPanel LastChildFill="True">
+                <TextBlock Text="Dashboard" FontSize="20" FontWeight="Bold" Foreground="#2C3E50"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!--<TextBlock Text="Administrator" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="SemiBold"/>-->
+                    <!--<Ellipse Width="35" Height="35" Fill="#4D7AA4"/>-->
+                </StackPanel>
+            </DockPanel>
         </Border>
 
-        <!-- Combo Items Section -->
-        <Grid Grid.Row="2" Margin="0,0,0,20">
+        <Border Grid.Row="1" Background="#4D7AA4" CornerRadius="10" Padding="15" Margin="0,0,0,15">
+            <TextBlock Text="Danh sách combo hấp dẫn" FontSize="24" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+        </Border>
+
+        <Grid Grid.Row="2" Margin="0,0,0,15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Combo Item 1 -->
-            <Border Grid.Column="0" Background="White" CornerRadius="15" Margin="5" Padding="15">
+            <Border Grid.Column="0" Background="White" CornerRadius="12" Margin="5" Padding="10">
                 <StackPanel>
-                    <Image Source="{Binding Combo1ImageUrl, FallbackValue=/Assets/Images/default-combo.png, TargetNullValue=/Assets/Images/default-combo.png}" 
-                           Stretch="UniformToFill" 
-                           Height="150" 
-                           Width="150"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,10"/>
-                    <TextBlock Text="{Binding Combo1Name, FallbackValue='Combo đang cập nhật'}" 
-                               FontSize="16" 
-                               FontWeight="SemiBold" 
-                               TextAlignment="Center" 
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,5"/>
-                    <TextBlock Text="{Binding Combo1Price, FallbackValue='0 VNĐ'}" 
-                               FontSize="14" 
-                               Foreground="#4D7AA4" 
-                               TextAlignment="Center"
-                               FontWeight="Bold"/>
+                    <Image Source="/Assets/Images/anh1.png"
+       Height="120" Width="200"
+       Stretch="Uniform"/>
+                    <TextBlock Text="Bữa trưa vui vẻ" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5"/>
+                    <TextBlock Text="120.000 vnd" Foreground="#4D7AA4" FontWeight="Bold" HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>
-
-            <!-- Combo Item 2 -->
-            <Border Grid.Column="1" Background="White" CornerRadius="15" Margin="5" Padding="15">
+            <Border Grid.Column="1" Background="White" CornerRadius="12" Margin="5" Padding="10">
                 <StackPanel>
-                    <Image Source="{Binding Combo2ImageUrl, FallbackValue=/Assets/Images/default-combo.png, TargetNullValue=/Assets/Images/default-combo.png}" 
-                           Stretch="UniformToFill" 
-                           Height="150" 
-                           Width="150"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,10"/>
-                    <TextBlock Text="{Binding Combo2Name, FallbackValue='Combo đang cập nhật'}" 
-                               FontSize="16" 
-                               FontWeight="SemiBold" 
-                               TextAlignment="Center" 
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,5"/>
-                    <TextBlock Text="{Binding Combo2Price, FallbackValue='0 VNĐ'}" 
-                               FontSize="14" 
-                               Foreground="#4D7AA4" 
-                               TextAlignment="Center"
-                               FontWeight="Bold"/>
+                    <Image Source="/Assets/Images/anh2.png"
+       Height="120"
+       Stretch="Uniform"/>
+                    <TextBlock Text="Đồ chay thuần khiết" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5"/>
+                    <TextBlock Text="90.000 vnd" Foreground="#4D7AA4" FontWeight="Bold" HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>
-
-            <!-- Combo Item 3 -->
-            <Border Grid.Column="2" Background="White" CornerRadius="15" Margin="5" Padding="15">
+            <Border Grid.Column="2" Background="White" CornerRadius="12" Margin="5" Padding="10">
                 <StackPanel>
-                    <Image Source="{Binding Combo3ImageUrl, FallbackValue=/Assets/Images/default-combo.png, TargetNullValue=/Assets/Images/default-combo.png}" 
-                           Stretch="UniformToFill" 
-                           Height="150" 
-                           Width="150"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,10"/>
-                    <TextBlock Text="{Binding Combo3Name, FallbackValue='Combo đang cập nhật'}" 
-                               FontSize="16" 
-                               FontWeight="SemiBold" 
-                               TextAlignment="Center" 
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,5"/>
-                    <TextBlock Text="{Binding Combo3Price, FallbackValue='0 VNĐ'}" 
-                               FontSize="14" 
-                               Foreground="#4D7AA4" 
-                               TextAlignment="Center"
-                               FontWeight="Bold"/>
+                    <Image Source="/Assets/Images/anh3.png"
+       Height="120"
+       Stretch="Uniform"/>
+                    <TextBlock Text="Nước ngọt tinh khiết" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5"/>
+                    <TextBlock Text="120.000 vnd" Foreground="#4D7AA4" FontWeight="Bold" HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>
         </Grid>
 
-        <!-- Main content (Charts + Notifications) - GIỮ NGUYÊN PHẦN CŨ -->
-        <Grid Grid.Row="3" Margin="0,10,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="300"/>
-                <!-- Charts -->
-                <RowDefinition Height="180"/>
-                <!-- Notifications -->
-            </Grid.RowDefinitions>
-
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <!-- Line Chart -->
-                <ColumnDefinition Width="220"/>
-                <!-- Pie Chart -->
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Line Chart Placeholder -->
-            <Border Grid.Row="0" Grid.Column="0" Background="White" BorderThickness="2" Margin="5">
-                <Image Source="/Assets/Images/BarLineChart.png" Stretch="Uniform"/>
+            <Border Grid.Column="0" Background="White" CornerRadius="15" Margin="5" Padding="15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Doanh Thu Theo Ngày" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                    <lvc:CartesianChart Grid.Row="1" Series="{Binding RevenueSeries}">
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Title="Ngày" Labels="{Binding RevenueLabels}"/>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="VNĐ" LabelFormatter="{Binding YFormatter}"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Grid>
             </Border>
 
-            <!-- Pie Chart Placeholder -->
-            <Border Grid.Row="0" Grid.Column="1" Background="White" BorderThickness="2" Margin="5">
-                <Image Source="/Assets/Images/PieChart (1).png" Stretch="Uniform"/>
+            <Border Grid.Column="1" Background="White" CornerRadius="15" Margin="5" Padding="15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Tỉ Trọng Đồ Ăn" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                    <lvc:PieChart Grid.Row="1" Series="{Binding FoodPieSeries}" LegendLocation="Bottom" InnerRadius="20"/>
+                </Grid>
             </Border>
 
-            <!-- Bottom Pie Chart + Notifications -->
-            <Grid Grid.Row="1" Grid.ColumnSpan="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="350"/>
-                    <!-- Pie chart -->
-                    <ColumnDefinition Width="*"/>
-                    <!-- Notifications -->
-                </Grid.ColumnDefinitions>
-
-                <Border Grid.Column="0" Background="White" BorderThickness="2" Margin="5">
-                    <Image Source="/Assets/Images/PieChart.png" Stretch="Uniform"/>
-                </Border>
-
-                <StackPanel Grid.Column="1" Background="#E5E5E5" Margin="10">
-                    <DockPanel>
-                        <Image Source="/Assets/Images/bell.png" Width="37" Height="24" Margin="1"/>
-                        <TextBlock FontWeight="SemiBold" FontSize="18" Text=" Notifications" Margin="0,-2,0,0"/>
-                    </DockPanel>
-                    <TextBlock FontSize="15" Text="Thông báo: Cập nhập quy định mới của công ty" Foreground="#4D7AA4" Margin="0,5,0,0"/>
-                    <TextBlock Text="Chào mọi người, công ty đã có quy định mới về việc sử dụng bếp và..." TextWrapping="Wrap" Margin="0,5,0,0"/>
-                </StackPanel>
-            </Grid>
+            <Border Grid.Column="2" Background="White" CornerRadius="15" Margin="5" Padding="15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Tỉ Trọng Đồ Uống" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                    <lvc:PieChart Grid.Row="1" Series="{Binding DrinkPieSeries}" LegendLocation="Bottom" InnerRadius="20"/>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>
