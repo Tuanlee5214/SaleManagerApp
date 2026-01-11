@@ -319,7 +319,6 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Data\Repositories\" />
-    <Folder Include="Images\MenuItems\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Utils\Converters\" />
   </ItemGroup>
@@ -360,6 +359,273 @@
     <Resource Include="Assets\Images\bell.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\default-combo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\0080e69b-0835-41c7-845e-a1d6bb0f103e.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\026bf54a-9b62-4ea4-ac73-bd74279c880b.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\03d7b3f3-9a97-484a-a276-5169b8082266.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\049d6fc4-7217-4b83-b2c7-ab4a0be161b7.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\12c5de56-6a55-454f-aaec-dc09fcb1d08d.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\20ba8685-6b87-419f-9bd0-1f6d0fb8b9a0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\2100896b-a462-4966-bba1-e6927f54c17a.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\2a23ee63-aec2-4e6e-80b8-b93d38906af2.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\30ebca9d-a548-4202-bffd-6d6ff3953410.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\319443e6-85e1-49bf-98ec-79e580849034.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\39c932f0-0c69-44d7-b626-6bf755b85ac5.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\3a46fd7f-b702-458f-81a6-14f1c55d481d.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\3ca6ecbb-16c3-40b3-b20a-a650b18afc69.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\3f3e437c-c079-46b1-86d2-944fd609e92b.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\424212e3-8a2c-4ee1-b5a7-86aa83e93b36.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\424649c8-3909-457e-a06e-4dbdd8c2f843.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\43d65322-b6f2-49ea-8ecd-627351e65b41.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\48a7dea4-2002-4d00-8217-75d6495c36a6.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\48ee16af-0a29-476e-95ea-d46692e5db77.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\4d571f7d-5d8f-42b8-adcb-c2bd39232164.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\4dcaf385-a798-49ad-b78b-ba8689b826ba.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\51148d60-fd71-47bc-894c-126fb7c93fb8.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\547dc7ed-a802-44e5-8ac2-e80528b3d14e.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\56fe06d0-0b70-4a8d-b03a-4483b73ed24a.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\583f55b9-4e40-4d17-af04-6e7df4653a33.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\586f8e85-e678-4e37-b26c-5667c581e93d.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\5989e947-f865-45c9-87b6-ee5cb2769d8c.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\6648484d-b777-4f3c-9e88-3ddcdc508ae8.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\696d5661-4a38-4047-b7a3-2d67791902bd.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\6aa77f08-8fae-4dd2-a36a-2606b88b73dd.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\6d37c7d4-3409-4ced-9af5-a0abe044529e.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\73b6f1d1-9e78-404b-9a06-15dfe3b88e40.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\75b2273a-1dcd-464a-ab04-585ddeadd18b.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\7843b246-b5fe-4e18-935b-7fc158455d94.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\786689ee-5137-4260-8a36-31186365b406.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\7b5b1e09-b32f-46ee-bde8-bbf63d53db3e.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\7c260480-76c2-4985-b435-4469de075b76.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\807fc7aa-ee0b-4f64-9bb2-09391030a12f.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\80a23953-370d-4c68-a4ff-36c8cb762b76.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\88eaa93a-03d7-4056-b7a6-69353d0b3b2c.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\8939fd6a-da95-429c-835c-f840e72ff114.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\8afc44c5-6f85-4448-9a0a-59957e454568.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\8bc3c839-7a23-4a13-ad7d-a1618643310c.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\8fffdd26-b6fc-454a-8da2-8e7cf2c5466f.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\928c4c80-43db-4153-83a5-1a4fd7492366.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\96137b35-94f9-4005-805f-0af7cad2f775.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\a3930e9b-8d6f-4f6b-b99d-b1193fe814b0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\a596d237-b6e9-40fa-aa38-7ab7438afd88.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\a8b78ffd-fe9d-47cc-ae26-2d9bcd9d44cf.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\b7cbff0e-d5c1-4f3e-abc6-c6d485df3c7d.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\ba4b31d2-051e-4c5f-bc3d-0620d98cb14a.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\bb301924-c4f7-479f-8f41-ad44fae92679.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\bb455771-3133-480e-917a-6a9b82574b3f.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\c41ac53d-358b-41a2-81f1-81f79c1153a4.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\c4e2d376-496d-4b75-bc6a-d83232bb13d5.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\c62f0440-eaa7-46c9-9e89-c32d5b3f060a.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\c93fa112-aef1-45f7-a9f8-c8d505e11622.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\da39419a-4174-4ec7-9214-b1ea52716088.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\daa62650-f375-404d-82a4-a900aa6e42c2.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\dfa1e363-427f-4d70-84a4-cb35172cef73.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\e005fc3e-2eca-4244-8ef4-85bc08950a62.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\e0b533e9-b1ce-4507-bb23-1b10f9d65db3.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\e0c3c7cb-64fa-4df8-ba46-0c648b9c17ec.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\e18fc2d5-945d-42ef-8778-7fcc0654f7a4.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\e75e69c8-55cf-4b6b-971f-d832eb45ce47.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\ed9144a2-817c-4243-b6f8-9bc89dc079ab.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\ee8c0eda-fcd3-45a2-8bc0-d9c74815c806.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\f5c806a1-835f-43d9-8c67-f929b9cae966.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MenuItems\fdac2115-6d73-4666-b26a-9943b5e56820.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\063d5796-858b-4abb-a2b3-374d6219a3b9.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\27aab03d-4296-4606-af13-3c0cb4b5ee78.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\3f8adde7-20e9-4d3d-a7fc-eaf3651cd36e.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\543df03d-f19a-42c8-be85-253a9be23aee.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\61c77ad6-d1ae-4fea-9d9b-15268f079b74.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\6231807b-fdb8-40ac-8c7e-eb31688240c1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\744e5566-6ec8-4bf9-a0f6-cf4b8a408ac6.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\7e5e7a50-6577-42d7-8067-75c3b81a3323.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\90dfae6e-3307-474b-aa63-35d0ea3ed2c7.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\99bfc830-bc96-4fa0-a8b1-aa2a9a456fdf.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\a0e87cb9-d9e1-4e45-a8d2-fdaa637732cd.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\a5a53ded-0dd6-44c0-89db-c52bc17525f0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\a63d0758-1cab-4f3a-bd0f-59d543755f21.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\b6068a10-157f-4890-816f-c1153a71dfaf.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\d33d9db5-3d6b-4124-baa2-6ec7589d3554.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\d703ce93-1b59-4242-a6da-6f4281dee1d3.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\e5a6a0d8-a17d-4c46-bcd9-cb9f3a9f7366.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\e8a88054-9b89-4910-a766-26fcb4bbe55e.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Staffs\fed25173-2bd0-488d-b586-274a66fce338.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Assets\Images\Search.png" />
     <Resource Include="Assets\Images\default-combo.png" />
     <Content Include="DataBaseScript\SaleManagement1.sql" />
