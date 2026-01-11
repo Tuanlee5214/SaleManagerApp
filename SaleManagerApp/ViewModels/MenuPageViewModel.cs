@@ -293,7 +293,7 @@ namespace SaleManagerApp.ViewModels
 
         /* ===================== SYNC ===================== */
 
-        private void SyncMenuDisplayQuantity()
+        private void SyncMenuDisplayQuantity()  
         {
             foreach (var menu in MenuItems)
             {
