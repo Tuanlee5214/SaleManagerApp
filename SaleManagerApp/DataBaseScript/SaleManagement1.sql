@@ -53,55 +53,6 @@ CREATE TABLE TotalDrink
 	updatedAt datetime
 )
 
-select * from Invoice
-WHERE invoiceStatus = N'Đã thanh toán'
-
-SELECT 
-    mi.menuItemName AS [ItemName],
-    SUM(od.quantity) AS [TotalQuantity],
-    ROUND(CAST(SUM(od.quantity) AS FLOAT) * 100 / 
-        (SELECT SUM(od2.quantity) 
-         FROM OrderDetail od2 
-         JOIN MenuItem mi2 ON od2.menuItemId = mi2.menuItemId 
-         WHERE mi2.[description] = N'Đồ ăn'), 2) AS [Percentage]
-FROM OrderDetail od
-JOIN MenuItem mi ON od.menuItemId = mi.menuItemId
-JOIN [Order] o ON od.orderId = o.orderId
-JOIN Invoice i ON o.orderId = i.orderId
-WHERE mi.[description] = N'Đồ ăn' 
-  AND i.invoiceStatus = N'Đã thanh toán'
-GROUP BY mi.menuItemName
-ORDER BY [TotalQuantity] DESC;
-
-SELECT 
-    mi.menuItemName AS [ItemName],
-    SUM(od.quantity) AS [TotalQuantity],
-    -- Tính % trực tiếp trong query
-    ROUND(CAST(SUM(od.quantity) AS FLOAT) * 100 / 
-        (SELECT SUM(od2.quantity) 
-         FROM OrderDetail od2 
-         JOIN MenuItem mi2 ON od2.menuItemId = mi2.menuItemId 
-         WHERE mi2.[description] = N'Nước uống'), 2) AS [Percentage]
-FROM OrderDetail od
-JOIN MenuItem mi ON od.menuItemId = mi.menuItemId
-JOIN [Order] o ON od.orderId = o.orderId
-JOIN Invoice i ON o.orderId = i.orderId
-WHERE mi.[description] = N'Nước uống' 
-  AND i.invoiceStatus = N'Đã thanh toán'
-GROUP BY mi.menuItemName
-ORDER BY [TotalQuantity] DESC;
-
-SELECT 
-    CAST(createdAt AS DATE) AS [Date], 
-    SUM(totalAmount) AS [DailyRevenue],
-    COUNT(invoiceId) AS [OrderCount]
-FROM Invoice
-WHERE invoiceStatus = N'Đã thanh toán'
-  AND MONTH(createdAt) = 12 
-  AND YEAR(createdAt) = 2025
-GROUP BY CAST(createdAt AS DATE)
-ORDER BY [Date] ASC;
-select * from MenuItem
 CREATE TABLE TotalFood 
 (
 	totalFoodId char(7) primary key,

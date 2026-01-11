@@ -1,0 +1,264 @@
+﻿<Window x:Class="SaleManagerApp.Views.BatchDetailView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        Title="Chi tiết Batch - Nguyên liệu"
+        Width="1000" Height="700"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+
+    <!-- ================= RESOURCES ================= -->
+    <Window.Resources>
+
+        <!-- Bool to Visibility -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        <!-- Button Style -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#5B7FFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="18"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButton"
+               TargetType="Button"
+               BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#95A5A6"/>
+        </Style>
+
+        <Style x:Key="DangerButton"
+               TargetType="Button"
+               BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#E74C3C"/>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- ================= ROOT ================= -->
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ================= HEADER ================= -->
+        <Border Grid.Row="0"
+                Background="White"
+                CornerRadius="16"
+                Padding="24"
+                Margin="0,0,0,16">
+
+            <!-- FIX: Border chỉ có 1 child -->
+            <StackPanel>
+
+                <!-- HEADER INFO -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="{Binding Ingredient.IngredientName}"
+                                   FontSize="24"
+                                   FontWeight="Bold"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="Mã NL: " Foreground="#666"/>
+                            <TextBlock Text="{Binding Ingredient.IngredientId}"
+                                       FontWeight="SemiBold"/>
+
+                            <TextBlock Text=" | Đơn vị: "
+                                       Foreground="#666"
+                                       Margin="12,0,0,0"/>
+                            <TextBlock Text="{Binding Ingredient.Unit}"
+                                       FontWeight="SemiBold"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="Tổng tồn kho: "
+                                       FontSize="16"
+                                       Foreground="#666"/>
+                            <TextBlock Text="{Binding TotalQuantity}"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="#27AE60"/>
+                            <TextBlock Text="{Binding Ingredient.Unit}"
+                                       FontSize="16"
+                                       Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button Grid.Column="1"
+                            Content="✕ Đóng"
+                            Width="100"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding CloseCommand}"/>
+                </Grid>
+
+                <!-- WARNING BANNER -->
+                <Border Background="#FFEBEE"
+                        CornerRadius="8"
+                        Padding="12"
+                        Margin="0,16,0,0"
+                        Visibility="{Binding HasExpiredBatch,
+                                             Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚠️"
+                                   FontSize="18"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Text="CÓ BATCH HẾT HẠN - Phải xử lý trước khi xuất kho!"
+                                   Foreground="#C62828"
+                                   FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </Border>
+
+        <!-- ================= CONTENT ================= -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT: BATCH LIST -->
+            <Border Grid.Column="0"
+                    Background="White"
+                    CornerRadius="16"
+                    Padding="20">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Danh sách Batch"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,12"/>
+
+                    <DataGrid Grid.Row="1"
+                              ItemsSource="{Binding Batches}"
+                              SelectedItem="{Binding SelectedBatch, Mode=TwoWay}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="None"
+                              BorderThickness="0">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Ngày nhập"
+                                                Binding="{Binding ImportDate, Mode=OneWay, StringFormat=dd/MM/yyyy}"
+                                                Width="100"/>
+
+                            <DataGridTextColumn Header="SL Nhập"
+                                                Binding="{Binding Quantity, Mode=OneWay}"
+                                                Width="80"/>
+
+                            <DataGridTextColumn Header="SL Xuất"
+                                                Binding="{Binding QuantityExported, Mode=OneWay}"
+                                                Width="80"/>
+
+                            <DataGridTextColumn Header="SL Còn"
+                                                Binding="{Binding RemainingQuantity, Mode=OneWay}"
+                                                Width="80">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="Foreground" Value="#27AE60"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Header="Hết hạn"
+                                                Binding="{Binding ExpiryDate, Mode=OneWay, StringFormat=dd/MM/yyyy}"
+                                                Width="100"/>
+
+                            <DataGridTemplateColumn Header="Trạng thái" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border CornerRadius="12"
+                                                Padding="8,4"
+                                                Background="{Binding StatusColor}">
+                                            <TextBlock Text="{Binding Status}"
+                                                       Foreground="White"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- RIGHT: ACTIONS -->
+            <StackPanel Grid.Column="2">
+
+                <!-- EXPORT -->
+                <Border Background="White"
+                        CornerRadius="16"
+                        Padding="20"
+                        Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="📤 Xuất kho"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,12"/>
+
+                        <TextBox Text="{Binding ExportQuantity}"
+                                 Height="40"
+                                 Margin="0,0,0,12"/>
+
+                        <Button Content="Xuất kho"
+                                Style="{StaticResource PrimaryButton}"
+                                Command="{Binding ExportCommand}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- DELETE -->
+                <Border Background="White"
+                        CornerRadius="16"
+                        Padding="20">
+                    <Button Content="🗑️ Xóa batch"
+                            Style="{StaticResource DangerButton}"
+                            Command="{Binding DeleteExpiredBatchCommand}"/>
+                </Border>
+
+            </StackPanel>
+        </Grid>
+
+        <!-- ================= FOOTER ================= -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,16,0,0">
+            <Button Content="🔄 Làm mới"
+                    Width="120"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding RefreshCommand}"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

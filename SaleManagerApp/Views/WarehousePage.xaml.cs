@@ -1,28 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using SaleManagerApp.ViewModels;
 
 namespace SaleManagerApp.Views
 {
-    /// <summary>
-    /// Interaction logic for WareHousePage.xaml
-    /// </summary>
-    public partial class WareHousePage : UserControl
+    public partial class WarehousePage : UserControl
     {
-        public WareHousePage()
+        public WarehousePage()
         {
             InitializeComponent();
+            DataContext = new WarehousePageViewModel();
+        }
+
+        private void FilterButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton rb && DataContext is WarehousePageViewModel vm)
+            {
+                string filterValue = rb.Tag?.ToString();
+                vm.SelectedFilter = string.IsNullOrEmpty(filterValue) ? null : filterValue;
+            }
+        }
+
+        private void IngredientCard_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.Tag is string ingredientId)
+            {
+                if (DataContext is WarehousePageViewModel vm)
+                {
+                    var ingredient = vm.Ingredients.FirstOrDefault(i => i.IngredientId == ingredientId);
+                    if (ingredient != null)
+                    {
+                        vm.SelectedIngredient = ingredient;
+                        vm.OpenBatchDetailCommand.Execute(null);
+                    }
+                }
+            }
         }
     }
 }
