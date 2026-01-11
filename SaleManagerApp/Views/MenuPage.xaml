@@ -86,11 +86,11 @@
             HorizontalAlignment="Right"
             Margin="0,0,20,0"
             VerticalAlignment="Center">
-                    <TextBlock Text="Tên admin/user"
+                    <TextBlock Text=""
                FontSize="14"
                FontWeight="SemiBold"
                HorizontalAlignment="Right"/>
-                    <TextBlock Text="Mã NV/ADMIN"
+                    <TextBlock Text=""
                FontSize="12"
                Foreground="#666"
                HorizontalAlignment="Right"

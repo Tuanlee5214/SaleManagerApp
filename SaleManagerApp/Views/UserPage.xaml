@@ -20,11 +20,12 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="897*"/>
-            <ColumnDefinition Width="263*"/>
+            <ColumnDefinition Width="203*"/>
+            <ColumnDefinition Width="60*"/>
         </Grid.ColumnDefinitions>
 
         <!-- HEADER -->
-        <Grid Height="65" Grid.Row="0" Background="White" Margin="-19,-25,-19,35" Grid.ColumnSpan="2">
+        <Grid Height="65" Grid.Row="0" Background="White" Margin="-19,-25,-19,35" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -143,13 +144,13 @@
             </StackPanel>
 
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,30,0" Grid.Column="2">
-                <TextBlock Text="Tên admin/user" FontWeight="Bold" HorizontalAlignment="Right"/>
-                <TextBlock Text="Mã NV/ADMIN" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
+                <TextBlock Text="" FontWeight="Bold" HorizontalAlignment="Right"/>
+                <TextBlock Text="" FontSize="12" Foreground="#999" HorizontalAlignment="Right"/>
             </StackPanel>
         </Grid>
 
         <!-- MAIN CONTENT -->
-        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>

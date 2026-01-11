@@ -278,7 +278,7 @@ namespace SaleManagerApp.Services
             int dayOfWeek,
             int startHour,
             int endHour,
-            decimal discountPercent,
+            decimal discountPercent,    
             decimal comboPrice,
             decimal originalPrice,
             List<string> menuItemIds)
