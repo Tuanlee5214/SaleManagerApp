@@ -20,23 +20,21 @@ namespace SaleManagerApp.ViewModels
             set { _selectedMenu = value; OnPropertyChanged(); }
         }
 
-        // ✅ ĐỔI: Từ BaseViewModel → object
-        private object _currentPage;
-        public object CurrentPage
+
+        private BaseViewModel _currentViewModel;
+        public BaseViewModel CurrentViewModel
         {
-            get => _currentPage;
+            get => _currentViewModel;
             set
             {
-                _currentPage = value;
-                OnPropertyChanged();
+                _currentViewModel = value; OnPropertyChanged();
+
                 IsVisibleToastLoginSuccess();
             }
         }
-
         public void IsVisibleToastLoginSuccess()
         {
-            // ✅ SỬA: Kiểm tra type của View thay vì ViewModel
-            if (_currentPage is HomePage && UserSession.JustLoggedIn)
+            if (CurrentViewModel is HomePageViewModel && UserSession.JustLoggedIn)
             {
                 Application.Current.Dispatcher.InvokeAsync(() =>
                 {
@@ -48,42 +46,42 @@ namespace SaleManagerApp.ViewModels
 
         public ICommand ShowHomeCommand { get; }
         public ICommand ShowMenuCommand { get; }
-        public ICommand ShowUserCommand { get; }
-        public ICommand ShowWareHouseCommand { get; }
 
+        public ICommand ShowUserCommand { get; }
+
+        public ICommand ShowWareHouseCommand { get; }
         public MainLayoutViewModel()
         {
-            // ✅ Trang mặc định - Load HomePage View
-            CurrentPage = new HomePage();
+            // Trang mặc định
+            CurrentViewModel = new HomePageViewModel();
             SelectedMenu = "Home";
 
             ShowHomeCommand = new RelayCommand(o =>
             {
-                CurrentPage = new HomePage();
+                CurrentViewModel = new HomePageViewModel();
                 SelectedMenu = "Home";
-                Console.WriteLine("✅ SELECTED = HOME");
-            });
+                Console.WriteLine("SELECTED = HOME");
 
-            ShowMenuCommand = new RelayCommand(o =>
-            {
-                CurrentPage = new MenuPage(); // ✅ BỎ COMMENT
+            });
+            ShowMenuCommand = new RelayCommand(o => {
+                CurrentViewModel = new MenuPageViewModel();
                 SelectedMenu = "Menu";
-                Console.WriteLine("✅ SELECTED = MENU");
-            });
+                Console.WriteLine("SELECTED = menu");
 
-            ShowUserCommand = new RelayCommand(o =>
-            {
-                CurrentPage = new UserPage(); // ✅ BỎ COMMENT
+            });
+            ShowUserCommand = new RelayCommand(o => {
+                CurrentViewModel = new UserPageViewModel();
                 SelectedMenu = "Staff";
-                Console.WriteLine("✅ SELECTED = USER");
+                Console.WriteLine("SELECTED = user");
+
+            });
+            ShowWareHouseCommand = new RelayCommand(o => {
+                CurrentViewModel = new WarehousePageViewModel();
+                SelectedMenu = "WareHouse";
+                Console.WriteLine("SELECTED = warehouse");
+
             });
 
-            ShowWareHouseCommand = new RelayCommand(o =>
-            {
-                CurrentPage = new WarehousePage(); // ✅ BỎ COMMENT (nếu có class này)
-                SelectedMenu = "WareHouse";
-                Console.WriteLine("✅ SELECTED = WAREHOUSE");
-            });
         }
     }
 }

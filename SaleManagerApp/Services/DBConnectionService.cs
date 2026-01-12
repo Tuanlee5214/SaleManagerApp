@@ -6,7 +6,7 @@ namespace SaleManagerApp.Services
     public class DBConnectionService
     {
         private readonly string _connectString =
-            @"Server=.\SQLEXPRESS;
+            @"Server=TUANLEE\SQLEXPRESS;
          Database=SaleManagement20251_12;
          Trusted_Connection=True;
          TrustServerCertificate=True;";
