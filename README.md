@@ -33,3 +33,8 @@ Server=TUANLEE\\SQLEXPRESS;Database=SaleManagement20251_12;Trusted_Connection=Tr
 + Ngôn ngữ : C#
 + UI : WPF C#
 + Kiến trúc thick client không có backend, UI vừa chứa logic xử lí giao diện và tương tác với db.
+
+## Người thực hiện
++ Lê Anh Tuấn: 23521711
++ Hồ Nhật Thành : 23521439
++ Bùi Đức Anh : 24520083
