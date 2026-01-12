@@ -12,6 +12,9 @@ namespace SaleManagerApp.ViewModels
     {
         private readonly WarehouseService _service = new WarehouseService();
 
+        // =========================
+        // DATA
+        // =========================
         public ObservableCollection<WarehouseLog> Logs { get; }
             = new ObservableCollection<WarehouseLog>();
 
@@ -41,6 +44,7 @@ namespace SaleManagerApp.ViewModels
             {
                 _fromDate = value;
                 OnPropertyChanged();
+                ApplyFilter();
             }
         }
 
@@ -52,28 +56,29 @@ namespace SaleManagerApp.ViewModels
             {
                 _toDate = value;
                 OnPropertyChanged();
+                ApplyFilter();
             }
         }
 
-        private LogType? _selectedLogType;
-        public LogType? SelectedLogType
+        private string _selectedActionType;
+        public string SelectedActionType
         {
-            get => _selectedLogType;
+            get => _selectedActionType;
             set
             {
-                _selectedLogType = value;
+                _selectedActionType = value;
                 OnPropertyChanged();
                 ApplyFilter();
             }
         }
 
-        public Array LogTypes => Enum.GetValues(typeof(LogType));
+        public string[] ActionTypes =>
+            new[] { "Tất cả", "IMPORT", "EXPORT", "UPDATE", "DELETE" };
 
         // =========================
         // COMMANDS
         // =========================
         public ICommand LoadCommand { get; }
-        public ICommand SearchCommand { get; }
         public ICommand ClearFilterCommand { get; }
         public ICommand CloseCommand { get; }
 
@@ -85,7 +90,6 @@ namespace SaleManagerApp.ViewModels
         public WarehouseLogsViewModel()
         {
             LoadCommand = new RelayCommand(_ => LoadLogs());
-            SearchCommand = new RelayCommand(_ => LoadLogs());
             ClearFilterCommand = new RelayCommand(_ => ClearFilter());
             CloseCommand = new RelayCommand(_ => CloseAction?.Invoke());
 
@@ -99,24 +103,21 @@ namespace SaleManagerApp.ViewModels
         {
             Logs.Clear();
 
-            var result = _service.GetWarehouseLogs(
-                ingredientId: null,
-                fromDate: FromDate,
-                toDate: ToDate
-            );
-
-            if (!result.Success)
+            try
             {
-                ToastService.ShowError(result.ErrorMessage);
-                return;
-            }
+                var logs = _service.GetWarehouseLogs(300);
 
-            foreach (var log in result.Logs.OrderByDescending(l => l.ActionDate))
+                foreach (var log in logs.OrderByDescending(l => l.CreatedAt))
+                {
+                    Logs.Add(log);
+                }
+
+                ApplyFilter();
+            }
+            catch (Exception ex)
             {
-                Logs.Add(log);
+                ToastService.ShowError($"Không thể tải warehouse log: {ex.Message}");
             }
-
-            ApplyFilter();
         }
 
         // =========================
@@ -128,18 +129,34 @@ namespace SaleManagerApp.ViewModels
 
             var filtered = Logs.AsEnumerable();
 
-            // Filter by search text
+            // Search theo tên nguyên liệu hoặc historyId
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 filtered = filtered.Where(l =>
-                    l.IngredientName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    l.BatchId.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+                    (!string.IsNullOrEmpty(l.IngredientName) &&
+                     l.IngredientName.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                    ||
+                    (!string.IsNullOrEmpty(l.HistoryId) &&
+                     l.HistoryId.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                );
             }
 
-            // Filter by log type
-            if (SelectedLogType.HasValue)
+            // Filter theo ngày
+            if (FromDate.HasValue)
             {
-                filtered = filtered.Where(l => l.Type == SelectedLogType.Value);
+                filtered = filtered.Where(l => l.CreatedAt.Date >= FromDate.Value.Date);
+            }
+
+            if (ToDate.HasValue)
+            {
+                filtered = filtered.Where(l => l.CreatedAt.Date <= ToDate.Value.Date);
+            }
+
+            // Filter theo loại action
+            if (!string.IsNullOrEmpty(SelectedActionType) &&
+                SelectedActionType != "Tất cả")
+            {
+                filtered = filtered.Where(l => l.ActionType == SelectedActionType);
             }
 
             foreach (var log in filtered)
@@ -156,8 +173,9 @@ namespace SaleManagerApp.ViewModels
             SearchText = string.Empty;
             FromDate = null;
             ToDate = null;
-            SelectedLogType = null;
-            LoadLogs();
+            SelectedActionType = "Tất cả";
+
+            ApplyFilter();
         }
     }
 }

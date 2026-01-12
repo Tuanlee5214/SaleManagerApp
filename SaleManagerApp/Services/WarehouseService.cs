@@ -288,27 +288,53 @@ namespace SaleManagerApp.Services
         // 5. UPDATE BATCH
         // ================================================
 
-        public void UpdateBatch(string historyId, int addQuantity,
-            DateTime newExpiryDate, string note = null)
+        public ServiceResult UpdateBatch(
+    string historyId,
+    int addQuantity,
+    DateTime importDate,
+    DateTime? expiryDate,
+    string note = null
+)
         {
-            using (var conn = new SqlConnection(_connectionString))
+            try
             {
-                conn.Open();
-
-                using (var cmd = conn.CreateCommand())
+                using (var conn = new SqlConnection(_connectionString))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = "sp_UpdateIngredientBatch";
+                    conn.Open();
 
-                    cmd.Parameters.AddWithValue("@historyId", historyId);
-                    cmd.Parameters.AddWithValue("@addQuantity", addQuantity);
-                    cmd.Parameters.AddWithValue("@newExpiryDate", newExpiryDate);
-                    cmd.Parameters.AddWithValue("@note", (object)note ?? DBNull.Value);
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "sp_UpdateIngredientBatch";
 
-                    cmd.ExecuteNonQuery();
+                        cmd.Parameters.AddWithValue("@historyId", historyId);
+                        cmd.Parameters.AddWithValue("@addQuantity", addQuantity);
+                        cmd.Parameters.AddWithValue("@importDate", importDate);
+                        cmd.Parameters.AddWithValue("@newExpiryDate",
+                            (object)expiryDate ?? DBNull.Value);
+                        cmd.Parameters.AddWithValue("@note",
+                            (object)note ?? DBNull.Value);
+
+                        cmd.ExecuteNonQuery();
+                    }
                 }
+
+                return new ServiceResult
+                {
+                    Success = true,
+                    SuccessMessage = "Cập nhật lô hàng thành công"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult
+                {
+                    Success = false,
+                    ErrorMessage = ex.Message
+                };
             }
         }
+
 
         // ================================================
         // 6. EXPORT

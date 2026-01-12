@@ -97,8 +97,8 @@ namespace SaleManagerApp.ViewModels
                 BatchId,
                 Quantity,
                 ImportDate,
-                ExpiryDate,
-                "System"
+                ExpiryDate,   // ✅ DateTime?
+                "System"      // ✅ string note
             );
 
             if (result.Success)

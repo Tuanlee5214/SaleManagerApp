@@ -23,7 +23,7 @@
 
         <!-- Content -->
         <Grid Grid.Column="1" x:Name="ContentRoot">
-            <ContentControl Content="{Binding CurrentViewModel}" />
+            <ContentControl Content="{Binding CurrentPage}" />
         </Grid>
 
     </Grid>

@@ -194,10 +194,11 @@ namespace SaleManagerApp.ViewModels
             try
             {
                 _service.UpdateBatch(
-                    SelectedBatch.HistoryId,
-                    AddQuantity,
-                    NewExpiryDate,
-                    $"Cập nhật thêm {AddQuantity} {Ingredient.Unit}"
+                    historyId: SelectedBatch.HistoryId,
+                    addQuantity: AddQuantity,
+                    importDate: SelectedBatch.ImportDate,
+                    expiryDate: NewExpiryDate,
+                    note: $"Cập nhật thêm {AddQuantity} {Ingredient.Unit}"
                 );
 
                 ToastService.Show("Cập nhật batch thành công");
