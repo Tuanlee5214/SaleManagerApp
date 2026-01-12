@@ -6,7 +6,7 @@
   - Hiển thị đồ thị báo cáo thu chi theo ngày, báo cáo phần trăm số lượng món ăn bán ra.
   - Cho phép xem được danh sách món ăn, thêm món ăn, thêm khách hàng, thay đổi trạng thái bàn ăn hiện tại, tạo đơn hàng, xuất hóa đơn, xem danh sách hóa đơn.
   - Cho phép xem chi tiết đơn hàng và thay đổi trạng thái phục vụ của đơn hàng.
-  - cho phép tìm kiếm món ăn.
+  - Cho phép tìm kiếm món ăn.
   - Quản lý nhân viêm. Thêm xóa sửa cập nhật thông tin nhân viên, chấm công nhân viên, set lịch làm cho nhân viên.
   - Quản lý nhập kho xuất kho cho cửa hàng.
   - Chức năng đăng nhập, thay đổi thông tin tài khoản người sử dụng.
@@ -20,7 +20,7 @@ git clone https://github.com/Tuanlee5214/SaleManagerApp.git
 + B3: Mở file SaleManagerApp.sln để mở code trong VS 2022. 
 + B4: Tiến hành vào folder Service, chọn file DatabaseConnection để chỉnh lại connectString kết nối DB cho phù hợp.
 ```Bash
-Server=TUANLEE\\SQLEXPRESS;Database=QUANLYGARA111;Trusted_Connection=True
+Server=TUANLEE\\SQLEXPRESS;Database=SaleManagement20251_12;Trusted_Connection=True
 ```
 + B5: Đổi tên server TUANLEE sang tên server máy bạn cho phù hợp.
 + B6: Tiến hành chạy và thử nghiệm ứng dụng
