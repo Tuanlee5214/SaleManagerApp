@@ -8,12 +8,11 @@ namespace SaleManagerApp.Services
 {
     public class WarehouseService
     {
-        // ✅ FIX: Thay YOUR_CONNECTION_STRING bằng connection string thật
         private readonly string _connectionString =
-    @"Server=.\SQLEXPRESS;
-      Database=SaleManagement20251_12;
-      Trusted_Connection=True;
-      TrustServerCertificate=True;";
+         @"Server=.\SQLEXPRESS;
+         Database=SaleManagement20251_12;
+         Trusted_Connection=True;
+         TrustServerCertificate=True;";
 
         // ================================================
         // 1. LOAD INGREDIENTS
@@ -290,7 +289,7 @@ namespace SaleManagerApp.Services
         // ================================================
 
         public void UpdateBatch(string historyId, int addQuantity,
-            DateTime newExpiryDate, DateTime? expiryDate, string note = null)
+            DateTime newExpiryDate, string note = null)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
@@ -450,17 +449,5 @@ namespace SaleManagerApp.Services
 
             return logs;
         }
-
-        internal void UpdateBatch(string historyId, int addQuantity, DateTime newExpiryDate, string v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
-
-    public class Result<T>
-    {
-        public bool Success { get; set; }
-        public string ErrorMessage { get; set; }
-        public T Data { get; set; }
-    }

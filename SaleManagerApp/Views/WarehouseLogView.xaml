@@ -1,50 +1,281 @@
 ﻿<Window x:Class="SaleManagerApp.Views.WarehouseLogView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Lịch sử kho"
-        Width="1100"
-        Height="700"
-        WindowStartupLocation="CenterOwner">
+        Title="Lịch sử Warehouse"
+        Width="1100" Height="700"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+
+    <Window.Resources>
+        <!-- Button Style -->
+        <Style x:Key="FilterButton" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#666"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="18" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Stat Card Style -->
+        <Style x:Key="StatCard" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+            <Setter Property="Width" Value="160"/>
+        </Style>
+    </Window.Resources>
 
     <Grid Margin="20">
-        <DataGrid ItemsSource="{Binding FilteredLogs}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Thời gian"
-                                    Binding="{Binding TimeDisplay}"
-                                    Width="140"/>
+        <!-- ================= HEADER ================= -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-                <DataGridTemplateColumn Header="Loại" Width="120">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Border Background="{Binding ActionColor}"
-                                    CornerRadius="10"
-                                    Padding="6">
-                                <TextBlock Foreground="White"
-                                           HorizontalAlignment="Center">
-                                    <Run Text="{Binding ActionIcon}"/>
-                                    <Run Text=" "/>
-                                    <Run Text="{Binding ActionType}"/>
-                                </TextBlock>
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Lịch sử Warehouse"
+                           FontSize="24"
+                           FontWeight="Bold"/>
+                <TextBlock Text="Theo dõi mọi thao tác nhập/xuất/cập nhật kho"
+                           Foreground="#666"
+                           Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Content="🔄 Làm mới"
+                        Width="120"
+                        Height="36"
+                        Background="#5B7FFF"
+                        Foreground="White"
+                        BorderThickness="0"
+                        FontWeight="SemiBold"
+                        Margin="0,0,8,0"
+                        Command="{Binding RefreshCommand}">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="18" Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
 
-                <DataGridTextColumn Header="Nguyên liệu"
-                                    Binding="{Binding IngredientName}"
-                                    Width="200"/>
+                <Button Content="✕ Đóng"
+                        Width="100"
+                        Height="36"
+                        Background="#95A5A6"
+                        Foreground="White"
+                        BorderThickness="0"
+                        FontWeight="SemiBold"
+                        Command="{Binding CloseCommand}">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="18" Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Grid>
 
-                <DataGridTextColumn Header="Chi tiết"
-                                    Binding="{Binding ActionDescription}"
-                                    Width="200"/>
+        <!-- ================= STATS ================= -->
+        <StackPanel Grid.Row="1" 
+                    Orientation="Horizontal" 
+                    Margin="0,0,0,16">
 
-                <DataGridTextColumn Header="Ghi chú"
-                                    Binding="{Binding Note}"
-                                    Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
+            <!-- Total Imports -->
+            <Border Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="📥 Nhập kho"
+                               FontSize="12"
+                               Foreground="#666"
+                               Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding TotalImports}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#27AE60"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Total Exports -->
+            <Border Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="📤 Xuất kho"
+                               FontSize="12"
+                               Foreground="#666"
+                               Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding TotalExports}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#E67E22"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Total Updates -->
+            <Border Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="✏️ Cập nhật"
+                               FontSize="12"
+                               Foreground="#666"
+                               Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding TotalUpdates}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#3498DB"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Total Deletes -->
+            <Border Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="🗑️ Xóa"
+                               FontSize="12"
+                               Foreground="#666"
+                               Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding TotalDeletes}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#E74C3C"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- ================= FILTER + TABLE ================= -->
+        <Border Grid.Row="2" 
+                Background="White" 
+                CornerRadius="16" 
+                Padding="20">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- FILTER BUTTONS -->
+                <StackPanel Grid.Row="0" 
+                            Orientation="Horizontal" 
+                            Margin="0,0,0,16">
+                    <TextBlock Text="Lọc theo: "
+                               VerticalAlignment="Center"
+                               Margin="0,0,12,0"
+                               Foreground="#666"/>
+
+                    <RadioButton Content="Tất cả"
+                                 GroupName="FilterType"
+                                 IsChecked="{Binding FilterType, Converter={StaticResource FilterConverter}, ConverterParameter=Tất cả}"
+                                 Margin="0,0,12,0"/>
+
+                    <RadioButton Content="Nhập kho"
+                                 GroupName="FilterType"
+                                 IsChecked="{Binding FilterType, Converter={StaticResource FilterConverter}, ConverterParameter=Nhập kho}"
+                                 Margin="0,0,12,0"/>
+
+                    <RadioButton Content="Xuất kho"
+                                 GroupName="FilterType"
+                                 IsChecked="{Binding FilterType, Converter={StaticResource FilterConverter}, ConverterParameter=Xuất kho}"
+                                 Margin="0,0,12,0"/>
+
+                    <RadioButton Content="Cập nhật"
+                                 GroupName="FilterType"
+                                 IsChecked="{Binding FilterType, Converter={StaticResource FilterConverter}, ConverterParameter=Cập nhật}"
+                                 Margin="0,0,12,0"/>
+
+                    <RadioButton Content="Xóa"
+                                 GroupName="FilterType"
+                                 IsChecked="{Binding FilterType, Converter={StaticResource FilterConverter}, ConverterParameter=Xóa}"/>
+                </StackPanel>
+
+                <!-- LOG TABLE -->
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding Logs}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="None"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          AlternatingRowBackground="#F9F9F9">
+
+                    <DataGrid.Columns>
+                        <!-- Time -->
+                        <DataGridTextColumn Header="Thời gian" 
+                                            Binding="{Binding TimeDisplay}"
+                                            Width="140"/>
+
+                        <!-- Action Type -->
+                        <DataGridTemplateColumn Header="Loại" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border CornerRadius="12" 
+                                            Padding="8,4"
+                                            Background="{Binding ActionColor}">
+                                        <TextBlock HorizontalAlignment="Center">
+                                            <Run Text="{Binding ActionIcon, Mode=OneWay}"/>
+                                            <Run Text="{Binding ActionType}"/>
+                                        </TextBlock>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Ingredient Name -->
+                        <DataGridTextColumn Header="Nguyên liệu" 
+                                            Binding="{Binding IngredientName}"
+                                            Width="200">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- Description -->
+                        <DataGridTextColumn Header="Chi tiết" 
+                                            Binding="{Binding ActionDescription}"
+                                            Width="200"/>
+
+                        <!-- Note -->
+                        <DataGridTextColumn Header="Ghi chú" 
+                                            Binding="{Binding Note}"
+                                            Width="*"/>
+
+                        <!-- Log ID -->
+                        <DataGridTextColumn Header="Mã Log" 
+                                            Binding="{Binding LogId}"
+                                            Width="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="11"/>
+                                    <Setter Property="Foreground" Value="#999"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

@@ -1932,3 +1932,541 @@ ALTER COLUMN position NVARCHAR(20) NOT NULL;
 UPDATE Employee SET position = N'Quản lý' WHERE position LIKE '%Qu%n%';
 UPDATE Employee SET position = N'Phục vụ' WHERE position LIKE '%Ph%c%';
 UPDATE Employee SET position = N'Phụ bếp' WHERE position LIKE '%Ph%b%';
+
+-- Xử lý DB Ware house
+----------------------------------------------------------------------------
+
+ALTER TABLE Ingredient ADD [filter] NVARCHAR(20) CHECK([filter] IN (N'Meat', N'Seafood', N'Vegetable', N'Spice', N'Others'));
+ALTER TABLE Ingredient ADD maxStorageDays INT CHECK(maxStorageDays > 0);
+ALTER TABLE Ingredient ADD imageUrl VARCHAR(200);
+
+CREATE TABLE IngredientBatchHistory
+(
+    historyId CHAR(7) PRIMARY KEY,
+    ingredientId CHAR(7) NOT NULL,
+    quantity INT NOT NULL,
+    importDate DATE NOT NULL,
+    expiryDate DATE NOT NULL,
+    createdAt DATETIME DEFAULT GETDATE(),
+    isDeleted BIT DEFAULT 0
+);
+
+ALTER TABLE IngredientBatchHistory
+ADD CONSTRAINT FK_IBH_Ingredient
+FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
+
+ALTER TABLE IngredientBatchHistory ADD CHECK (quantity > 0);
+ALTER TABLE IngredientBatchHistory ADD CHECK (expiryDate >= importDate);
+
+CREATE TABLE WarehouseLog
+(
+    logId CHAR(7) PRIMARY KEY,
+    ingredientId CHAR(7) NOT NULL,
+    historyId CHAR(7) NULL,
+    actionType NVARCHAR(20) NOT NULL, -- IMPORT / UPDATE / EXPORT / DELETE
+    quantity INT NOT NULL,
+    note NVARCHAR(100),
+    createdAt DATETIME DEFAULT GETDATE()
+);
+
+ALTER TABLE WarehouseLog
+ADD CONSTRAINT FK_WarehouseLog_Ingredient
+FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId);
+
+ALTER TABLE WarehouseLog
+ADD CONSTRAINT FK_WarehouseLog_History
+FOREIGN KEY (historyId) REFERENCES IngredientBatchHistory(historyId);
+
+ALTER TABLE WarehouseLog ADD CHECK (quantity >= 0);
+
+CREATE TABLE WarehouseExport
+(
+    exportId CHAR(7) PRIMARY KEY,
+    ingredientId CHAR(7) NOT NULL,
+    historyId CHAR(7) NOT NULL,  -- ⚠️ QUAN TRỌNG: Track batch nào bị xuất
+    quantityExported INT NOT NULL,
+    exportDate DATETIME DEFAULT GETDATE(),
+    employeeId CHAR(7) NULL,
+    note NVARCHAR(100),
+    
+    CONSTRAINT FK_WE_Ingredient FOREIGN KEY (ingredientId) REFERENCES Ingredient(ingredientId),
+    CONSTRAINT FK_WE_History FOREIGN KEY (historyId) REFERENCES IngredientBatchHistory(historyId),
+    CONSTRAINT FK_WE_Employee FOREIGN KEY (employeeId) REFERENCES Employee(employeeId),
+    CONSTRAINT CHK_WE_Quantity CHECK (quantityExported > 0)
+);
+
+CREATE OR ALTER VIEW vw_IngredientStock_Correct AS
+SELECT 
+    I.ingredientId,
+    I.ingredientName,
+    I.unit,
+    ISNULL(SUM(H.quantity), 0) - ISNULL(SUM(WE.quantityExported), 0) AS totalQuantity,
+    COUNT(DISTINCT H.historyId) AS batchCount
+FROM Ingredient I
+LEFT JOIN IngredientBatchHistory H 
+    ON I.ingredientId = H.ingredientId
+   AND H.isDeleted = 0
+   AND H.expiryDate >= CAST(GETDATE() AS DATE)
+LEFT JOIN WarehouseExport WE
+    ON H.historyId = WE.historyId
+GROUP BY I.ingredientId, I.ingredientName, I.unit;
+
+CREATE OR ALTER PROCEDURE sp_ImportIngredientHistory
+(
+    @historyId CHAR(7),
+    @ingredientId CHAR(7),
+    @quantity INT,
+    @importDate DATE,
+    @expiryDate DATE,
+    @note NVARCHAR(100) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @quantity <= 0
+    BEGIN
+        RAISERROR (N'Số lượng phải > 0', 16, 1);
+        RETURN;
+    END
+
+    IF @expiryDate < @importDate
+    BEGIN
+        RAISERROR (N'Ngày hết hạn không hợp lệ', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        INSERT INTO IngredientBatchHistory
+        (
+            historyId,
+            ingredientId,
+            quantity,
+            importDate,
+            expiryDate
+        )
+        VALUES
+        (
+            @historyId,
+            @ingredientId,
+            @quantity,
+            @importDate,
+            @expiryDate
+        );
+
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        INSERT INTO WarehouseLog
+        (
+            logId,
+            ingredientId,
+            historyId,
+            actionType,
+            quantity,
+            note
+        )
+        VALUES (
+            @LogId,
+            @ingredientId,
+            @historyId,
+            N'IMPORT',
+            @quantity,
+            @note
+        );
+
+        COMMIT;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE sp_CheckExpiredHistory
+(
+    @ingredientId CHAR(7)
+)
+AS
+BEGIN
+    IF EXISTS
+    (
+        SELECT 1
+        FROM IngredientBatchHistory
+        WHERE ingredientId = @ingredientId
+          AND expiryDate < CAST(GETDATE() AS DATE)
+          AND isDeleted = 0
+    )
+    BEGIN
+        RAISERROR (N'Tồn tại batch hết hạn, cần xử lý trước khi xuất kho', 16, 1);
+    END
+END;
+GO
+
+CREATE OR ALTER PROCEDURE sp_ExportIngredient_FEFO
+    @ingredientId CHAR(7),
+    @exportQuantity INT,
+    @employeeId CHAR(7),
+    @note NVARCHAR(100) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- 1. Kiểm tra batch hết hạn
+    IF EXISTS (
+        SELECT 1 FROM IngredientBatchHistory
+        WHERE ingredientId = @ingredientId 
+          AND expiryDate < CAST(GETDATE() AS DATE)
+          AND isDeleted = 0
+    )
+    BEGIN
+        RAISERROR(N'Tồn tại batch hết hạn, phải xử lý trước', 16, 1);
+        RETURN;
+    END
+
+    -- 2. Kiểm tra tồn kho
+    DECLARE @totalStock INT;
+    SELECT @totalStock = ISNULL(SUM(quantity), 0)
+    FROM IngredientBatchHistory
+    WHERE ingredientId = @ingredientId 
+      AND expiryDate >= CAST(GETDATE() AS DATE)
+      AND isDeleted = 0;
+
+    IF @exportQuantity > @totalStock
+    BEGIN
+        RAISERROR(N'Không đủ hàng trong kho', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        DECLARE @remaining INT = @exportQuantity;
+        DECLARE @batchId CHAR(7);
+        DECLARE @batchQty INT;
+        DECLARE @exportId CHAR(7);
+
+        -- 3. Duyệt các batch theo FEFO (gần hết hạn nhất trước)
+        DECLARE batch_cursor CURSOR FOR
+        SELECT historyId, quantity
+        FROM IngredientBatchHistory
+        WHERE ingredientId = @ingredientId
+          AND expiryDate >= CAST(GETDATE() AS DATE)
+          AND isDeleted = 0
+        ORDER BY expiryDate ASC, importDate ASC;
+
+        OPEN batch_cursor;
+        FETCH NEXT FROM batch_cursor INTO @batchId, @batchQty;
+
+        WHILE @@FETCH_STATUS = 0 AND @remaining > 0
+        BEGIN
+            DECLARE @toExport INT = CASE 
+                WHEN @batchQty >= @remaining THEN @remaining 
+                ELSE @batchQty 
+            END;
+
+            -- Tạo exportId mới cho mỗi batch
+            EXEC sp_GenerateId 
+                @prefix = 'WE',
+                @tableName = 'WarehouseExport',
+                @idColumn = 'exportId',
+                @idLength = 7,
+                @newId = @exportId OUTPUT;
+
+            -- Ghi lại batch nào bị xuất
+            INSERT INTO WarehouseExport (
+                exportId, ingredientId, historyId, quantityExported, 
+                exportDate, employeeId, note
+            )
+            VALUES (
+                @exportId, @ingredientId, @batchId, @toExport,
+                GETDATE(), 'ADMIN', @note
+            );
+
+            -- Trừ số lượng batch
+            UPDATE IngredientBatchHistory
+            SET quantity = quantity - @toExport
+            WHERE historyId = @batchId;
+
+            -- Nếu batch hết hàng → soft delete
+            IF (SELECT quantity FROM IngredientBatchHistory WHERE historyId = @batchId) = 0
+            BEGIN
+                UPDATE IngredientBatchHistory
+                SET isDeleted = 1
+                WHERE historyId = @batchId;
+            END
+
+            SET @remaining = @remaining - @toExport;
+            FETCH NEXT FROM batch_cursor INTO @batchId, @batchQty;
+        END
+
+        CLOSE batch_cursor;
+        DEALLOCATE batch_cursor;
+
+        -- Ghi log tổng
+
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        INSERT INTO WarehouseLog (
+            logId, ingredientId, actionType, quantity, note
+        )
+        VALUES (
+            @LogId, @ingredientId, N'EXPORT', @exportQuantity, @note
+        );
+
+        COMMIT;
+        SELECT 1 AS Success, N'Xuất kho thành công' AS Message;
+    END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0
+        ROLLBACK;
+
+    IF CURSOR_STATUS('local', 'batch_cursor') >= 0
+    BEGIN
+        CLOSE batch_cursor;
+        DEALLOCATE batch_cursor;
+    END
+
+    DECLARE @ErrMsg NVARCHAR(4000),
+            @ErrSeverity INT,
+            @ErrState INT;
+
+    SELECT 
+        @ErrMsg = ERROR_MESSAGE(),
+        @ErrSeverity = ERROR_SEVERITY(),
+        @ErrState = ERROR_STATE();
+
+    RAISERROR(@ErrMsg, @ErrSeverity, @ErrState);
+END CATCH
+
+END;
+
+CREATE OR ALTER PROCEDURE sp_DeleteExpiredHistory
+(
+    @ingredientId CHAR(7)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        UPDATE IngredientBatchHistory
+        SET isDeleted = 1
+        WHERE ingredientId = @ingredientId
+          AND expiryDate < CAST(GETDATE() AS DATE)
+          AND isDeleted = 0;
+        
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        INSERT INTO WarehouseLog
+        (
+            logId,
+            ingredientId,
+            actionType,
+            quantity,
+            note
+        )
+        VALUES
+        (
+            @LogId,
+            @ingredientId,
+            N'DELETE',
+            0,
+            N'Xóa batch hết hạn'
+        );
+
+        COMMIT;
+
+        -- ✅ TRẢ KẾT QUẢ
+        SELECT
+            historyId,
+            quantity,
+            importDate,
+            expiryDate,
+            CASE
+                WHEN expiryDate < CAST(GETDATE() AS DATE) THEN N'Hết hạn'
+                ELSE N'Còn hạn'
+            END AS status
+        FROM IngredientBatchHistory
+        WHERE ingredientId = @ingredientId
+          AND isDeleted = 0
+        ORDER BY importDate;
+
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE PROCEDURE sp_UpdateIngredientBatch
+    @historyId CHAR(7),
+    @addQuantity INT,
+    @newExpiryDate DATE,
+    @note NVARCHAR(100) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM IngredientBatchHistory WHERE historyId = @historyId)
+    BEGIN
+        RAISERROR(N'Batch không tồn tại', 16, 1);
+        RETURN;
+    END
+
+    IF @addQuantity <= 0
+    BEGIN
+        RAISERROR(N'Số lượng thêm phải > 0', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        DECLARE @ingredientId CHAR(7);
+        SELECT @ingredientId = ingredientId FROM IngredientBatchHistory WHERE historyId = @historyId;
+
+        -- Cập nhật batch
+        UPDATE IngredientBatchHistory
+        SET quantity = quantity + @addQuantity,
+            expiryDate = @newExpiryDate
+        WHERE historyId = @historyId;
+
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        -- Ghi log
+
+        INSERT INTO WarehouseLog (
+            logId, ingredientId, historyId, actionType, quantity, note
+        )
+        VALUES (
+            @LogId, @ingredientId, @historyId, N'UPDATE', @addQuantity, @note
+        );
+
+        COMMIT;
+        SELECT 1 AS Success, N'Cập nhật batch thành công' AS Message;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+
+CREATE OR ALTER PROCEDURE sp_DeleteIngredientBatch
+(
+    @historyId CHAR(7),
+    @note NVARCHAR(100) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- 1. Kiểm tra batch tồn tại & chưa bị xóa
+    IF NOT EXISTS (
+        SELECT 1 FROM IngredientBatchHistory
+        WHERE historyId = @historyId AND isDeleted = 0
+    )
+    BEGIN
+        RAISERROR(N'Batch không tồn tại hoặc đã bị xóa', 16, 1);
+        RETURN;
+    END
+
+    -- 2. Không cho xóa batch đã từng xuất kho
+    IF EXISTS (
+        SELECT 1 FROM WarehouseExport
+        WHERE historyId = @historyId
+    )
+    BEGIN
+        RAISERROR(N'Không thể xóa batch đã từng xuất kho', 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        DECLARE @ingredientId CHAR(7);
+        DECLARE @qty INT;
+
+        SELECT 
+            @ingredientId = ingredientId,
+            @qty = quantity
+        FROM IngredientBatchHistory
+        WHERE historyId = @historyId;
+
+        -- 3. Soft delete batch
+        UPDATE IngredientBatchHistory
+        SET isDeleted = 1
+        WHERE historyId = @historyId;
+
+        -- 4. Ghi log
+
+        DECLARE @LogId CHAR(7);
+
+        EXEC sp_GenerateId
+            @prefix = 'WL',
+            @tableName = 'WarehouseLog',
+            @idColumn = 'logId',
+            @idLength = 7,
+            @newId = @LogId OUTPUT;
+
+        INSERT INTO WarehouseLog
+        (
+            logId,
+            ingredientId,
+            historyId,
+            actionType,
+            quantity,
+            note
+        )
+        VALUES
+        (
+            @LogId,
+            @ingredientId,
+            @historyId,
+            N'DELETE',
+            @qty,
+            @note
+        );
+
+        COMMIT;
+        SELECT 1 AS Success, N'Xóa batch thành công' AS Message;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK;
+        THROW;
+    END CATCH
+END;
+GO
+
+
+INSERT INTO Employee (employeeId, fullname, dateOfBirth, position)
+VALUES ('ADMIN', 'Ho Nhat Thanh', '8/11/2003', 'admin');

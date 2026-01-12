@@ -1,17 +1,11 @@
 ﻿<Window x:Class="SaleManagerApp.Views.ImportIngredientView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:viewmodels="clr-namespace:SaleManagerApp.ViewModels" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:helpers="clr-namespace:SaleManagerApp.Helpers" d:DataContext="{d:DesignInstance Type=viewmodels:ImportIngredientViewModel}"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Nhập kho"
-
         Width="450" Height="650"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         Background="#F5F5F5">
-
-    <Window.Resources>
-        <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-    </Window.Resources>
-
 
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -54,29 +48,24 @@
 
                 <!-- INGREDIENT INFO (readonly) -->
                 <Border Background="#ECF0F1"
-        CornerRadius="8"
-        Padding="12"
-        Margin="0,0,0,16"
-        Visibility="{Binding SelectedIngredient,
-                             Converter={StaticResource NullToVisibilityConverter}}">
+                        CornerRadius="8"
+                        Padding="12"
+                        Margin="0,0,0,16"
+                        Visibility="{Binding SelectedIngredient, Converter={StaticResource NullToVisibilityConverter}}">
                     <StackPanel>
-
                         <TextBlock>
-            <Run Text="Mã: " FontWeight="SemiBold"/>
-            <Run Text="{Binding SelectedIngredient.IngredientId}"/>
+                            <Run Text="Mã: " FontWeight="SemiBold"/>
+                            <Run Text="{Binding IngredientId, Mode=OneWay}"/>
                         </TextBlock>
-
                         <TextBlock Margin="0,4,0,0">
-            <Run Text="Đơn vị: " FontWeight="SemiBold"/>
-            <Run Text="{Binding SelectedIngredient.Unit}"/>
+                            <Run Text="Đơn vị: " FontWeight="SemiBold"/>
+                            <Run Text="{Binding Unit, Mode=OneWay}"/>
                         </TextBlock>
-
                         <TextBlock Margin="0,4,0,0">
-            <Run Text="Thời hạn: " FontWeight="SemiBold"/>
-            <Run Text="{Binding SelectedIngredient.MaxStorageDays}"/>
-            <Run Text=" ngày"/>
+                            <Run Text="Thời hạn: " FontWeight="SemiBold"/>
+                            <Run Text="{Binding MaxStorageDays, Mode=OneWay}"/>
+                            <Run Text=" ngày"/>
                         </TextBlock>
-
                     </StackPanel>
                 </Border>
 

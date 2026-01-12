@@ -1,5 +1,4 @@
-﻿
-using SaleManagerApp.Helpers;
+﻿using SaleManagerApp.Helpers;
 using SaleManagerApp.Models;
 using SaleManagerApp.Services;
 using System;

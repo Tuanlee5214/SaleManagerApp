@@ -93,7 +93,7 @@ namespace SaleManagerApp.ViewModels
                 return;
             }
 
-             _service.UpdateBatch(
+            var result = _service.UpdateBatch(
                 BatchId,
                 Quantity,
                 ImportDate,
@@ -101,7 +101,16 @@ namespace SaleManagerApp.ViewModels
                 "System"
             );
 
-
+            if (result.Success)
+            {
+                ToastService.Show(result.SuccessMessage);
+                ReloadAction?.Invoke();
+                CloseAction?.Invoke();
+            }
+            else
+            {
+                ToastService.ShowError(result.ErrorMessage);
+            }
         }
     }
 }
